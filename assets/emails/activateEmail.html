@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Activa tu cuenta</title>
+  <style type="text/css">
+    /*Edición de todos los div*/
+    div {
+      text-align: center;
+    }
+
+    div .kabil-logo-container img {
+      width: 100%;
+      height: 40%;
+    }
+
+    div .logo img {
+      width: 30%;
+    }
+
+    /*Edición en div del Titulo*/
+    div #titulo-correo h1 {
+      font-size: 30px;
+      color: #132861;
+    }
+
+    /*Edición en div del texto 1*/
+    div #texto-1-correo p {
+      font-size: 20px;
+    }
+
+    div #texto-2-correo {
+      font-size: 13px;
+      color: gray;
+      padding-bottom: 20px;
+    }
+
+    /*Edición en div del botón verificar*/
+    div #boton-verificar button {
+      width: 200px;
+      height: 40px;
+      background-color: #132861;
+      border-radius: 30px;
+    }
+
+    /*Edición del botón verificar*/
+    .boton {
+      text-decoration: none;
+      color: white;
+      display: inline;
+      border: 0;
+      padding: 0;
+      margin: 0;
+      background: none;
+      font-size: 1em;
+      line-height: 1em;
+      cursor: pointer;
+    }
+
+    /*Edición del botón verificar hover*/
+    .boton:hover {
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    div #boton-verificar button:hover {
+      background-color: #224199;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div style="font-family: Sans-serif">
+    <section id="">
+      <div id="titulo-correo">
+        <h1>¡Cuenta verificada!</h1>
+      </div>
+
+      <div id="texto-1-correo">
+        <h3>Tu cuenta ha sido verificada correctamente.</h3>
+        <p>
+          Ya puedes iniciar sesión y disfrutar los servicios que tenemos para
+          tí,
+          <br />
+          Haz click en el botón para ir a iniciar sesion, ¡que esperas!
+        </p>
+      </div>
+      <div id="boton-verificar">
+        <a class="boton" href="{{info.activateLink}}" target="_blank"><button class="boton">Iniciar sesión
+            👋</button></a>
+      </div>
+    </section>
+    <footer>
+      <div id="texto-2-correo">
+        <!-- <p>Para mas información envienos con correo a</p>
+          <a href="mailto:ikoodi.com@gmail.com">ikoodi.com@gmail.com</a> -->
+      </div>
+    </footer>
+  </div>
+</body>
+
+</html>
