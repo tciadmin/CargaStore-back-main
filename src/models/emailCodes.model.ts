@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 import db from "../db/connection";
 import Users from "./users.model";
+import { CreatedAt } from "sequelize-typescript";
 
 const EmailCodes = db.define(
   "email_codes",
@@ -23,6 +24,10 @@ const EmailCodes = db.define(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
     },
   },
   {
