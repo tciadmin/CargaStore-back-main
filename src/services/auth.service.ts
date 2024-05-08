@@ -133,10 +133,10 @@ const signUp = async (req: Request, res: Response) => {
     await sendCustomEmail(
       "Activar cuenta",
       [email],
-      "../../assets/emails/recoverEmail.html",
+      "../../assets/emails/verificationEmail.html",
       {
         user_name: name,
-        activateLink: `${urlBack}/api/auth/verify_email?token=${tokenVerificationCode}`,
+        verifyLink: `${urlBack}api/auth/verify_email?token=${tokenVerificationCode}`,
       }
     );
 
@@ -146,7 +146,7 @@ const signUp = async (req: Request, res: Response) => {
     });
   } catch (error) {
     await transaction.rollback();
-    console.error(error)
+    console.error(error);
     res.status(500).json({ msg: "Error interno" });
   }
 };
@@ -267,7 +267,7 @@ const resendVerifyEmail = async (req: Request, res: Response) => {
       "../../assets/emails/recoverEmail.html",
       {
         user_name: user.name + " " + user.last_name,
-        activateLink: `${urlBack}/api/auth/verify_email?token=${tokenVerificationCode}`,
+        activateLink: `${urlBack}api/auth/verify_email?token=${tokenVerificationCode}`,
       }
     );
 
