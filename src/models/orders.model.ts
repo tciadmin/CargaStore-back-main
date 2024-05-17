@@ -1,8 +1,8 @@
-import { DataTypes } from "sequelize";
-import db from "../db/connection";
+import { DataTypes } from 'sequelize';
+import db from '../db/connection';
 //Carga
 const Orders = db.define(
-  "orders",
+  'orders',
   {
     id: {
       type: DataTypes.BIGINT,

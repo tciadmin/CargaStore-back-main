@@ -1,16 +1,16 @@
 import { Router } from 'express';
 import { OrderService } from '../services';
-import validJwt from '../middlewares/valid-jwt';
+// import validJwt from '../middlewares/valid-jwt';
 
 const router = Router();
 //Servicios
-const {} = OrderService;
+const { orderList } = OrderService;
 
-router.post('/create', validJwt);
+router.post('/create');
 
-router.get('/list_order', validJwt);
+router.get('/list_order', orderList);
 
-router.patch('/edit_order', validJwt);
+router.patch('/edit_order');
 
 // router.post("/resend_email", validJwt);
 

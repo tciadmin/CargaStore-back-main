@@ -1,9 +1,36 @@
-import { DataTypes } from "sequelize";
-import db from "../db/connection";
-import EmailCodes from "./emailCodes.model";
+import { DataTypes, Model, Optional } from 'sequelize';
+import db from '../db/connection';
 
-const Users = db.define(
-  "users",
+// Definir la interfaz de atributos del usuario
+interface UserAttributes {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+  verified_email?: boolean;
+  status?: boolean;
+  driverId?: string;
+}
+
+// Interfaz para los atributos opcionales al crear un usuario
+interface UserCreationAttributes
+  extends Optional<UserAttributes, 'id'> {}
+
+// Definir el modelo del usuario
+class Users
+  extends Model<UserAttributes, UserCreationAttributes>
+  implements UserAttributes
+{
+  public id!: number;
+  public name!: string;
+  public email!: string;
+  public password!: string;
+  public verified_email!: boolean;
+  public status!: boolean;
+  public driverId?: string;
+}
+
+Users.init(
   {
     id: {
       type: DataTypes.BIGINT,
@@ -33,8 +60,20 @@ const Users = db.define(
       allowNull: false,
       defaultValue: true,
     },
+    driverId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: 'drivers',
+        key: 'id',
+      },
+    },
   },
-  { updatedAt: false }
+  {
+    sequelize: db,
+    tableName: 'users',
+    timestamps: false,
+  }
 );
 
 export default Users;

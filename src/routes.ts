@@ -9,4 +9,5 @@ export const ApiPaths: IApiPaths[] = [
   //url: url del endpoint, router: nombre del archivo sin la extención del "ts"
   { url: '/auth', router: 'auth.route' },
   { url: '/order', router: 'order.route' },
+  { url: '/driver', router: 'driver.route' },
 ];
