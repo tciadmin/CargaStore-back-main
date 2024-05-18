@@ -42,6 +42,14 @@ Users.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    /* lastname: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    identification_num: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },*/
     email: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -50,6 +58,22 @@ Users.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    /* role: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    country: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    city: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    address: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },*/
     verified_email: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
