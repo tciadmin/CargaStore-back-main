@@ -7,8 +7,8 @@ export interface SignUpBody {
   email: string;
   password: string;
   name: string;
-  last_name: string;
-  role?: string;
+  // last_name: string;
+  // role?: string;
   id?: number;
 }
 

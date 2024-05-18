@@ -115,7 +115,7 @@ const signUp = async (req: Request, res: Response) => {
 
     //creamos el codigo de verificación
     const verificationCode = generateVerificationCode(40);
-    const tokenVerificationCode = jwt.sign({ email, verificationCode }, secret);
+    const tokenVerificationCode = jwt.sign({ email, verificationCode }, secret); //Genera el token para solicitudes
 
     //Registramos el usuario
     const newUser: any = await UserModel.create({ ...body }, { transaction });
