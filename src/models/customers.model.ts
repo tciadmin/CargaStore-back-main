@@ -1,15 +1,36 @@
-import { DataTypes } from "sequelize";
+import { DataTypes, Model, Optional } from "sequelize";
 import db from "../db/connection";
-import Users from "./users.model";
 
-const Customers = db.define(
-  "customers",
+// Definir la interfaz de atributos del cliente
+interface CustomerAttributes {
+  id?: string;
+  company_name: string;
+  cuit: number;
+  company_phone: string;
+  userId?: number;
+}
+
+// Interfaz para los atributos opcionales al crear un conductor
+interface CustomerCreationAttributes
+  extends Optional<CustomerAttributes, "id"> {}
+
+class Customers
+  extends Model<CustomerAttributes, CustomerCreationAttributes>
+  implements CustomerAttributes
+{
+  public id!: string;
+  public company_name!: string;
+  public cuit!: number;
+  public company_phone!: string;
+  public userId!: number;
+}
+Customers.init(
   {
     id: {
-      type: DataTypes.BIGINT,
-      autoIncrement: true,
-      allowNull: false,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
+      allowNull: false,
     },
     company_name: {
       type: DataTypes.STRING,
@@ -20,21 +41,23 @@ const Customers = db.define(
       allowNull: false,
     },
     company_phone: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT,
       allowNull: false,
     },
     userId: {
       type: DataTypes.BIGINT,
       allowNull: false,
       references: {
-        model: Users,
+        model: "users",
         key: "id",
       },
     },
   },
-  { updatedAt: false }
+  {
+    sequelize: db,
+    tableName: "customers",
+    timestamps: false,
+  }
 );
 
-// Establece la relación entre Customers y User
-Customers.belongsTo(Users, { foreignKey: "userId" });
 export default Customers;

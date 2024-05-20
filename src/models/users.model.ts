@@ -1,5 +1,10 @@
+<<<<<<< dev-deni
+import { DataTypes, Model, Optional } from "sequelize";
+import db from "../db/connection";
+=======
 import { DataTypes, Model, Optional } from 'sequelize';
 import db from '../db/connection';
+>>>>>>> development
 
 // Definir la interfaz de atributos del usuario
 interface UserAttributes {
@@ -10,11 +15,19 @@ interface UserAttributes {
   verified_email?: boolean;
   status?: boolean;
   driverId?: string;
+<<<<<<< dev-deni
+  customerId?: string;
+}
+
+// Interfaz para los atributos opcionales al crear un usuario
+interface UserCreationAttributes extends Optional<UserAttributes, "id"> {}
+=======
 }
 
 // Interfaz para los atributos opcionales al crear un usuario
 interface UserCreationAttributes
   extends Optional<UserAttributes, 'id'> {}
+>>>>>>> development
 
 // Definir el modelo del usuario
 class Users
@@ -28,6 +41,10 @@ class Users
   public verified_email!: boolean;
   public status!: boolean;
   public driverId?: string;
+<<<<<<< dev-deni
+  public customerId?: string;
+=======
+>>>>>>> development
 }
 
 Users.init(
@@ -88,14 +105,31 @@ Users.init(
       type: DataTypes.UUID,
       allowNull: true,
       references: {
+<<<<<<< dev-deni
+        model: "drivers",
+        key: "id",
+      },
+    },
+    customerId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: "customers",
+        key: "id",
+=======
         model: 'drivers',
         key: 'id',
+>>>>>>> development
       },
     },
   },
   {
     sequelize: db,
+<<<<<<< dev-deni
+    tableName: "users",
+=======
     tableName: 'users',
+>>>>>>> development
     timestamps: false,
   }
 );
