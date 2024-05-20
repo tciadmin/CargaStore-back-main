@@ -1,5 +1,10 @@
+<<<<<<< dev-deni
 import { DataTypes, Model, Optional } from "sequelize";
 import db from "../db/connection";
+=======
+import { DataTypes, Model, Optional } from 'sequelize';
+import db from '../db/connection';
+>>>>>>> development
 
 // Definir la interfaz de atributos del conductor
 interface DriverAttributes {
@@ -13,7 +18,12 @@ interface DriverAttributes {
 }
 
 // Interfaz para los atributos opcionales al crear un conductor
+<<<<<<< dev-deni
 interface DriverCreationAttributes extends Optional<DriverAttributes, "id"> {}
+=======
+interface DriverCreationAttributes
+  extends Optional<DriverAttributes, 'id'> {}
+>>>>>>> development
 
 // Definir el modelo del conductor
 class Drivers
@@ -62,14 +72,23 @@ Drivers.init(
       type: DataTypes.BIGINT,
       allowNull: false,
       references: {
+<<<<<<< dev-deni
         model: "users",
         key: "id",
+=======
+        model: 'users',
+        key: 'id',
+>>>>>>> development
       },
     },
   },
   {
     sequelize: db,
+<<<<<<< dev-deni
     tableName: "drivers",
+=======
+    tableName: 'drivers',
+>>>>>>> development
     timestamps: false,
   }
 );
