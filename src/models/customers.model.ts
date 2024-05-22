@@ -1,7 +1,16 @@
-import { DataTypes, Model, Optional } from "sequelize";
-import db from "../db/connection";
+import {
+  Model,
+  Table,
+  Column,
+  DataType,
+  HasMany,
+  BelongsTo,
+  ForeignKey,
+  PrimaryKey,
+} from 'sequelize-typescript';
+import Order from './orders.model';
+import Users from './users.model';
 
-// Definir la interfaz de atributos del cliente
 interface CustomerAttributes {
   id?: string;
   company_name: string;
@@ -10,54 +19,55 @@ interface CustomerAttributes {
   userId?: number;
 }
 
-// Interfaz para los atributos opcionales al crear un conductor
-interface CustomerCreationAttributes
-  extends Optional<CustomerAttributes, "id"> {}
+@Table({ tableName: 'customers', timestamps: false })
+export class Customer extends Model<CustomerAttributes> {
+  @PrimaryKey
+  @Column({
+    type: DataType.UUID,
+    defaultValue: DataType.UUIDV4,
+    primaryKey: true,
+    allowNull: false,
+  })
+  id!: string;
 
-class Customers
-  extends Model<CustomerAttributes, CustomerCreationAttributes>
-  implements CustomerAttributes
-{
-  public id!: string;
-  public company_name!: string;
-  public cuit!: number;
-  public company_phone!: string;
-  public userId!: number;
-}
-Customers.init(
-  {
-    id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
-      allowNull: false,
-    },
-    company_name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    cuit: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    company_phone: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-    },
-    userId: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-      references: {
-        model: "users",
-        key: "id",
-      },
-    },
-  },
-  {
-    sequelize: db,
-    tableName: "customers",
-    timestamps: false,
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  company_name!: string;
+
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
+  cuit!: number;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  company_phone!: string;
+
+  @ForeignKey(() => Users)
+  @Column({
+    type: DataType.BIGINT,
+    allowNull: false,
+  })
+  userId!: number;
+
+  @BelongsTo(() => Users)
+  user!: Users;
+
+  @HasMany(() => Order)
+  orders!: Order[];
+
+  async addOrder(order: Order): Promise<void> {
+    if (!this.orders) {
+      this.orders = [];
+    }
+    this.orders.push(order);
+    await this.save();
   }
-);
+}
 
-export default Customers;
+export default Customer;

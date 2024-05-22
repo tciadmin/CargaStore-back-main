@@ -1,22 +1,104 @@
-dev-deni
-import { Request, Response } from "express";
-import { OrderModel } from "../models";
-
 import { Request, Response } from 'express';
-import { OrderModel } from '../models';
-development
+import { CustomerModel, OrderModel, PackageModel } from '../models';
+import { OrderInterface } from '../interface/order.interface';
+import { PackageInterface } from '../interface/package.interface';
 
-const orderList = async (req: Request, res: Response) => {
-  //   const { userId } = req.params;
+const createOrder = async (req: Request, res: Response) => {
+  const { customerId } = req.params;
+  const {
+    product_name, //string
+    quantity, //integer
+    type, // 'Seca' | 'Peligrosa' | 'Refrigerada'
+    weight, //float
+    volume, //integer
+    offered_price, //integer
+    product_pic, //string
+    receiving_company, //string
+    contact_number, //integer
+    receiving_company_RUC, //integer
+    pick_up_date, //date
+    pick_up_time, //string
+    pick_up_address, //string
+    pick_up_city, //string
+    delivery_date, //date
+    delivery_time, //string
+    delivery_address, //string
+    delivery_city, //string
+  } = req.body;
   try {
-    const allOrders = await OrderModel.findAll({
-      //   where: { UserId: userId },
+    if (
+      !product_name ||
+      !quantity ||
+      !type ||
+      !weight ||
+      !volume ||
+      !offered_price ||
+      !product_pic ||
+      !receiving_company ||
+      !contact_number ||
+      !receiving_company_RUC ||
+      !pick_up_date ||
+      !pick_up_time ||
+      !pick_up_address ||
+      !pick_up_city ||
+      !delivery_date ||
+      !delivery_time ||
+      !delivery_address ||
+      !delivery_city
+    ) {
+      return res.status(404).json({ msg: 'Faltan parametros' });
+    }
+    const packageData: PackageInterface = {
+      product_name,
+      quantity,
+      type,
+      weight,
+      volume,
+      offered_price,
+      product_pic,
+    };
+    const orderData: OrderInterface = {
+      receiving_company,
+      contact_number,
+      receiving_company_RUC,
+      pick_up_date,
+      pick_up_time,
+      pick_up_address,
+      pick_up_city,
+      delivery_date,
+      delivery_time,
+      delivery_address,
+      delivery_city,
+    };
+    const customer = await CustomerModel.findByPk(customerId);
+    if (!customer) {
+      return res.status(404).json({ msg: 'Cliente no encontrado' });
+    }
+    const newPackage = await PackageModel.create(packageData);
+    const order = await OrderModel.create({
+      ...orderData,
+      customerId: customer.id,
+      customer: customer,
+      packageId: newPackage.id,
+      package: newPackage,
     });
-
-    res.status(200).json(allOrders);
+    await customer.addOrder(order);
+    return res
+      .status(200)
+      .json({ msg: 'Orden creada con exito!!', order });
   } catch (error) {
-    res.status(500).json({ msg: error });
+    res.status(500).send(error);
   }
 };
 
-export default { orderList };
+const orderList = async (req: Request, res: Response) => {
+  try {
+    const allOrders = await OrderModel.findAll();
+    res.status(200).json(allOrders);
+  } catch (error) {
+    console.log('error: ', error);
+    res.status(500).send(error);
+  }
+};
+
+export default { orderList, createOrder };
