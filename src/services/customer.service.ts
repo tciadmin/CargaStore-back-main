@@ -1,6 +1,5 @@
-import { Request, Response } from "express";
-import { CustomerModel, UserModel } from "../models";
-import { CustomerInterface } from "../interface/customer.interface";
+import { Request, Response } from 'express';
+import { CustomerModel, UserModel } from '../models';
 
 const createCustomer = async (req: Request, res: Response) => {
   const { userId } = req.params;
@@ -9,25 +8,26 @@ const createCustomer = async (req: Request, res: Response) => {
     if (!company_name || !cuit || !company_phone) {
       return res
         .status(400)
-        .json({ msg: "Faltan parametros para crear cliente" });
+        .json({ msg: 'Faltan parametros para crear cliente' });
     }
     const user = await UserModel.findByPk(userId);
     if (!user) {
-      return res.status(404).json({ msg: "Usuario no encontrado" });
+      return res.status(404).json({ msg: 'Usuario no encontrado' });
     }
     const CustomerData = {
       company_name,
       cuit,
       company_phone,
     };
-    const newCustomer: CustomerInterface = await CustomerModel.create({
+    const newCustomer = await CustomerModel.create({
       ...CustomerData,
       userId: user.id,
     });
     await user.update({ customerId: newCustomer.id });
-    return res
-      .status(200)
-      .json({ driver: newCustomer, msg: "Cliente creado con éxito!!" });
+    return res.status(200).json({
+      msg: 'Cliente creado con éxito!!',
+      customer: newCustomer,
+    });
   } catch (error) {
     res.status(500).send(error);
   }

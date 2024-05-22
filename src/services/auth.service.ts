@@ -127,14 +127,10 @@ const signUp = async (req: Request, res: Response) => {
 
     //creamos el codigo de verificación
     const verificationCode = generateVerificationCode(40);
-dev-deni
-    const tokenVerificationCode = jwt.sign({ email, verificationCode }, secret); //Genera el token para solicitudes
-
     const tokenVerificationCode = jwt.sign(
       { email, verificationCode },
       secret
-    );
-development
+    ); //Genera el token para solicitudes
 
     //Registramos el usuario
     const newUser: any = await UserModel.create(
@@ -169,7 +165,7 @@ development
   } catch (error) {
     await transaction.rollback();
     console.error(error);
-    res.status(500).json({ msg: 'Error interno' });
+    res.status(500).send(error);
   }
 };
 

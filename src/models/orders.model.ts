@@ -1,53 +1,115 @@
-import { DataTypes } from 'sequelize';
-import db from '../db/connection';
-//Carga
-const Orders = db.define(
-  'orders',
-  {
-    id: {
-      type: DataTypes.BIGINT,
-      autoIncrement: true,
-      allowNull: false,
-      primaryKey: true,
-    },
-    picture: {
-      type: DataTypes.BLOB,
-      allowNull: false,
-    },
-    pick_up_time: {
-      type: DataTypes.TIME,
-      allowNull: false,
-    },
-    pick_up_date: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    pick_up_address: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    pick_up_city: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    delivery_time: {
-      type: DataTypes.TIME,
-      allowNull: false,
-    },
-    delivery_date: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    delivery_address: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    delivery_city: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-  },
-  { updatedAt: false }
-);
+import {
+  Table,
+  Model,
+  Column,
+  DataType,
+  PrimaryKey,
+  ForeignKey,
+  BelongsTo,
+  AutoIncrement,
+} from 'sequelize-typescript';
+import Package from './packages.model';
+import Customer from './customers.model';
+import { randomNumber } from '../utils/numberManager';
 
-export default Orders;
+@Table({ tableName: 'orders', timestamps: false })
+class Order extends Model {
+  @PrimaryKey
+  @AutoIncrement
+  @Column({ type: DataType.BIGINT, defaultValue: randomNumber(4) })
+  id!: number;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  receiving_company!: string;
+
+  @Column({
+    type: DataType.BIGINT,
+    allowNull: false,
+  })
+  contact_number!: number;
+
+  @Column({
+    type: DataType.BIGINT,
+    allowNull: false,
+  })
+  receiving_company_RUC!: number;
+
+  @Column({
+    type: DataType.DATE,
+    allowNull: false,
+  })
+  pick_up_date!: Date;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  pick_up_time!: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  pick_up_address!: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  pick_up_city!: string;
+
+  @Column({
+    type: DataType.DATE,
+    allowNull: false,
+  })
+  delivery_date!: Date;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  delivery_time!: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  delivery_address!: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  delivery_city!: string;
+
+  @ForeignKey(() => Customer)
+  @Column({
+    type: DataType.UUID,
+    allowNull: true,
+  })
+  customerId!: string;
+
+  @BelongsTo(() => Customer)
+  customer!: Customer;
+
+  @ForeignKey(() => Package)
+  @Column({
+    type: DataType.UUID,
+    allowNull: false,
+  })
+  packageId!: string;
+
+  @BelongsTo(() => Package)
+  package!: Package;
+
+  async setPackage(newPackage: Package): Promise<void> {
+    this.packageId = newPackage.id;
+    this.package = newPackage;
+    await this.save();
+  }
+}
+
+export default Order;
