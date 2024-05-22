@@ -93,8 +93,13 @@ const createOrder = async (req: Request, res: Response) => {
 
 const orderList = async (req: Request, res: Response) => {
   try {
-    const allOrders = await OrderModel.findAll();
-    res.status(200).json(allOrders);
+    const allOrders = await OrderModel.findAll({
+      include: [
+        { model: PackageModel, as: 'package' },
+        { model: CustomerModel, as: 'customer' },
+      ],
+    });
+    res.status(200).json({ orders: allOrders });
   } catch (error) {
     console.log('error: ', error);
     res.status(500).send(error);

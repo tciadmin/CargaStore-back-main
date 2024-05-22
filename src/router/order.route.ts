@@ -11,12 +11,6 @@ router.get('/list_order', orderList);
 
 router.patch('/edit_order');
 
-router.post('/create');
-
-router.get('/list_order', orderList);
-
-router.patch('/edit_order');
-
 // router.post("/resend_email", validJwt);
 
 module.exports = router;
