@@ -9,6 +9,7 @@ import {
   PrimaryKey,
 } from 'sequelize-typescript';
 import Users from './users.model';
+import Truck from './trucks.model';
 
 @Table({ tableName: 'drivers', timestamps: false })
 export default class Drivers extends Model {
@@ -59,4 +60,14 @@ export default class Drivers extends Model {
 
   @BelongsTo(() => Users, { as: 'user_driver' })
   user!: Users;
+
+  @ForeignKey(() => Truck)
+  @Column({
+    type: DataType.UUID,
+    allowNull: false,
+  })
+  truckId!: string;
+
+  @BelongsTo(() => Truck)
+  truck!: Truck;
 }

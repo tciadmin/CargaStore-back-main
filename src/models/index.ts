@@ -8,3 +8,4 @@ export { default as OrderModel } from './orders.model';
 export { default as PackageModel } from './packages.model';
 export { default as CustomerModel } from './customers.model';
 export { default as DriverModel } from './drivers.model';
+export { default as TruckModel } from './trucks.model';

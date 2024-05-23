@@ -1,54 +1,55 @@
-import { DataTypes } from "sequelize";
-import db from "../db/connection";
+import {
+  DataType,
+  PrimaryKey,
+  Table,
+  Column,
+  Model,
+  HasOne,
+} from 'sequelize-typescript';
+import { TruckInterface } from '../interface/truck.interface';
+import Drivers from './drivers.model';
 
-const Trucks = db.define(
-  "trucks",
-  {
-    id: {
-      type: DataTypes.BIGINT,
-      autoIncrement: true,
-      allowNull: false,
-      primaryKey: true,
-    },
-    brand: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    model: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    year: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    num_plate: {
-      type: DataTypes.STRING, //Puede contener letras
-      allowNull: false,
-    },
-    exp_plate: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    capacity: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    type_cargo: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    mech_inspection: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-    },
-    policy: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-    },
-  },
+enum ChargeType {
+  SECA = 'seca',
+  PELIGROSA = 'peligrosa',
+  REFRIGERADA = 'refrigerada',
+}
 
-  { updatedAt: false }
-);
+@Table({ tableName: 'trucks', timestamps: false })
+class Truck extends Model<TruckInterface> {
+  @PrimaryKey
+  @Column({
+    type: DataType.UUID,
+    defaultValue: DataType.UUIDV4,
+    primaryKey: true,
+    allowNull: false,
+  })
+  id!: string;
 
-export default Trucks;
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  brand!: string;
+
+  @Column({ type: DataType.STRING, allowNull: false })
+  model!: string;
+
+  @Column({ type: DataType.INTEGER, allowNull: false })
+  year!: number;
+
+  @Column({
+    type: DataType.ENUM,
+    values: Object.values(ChargeType),
+    allowNull: false,
+  })
+  charge_type!: ChargeType;
+
+  @HasOne(() => Drivers, {
+    foreignKey: 'DriverId',
+    as: 'truck_driver',
+  })
+  driver!: Drivers;
+}
+
+export default Truck;

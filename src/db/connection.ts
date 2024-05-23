@@ -6,6 +6,7 @@ import {
   OrderModel,
   PackageModel,
   DriverModel,
+  TruckModel,
 } from '../models';
 import EmailCodes from '../models/emailCodes.model';
 import PasswordCodes from '../models/passwordCodes.model';
@@ -28,6 +29,7 @@ const db = new Sequelize({
     CustomerModel,
     OrderModel,
     PackageModel,
+    TruckModel,
   ], // Aquí añades tus modelos
 });
 
