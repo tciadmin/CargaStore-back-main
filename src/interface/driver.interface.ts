@@ -3,7 +3,7 @@ export interface DriverInterface {
   picture: string;
   num_license: number;
   exp_license: Date;
-  iess: boolean;
+  iess?: boolean;
   description: string;
   userId?: number;
 }
