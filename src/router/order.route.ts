@@ -4,10 +4,10 @@ import { OrderService } from '../services';
 
 const router = Router();
 //Servicios
-const { orderList, createOrder } = OrderService;
+const { orderListWithFilter, createOrder } = OrderService;
 router.post('/create/:customerId', createOrder);
 
-router.get('/list_order', orderList);
+router.get('/list_order', orderListWithFilter);
 
 router.patch('/edit_order');
 

@@ -1,5 +1,6 @@
 export interface OrderInterface {
   id?: string;
+  status?: 'pendiente' | 'asignado' | 'en Curso' | 'finalizado';
   receiving_company: string;
   contact_number: number;
   receiving_company_RUC: number;

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { CustomerModel, OrderModel, PackageModel } from '../models';
 import { OrderInterface } from '../interface/order.interface';
 import { PackageInterface } from '../interface/package.interface';
+import { randomNumber } from '../utils/numberManager';
 
 const createOrder = async (req: Request, res: Response) => {
   const { customerId } = req.params;
@@ -76,6 +77,7 @@ const createOrder = async (req: Request, res: Response) => {
     }
     const newPackage = await PackageModel.create(packageData);
     const order = await OrderModel.create({
+      id: randomNumber(4),
       ...orderData,
       customerId: customer.id,
       customer: customer,
@@ -91,9 +93,11 @@ const createOrder = async (req: Request, res: Response) => {
   }
 };
 
-const orderList = async (req: Request, res: Response) => {
+const orderListWithFilter = async (req: Request, res: Response) => {
+  const { status } = req.query; //pendiente | asignada | en curso | finalizada
   try {
     const allOrders = await OrderModel.findAll({
+      where: { status: status },
       include: [
         { model: PackageModel, as: 'package' },
         { model: CustomerModel, as: 'customer' },
@@ -106,4 +110,4 @@ const orderList = async (req: Request, res: Response) => {
   }
 };
 
-export default { orderList, createOrder };
+export default { orderListWithFilter, createOrder };

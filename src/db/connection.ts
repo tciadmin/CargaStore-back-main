@@ -31,7 +31,6 @@ const db = new Sequelize({
   ], // Aquí añades tus modelos
 });
 
-// db.sync({alter:true});
-db.sync();
+db.sync({ alter: true });
 
 export default db;
