@@ -2,7 +2,7 @@ export interface PackageInterface {
   id?: string;
   product_name: string;
   quantity: number;
-  type: 'Seca' | 'Peligrosa' | 'Refrigerada';
+  type: 'seca' | 'peligrosa' | 'refrigerada';
   weight: number;
   volume: number;
   offered_price: number;

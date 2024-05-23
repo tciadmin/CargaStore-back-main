@@ -14,7 +14,7 @@ interface PackageAttributes {
   id?: string;
   product_name: string;
   quantity: number;
-  type: 'Seca' | 'Peligrosa' | 'Refrigerada';
+  type: 'seca' | 'peligrosa' | 'refrigerada';
   weight: number;
   volume: number;
   offered_price: number;
@@ -24,9 +24,9 @@ interface PackageAttributes {
 }
 
 enum PackageType {
-  SECA = 'Seca',
-  PELIGROSA = 'Peligrosa',
-  REFRIGERADA = 'Refrigerada',
+  SECA = 'seca',
+  PELIGROSA = 'peligrosa',
+  REFRIGERADA = 'refrigerada',
 }
 
 @Table({ tableName: 'packages', timestamps: false })

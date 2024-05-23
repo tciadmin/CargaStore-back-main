@@ -10,14 +10,28 @@ import {
 } from 'sequelize-typescript';
 import Package from './packages.model';
 import Customer from './customers.model';
-import { randomNumber } from '../utils/numberManager';
+
+enum OrderStatus {
+  PENDIENTE = 'pendiente',
+  ASIGNADO = 'asignado',
+  ENCURSO = 'en curso',
+  FINALIZADO = 'finalizado',
+}
 
 @Table({ tableName: 'orders', timestamps: false })
 class Order extends Model {
   @PrimaryKey
   @AutoIncrement
-  @Column({ type: DataType.BIGINT, defaultValue: randomNumber(4) })
+  @Column({ type: DataType.BIGINT })
   id!: number;
+
+  @Column({
+    type: DataType.ENUM,
+    values: Object.values(OrderStatus),
+    allowNull: false,
+    defaultValue: 'pendiente',
+  })
+  status!: OrderStatus;
 
   @Column({
     type: DataType.STRING,
