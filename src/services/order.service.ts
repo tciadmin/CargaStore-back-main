@@ -110,4 +110,24 @@ const orderListWithFilter = async (req: Request, res: Response) => {
   }
 };
 
-export default { orderListWithFilter, createOrder };
+const orderDetail = async (req: Request, res: Response) => {
+  const { orderId } = req.params;
+  try {
+    const order = await OrderModel.findByPk(orderId, {
+      include: [
+        { model: PackageModel, as: 'package' },
+        { model: CustomerModel, as: 'customer' },
+      ],
+    });
+    if (!order) {
+      return res
+        .status(404)
+        .json({ msg: 'No se encuentra la orden' });
+    }
+    res.status(200).json(order);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+export default { orderListWithFilter, createOrder, orderDetail };
