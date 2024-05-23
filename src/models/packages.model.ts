@@ -93,7 +93,7 @@ class Package extends Model<PackageAttributes> {
   createdAt!: Date;
 
   @HasOne(() => Order, {
-    foreignKey: 'orderId',
+    foreignKey: 'packageId',
     as: 'package_order',
   })
   order!: Order;
