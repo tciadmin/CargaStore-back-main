@@ -130,4 +130,45 @@ const orderDetail = async (req: Request, res: Response) => {
   }
 };
 
-export default { orderListWithFilter, createOrder, orderDetail };
+const editOrder = async (req: Request, res: Response) => {
+  const { orderId } = req.params;
+  const {
+    receiving_company,
+    contact_number,
+    receiving_company_RUC,
+    pick_up_date,
+    pick_up_time,
+    pick_up_address,
+    pick_up_city,
+    delivery_date,
+    delivery_time,
+    delivery_address,
+    delivery_city,
+  } = req.body;
+  try {
+    const orderData: OrderInterface = {
+      receiving_company,
+      contact_number,
+      receiving_company_RUC,
+      pick_up_date,
+      pick_up_time,
+      pick_up_address,
+      pick_up_city,
+      delivery_date,
+      delivery_time,
+      delivery_address,
+      delivery_city,
+    };
+    await OrderModel.update(orderData, { where: { id: orderId } });
+    res.status(200).json({ msg: 'Orden editada con exito' });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+export default {
+  editOrder,
+  orderListWithFilter,
+  createOrder,
+  orderDetail,
+};
