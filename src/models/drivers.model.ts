@@ -7,9 +7,12 @@ import {
   BelongsTo,
   AllowNull,
   PrimaryKey,
+  HasMany,
 } from 'sequelize-typescript';
 import Users from './users.model';
 import Truck from './trucks.model';
+import Application from './application.model';
+import Order from './orders.model';
 
 @Table({ tableName: 'drivers', timestamps: false })
 export default class Drivers extends Model {
@@ -70,4 +73,10 @@ export default class Drivers extends Model {
 
   @BelongsTo(() => Truck)
   truck!: Truck;
+
+  @HasMany(() => Application)
+  applications!: Application[];
+
+  @HasMany(() => Order, { foreignKey: 'assignedDriverId' })
+  assignedOrders!: Order[];
 }

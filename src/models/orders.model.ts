@@ -7,9 +7,12 @@ import {
   ForeignKey,
   BelongsTo,
   AutoIncrement,
+  HasMany,
 } from 'sequelize-typescript';
 import Package from './packages.model';
 import Customer from './customers.model';
+import Drivers from './drivers.model';
+import Application from './application.model';
 
 enum OrderStatus {
   PENDIENTE = 'pendiente',
@@ -118,6 +121,19 @@ class Order extends Model {
 
   @BelongsTo(() => Package)
   package!: Package;
+
+  @ForeignKey(() => Drivers)
+  @Column({ type: DataType.UUID, allowNull: true })
+  assignedDriverId!: string;
+
+  @BelongsTo(() => Drivers, {
+    foreignKey: 'assignedDriverId',
+    as: 'assignedDriver',
+  })
+  assignedDriver!: Drivers;
+
+  @HasMany(() => Application)
+  applications!: Application[];
 
   async setPackage(newPackage: Package): Promise<void> {
     this.packageId = newPackage.id;

@@ -1,5 +1,11 @@
 import { Request, Response } from 'express';
-import { CustomerModel, OrderModel, PackageModel } from '../models';
+import {
+  ApplicationModel,
+  CustomerModel,
+  DriverModel,
+  OrderModel,
+  PackageModel,
+} from '../models';
 import { OrderInterface } from '../interface/order.interface';
 import { PackageInterface } from '../interface/package.interface';
 import { randomNumber } from '../utils/numberManager';
@@ -117,6 +123,7 @@ const orderDetail = async (req: Request, res: Response) => {
       include: [
         { model: PackageModel, as: 'package' },
         { model: CustomerModel, as: 'customer' },
+        { model: ApplicationModel, include: [DriverModel] },
       ],
     });
     if (!order) {

@@ -11,4 +11,5 @@ export const ApiPaths: IApiPaths[] = [
   { url: '/order', router: 'order.route' },
   { url: '/driver', router: 'driver.route' },
   { url: '/customer', router: 'customer.route' },
+  { url: '/application', router: 'application.route' },
 ];
