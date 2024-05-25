@@ -20,6 +20,7 @@ const createOrder = async (req: Request, res: Response) => {
     volume, //integer
     offered_price, //integer
     product_pic, //string
+    orderType, //'national' | 'international'
     receiving_company, //string
     contact_number, //integer
     receiving_company_RUC, //integer
@@ -42,6 +43,7 @@ const createOrder = async (req: Request, res: Response) => {
       !offered_price ||
       !product_pic ||
       !receiving_company ||
+      !orderType ||
       !contact_number ||
       !receiving_company_RUC ||
       !pick_up_date ||
@@ -65,6 +67,7 @@ const createOrder = async (req: Request, res: Response) => {
       product_pic,
     };
     const orderData: OrderInterface = {
+      orderType,
       receiving_company,
       contact_number,
       receiving_company_RUC,
@@ -100,10 +103,10 @@ const createOrder = async (req: Request, res: Response) => {
 };
 
 const orderListWithFilter = async (req: Request, res: Response) => {
-  const { status } = req.query; //pendiente | asignada | en curso | finalizada
+  const { status, orderType } = req.query; //pendiente | asignada | en curso | finalizada
   try {
     const allOrders = await OrderModel.findAll({
-      where: { status: status },
+      where: { status: status, orderType: orderType },
       include: [
         { model: PackageModel, as: 'package' },
         { model: CustomerModel, as: 'customer' },
@@ -111,7 +114,6 @@ const orderListWithFilter = async (req: Request, res: Response) => {
     });
     res.status(200).json({ orders: allOrders });
   } catch (error) {
-    console.log('error: ', error);
     res.status(500).send(error);
   }
 };
@@ -140,6 +142,7 @@ const orderDetail = async (req: Request, res: Response) => {
 const editOrder = async (req: Request, res: Response) => {
   const { orderId } = req.params;
   const {
+    orderType,
     receiving_company,
     contact_number,
     receiving_company_RUC,
@@ -154,6 +157,7 @@ const editOrder = async (req: Request, res: Response) => {
   } = req.body;
   try {
     const orderData: OrderInterface = {
+      orderType,
       receiving_company,
       contact_number,
       receiving_company_RUC,
@@ -174,9 +178,9 @@ const editOrder = async (req: Request, res: Response) => {
 };
 
 const changeOrderStatus = async (req: Request, res: Response) => {
+  const { orderId } = req.params;
+  const { status } = req.body;
   try {
-    const { orderId } = req.params;
-    const { status } = req.body;
     if (!status) {
       return res.status(400).json({ msg: 'El estatus es requerido' });
     }

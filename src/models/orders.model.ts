@@ -21,6 +21,11 @@ enum OrderStatus {
   FINALIZADO = 'finalizado',
 }
 
+enum OrderType {
+  NATIONAL = 'national',
+  INTERNATIONAL = 'international',
+}
+
 @Table({ tableName: 'orders', timestamps: false })
 class Order extends Model {
   @PrimaryKey
@@ -35,6 +40,13 @@ class Order extends Model {
     defaultValue: 'pendiente',
   })
   status!: OrderStatus;
+
+  @Column({
+    type: DataType.ENUM,
+    values: Object.values(OrderType),
+    allowNull: false,
+  })
+  orderType!: OrderType;
 
   @Column({
     type: DataType.STRING,
