@@ -4,8 +4,14 @@ import { OrderService } from '../services';
 
 const router = Router();
 //Servicios
-const { orderListWithFilter, createOrder, orderDetail, editOrder } =
-  OrderService;
+const {
+  changeOrderStatus,
+  orderListWithFilter,
+  createOrder,
+  orderDetail,
+  editOrder,
+} = OrderService;
+
 router.post('/create/:customerId', createOrder);
 
 router.get('/list_order', orderListWithFilter);
@@ -13,6 +19,8 @@ router.get('/list_order', orderListWithFilter);
 router.get('/detail/:orderId', orderDetail);
 
 router.put('/edit/:orderId', editOrder);
+
+router.patch('/change_status/:orderId', changeOrderStatus);
 
 // router.post("/resend_email", validJwt);
 

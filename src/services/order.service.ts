@@ -173,9 +173,24 @@ const editOrder = async (req: Request, res: Response) => {
   }
 };
 
+const changeOrderStatus = async (req: Request, res: Response) => {
+  try {
+    const { orderId } = req.params;
+    const { status } = req.body;
+    if (!status) {
+      return res.status(400).json({ msg: 'El estatus es requerido' });
+    }
+    await OrderModel.update({ status }, { where: { id: orderId } });
+    res.status(200).json({ msg: 'Estado de orden cambiado' });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 export default {
   editOrder,
   orderListWithFilter,
   createOrder,
   orderDetail,
+  changeOrderStatus,
 };
