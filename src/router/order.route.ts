@@ -10,9 +10,12 @@ const {
   createOrder,
   orderDetail,
   editOrder,
+  duplicateOrder,
 } = OrderService;
 
 router.post('/create/:customerId', createOrder);
+
+router.post('/duplicate/:orderId', duplicateOrder);
 
 router.get('/list_order', orderListWithFilter);
 

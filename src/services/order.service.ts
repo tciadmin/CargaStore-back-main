@@ -191,10 +191,59 @@ const changeOrderStatus = async (req: Request, res: Response) => {
   }
 };
 
+const duplicateOrder = async (req: Request, res: Response) => {
+  const { orderId } = req.params;
+  try {
+    const originalOrder = await OrderModel.findByPk(orderId, {
+      include: [{ model: PackageModel, as: 'package' }],
+    });
+    const originalPackage = await PackageModel.findByPk(
+      originalOrder?.packageId
+    );
+    if (!originalOrder || !originalPackage) {
+      return res
+        .status(404)
+        .json({ msg: 'No se ha encontrado la orden original' });
+    }
+    const duplicatePackage = await PackageModel.create({
+      product_name: originalPackage.product_name,
+      quantity: originalPackage.quantity,
+      type: originalPackage.type,
+      weight: originalPackage.weight,
+      volume: originalPackage.volume,
+      offered_price: originalPackage.offered_price,
+      product_pic: originalPackage.product_pic,
+    });
+    const duplicateOrder = await OrderModel.create({
+      orderType: originalOrder.orderType,
+      receiving_company: originalOrder.receiving_company,
+      contact_number: originalOrder.contact_number,
+      receiving_company_RUC: originalOrder.receiving_company_RUC,
+      pick_up_date: originalOrder.pick_up_date,
+      pick_up_time: originalOrder.pick_up_time,
+      pick_up_address: originalOrder.pick_up_address,
+      pick_up_city: originalOrder.pick_up_city,
+      delivery_date: originalOrder.delivery_date,
+      delivery_time: originalOrder.delivery_time,
+      delivery_address: originalOrder.delivery_address,
+      delivery_city: originalOrder.delivery_city,
+      customerId: originalOrder.customerId,
+      packageId: duplicatePackage.id,
+    });
+    res.status(200).json({
+      msg: 'Orden duplicada con exito',
+      orden: duplicateOrder,
+    });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 export default {
   editOrder,
   orderListWithFilter,
   createOrder,
   orderDetail,
   changeOrderStatus,
+  duplicateOrder,
 };
