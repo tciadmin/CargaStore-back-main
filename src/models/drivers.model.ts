@@ -7,14 +7,11 @@ import {
   BelongsTo,
   AllowNull,
   PrimaryKey,
-  HasMany,
-} from 'sequelize-typescript';
-import Users from './users.model';
-import Truck from './trucks.model';
-import Application from './application.model';
-import Order from './orders.model';
+} from "sequelize-typescript";
+import Users from "./users.model";
+import Truck from "./trucks.model";
 
-@Table({ tableName: 'drivers', timestamps: false })
+@Table({ tableName: "drivers", timestamps: false })
 export default class Drivers extends Model {
   @PrimaryKey
   @Column({
@@ -38,12 +35,6 @@ export default class Drivers extends Model {
   num_license!: number;
 
   @Column({
-    type: DataType.DATE,
-    allowNull: false,
-  })
-  exp_license!: Date;
-
-  @Column({
     type: DataType.BOOLEAN,
     allowNull: false,
     defaultValue: false,
@@ -56,12 +47,18 @@ export default class Drivers extends Model {
   })
   description!: string;
 
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
+  phone!: number;
+
   @ForeignKey(() => Users)
   @AllowNull(false)
   @Column(DataType.BIGINT)
   userId!: number;
 
-  @BelongsTo(() => Users, { as: 'user_driver' })
+  @BelongsTo(() => Users, { as: "user_driver" })
   user!: Users;
 
   @ForeignKey(() => Truck)
@@ -73,10 +70,4 @@ export default class Drivers extends Model {
 
   @BelongsTo(() => Truck)
   truck!: Truck;
-
-  @HasMany(() => Application)
-  applications!: Application[];
-
-  @HasMany(() => Order, { foreignKey: 'assignedDriverId' })
-  assignedOrders!: Order[];
 }

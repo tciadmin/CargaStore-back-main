@@ -1,49 +1,58 @@
-import { Request, Response } from 'express';
-import { DriverModel, TruckModel, UserModel } from '../models';
-import { DriverInterface } from '../interface/driver.interface';
-import { TruckInterface } from '../interface/truck.interface';
+import { Request, Response } from "express";
+import { DriverModel, TruckModel, UserModel } from "../models";
+import { DriverInterface } from "../interface/driver.interface";
+import { TruckInterface } from "../interface/truck.interface";
 
 const createDriver = async (req: Request, res: Response) => {
   const { userId } = req.params;
   const {
     picture, // string
     num_license, //integer
-    exp_license, //date
     description, //string
+    phone, //integer
     brand, //string
     model, //string
     year, //integer
     charge_type, //seca | peligrosa | refrigerada
+    num_plate, //matricula
+    capacity, //capacidad de carga en numero
+    charge_capacity, //capacidad de carga "toneladas"o "litros" o "kilos"
   } = req.body;
   try {
     if (
       !picture ||
       !num_license ||
-      !exp_license ||
       !description ||
+      !phone ||
       !brand ||
       !model ||
       !year ||
+      !num_plate ||
+      !capacity ||
+      !charge_capacity ||
       !charge_type
     ) {
-      return res.status(400).json({ msg: 'Faltan parametros' });
+      return res.status(400).json({ msg: "Faltan parametros" });
     }
 
     const driverData: DriverInterface = {
       picture,
       num_license,
-      exp_license,
       description,
+      phone,
     };
     const truckData: TruckInterface = {
       brand,
       model,
       year,
       charge_type,
+      num_plate,
+      capacity,
+      charge_capacity,
     };
     const user = await UserModel.findByPk(userId);
     if (!user) {
-      return res.status(404).json({ msg: 'Usuario no encontrado' });
+      return res.status(404).json({ msg: "Usuario no encontrado" });
     }
 
     const newTruck = await TruckModel.create(truckData);
@@ -56,7 +65,7 @@ const createDriver = async (req: Request, res: Response) => {
     });
     await user.update({ driverId: newDriver.id });
     return res.status(200).json({
-      msg: 'Conductor creado con exito!!',
+      msg: "Conductor creado con exito!!",
       driver: newDriver,
     });
   } catch (error) {
@@ -64,4 +73,29 @@ const createDriver = async (req: Request, res: Response) => {
   }
 };
 
-export default { createDriver };
+//Obtener un Conductor
+const getDriverByUserId = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  try {
+    const driver = await DriverModel.findOne({
+      where: { userId },
+      include: [
+        {
+          model: TruckModel,
+          as: "truck",
+        },
+      ],
+    });
+
+    if (!driver) {
+      return res.status(404).json({ msg: "Conductor no encontrado" });
+    }
+
+    return res.status(200).json({
+      driver,
+    });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+export default { createDriver, getDriverByUserId };

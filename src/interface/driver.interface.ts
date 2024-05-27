@@ -2,8 +2,10 @@ export interface DriverInterface {
   id?: string;
   picture: string;
   num_license: number;
-  exp_license: Date;
-  iess?: boolean;
   description: string;
+  phone?: number;
+  iess?: boolean;
+  port?: boolean;
+  policy?: number;
   userId?: number;
 }
