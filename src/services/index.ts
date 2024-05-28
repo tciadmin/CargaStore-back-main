@@ -6,3 +6,4 @@ export { default as DriverService } from "./driver.service";
 export { default as CustomerService } from "./customer.service";
 export { default as ApplicationServcie } from "./application.service";
 export { default as TruckService } from "./truck.service";
+export { default as FeedbackService } from "./feedback.service";

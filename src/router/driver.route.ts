@@ -4,9 +4,10 @@ import { DriverService } from "../services";
 
 const router = Router();
 //Servicios
-const { createDriver, getDriverByUserId } = DriverService;
+const { createDriver, getDriverByUserId, patchDriver } = DriverService;
 
 router.post("/create/:userId", createDriver);
 router.get("/get/:userId", getDriverByUserId);
+router.patch("/patch/:userId", patchDriver);
 
 module.exports = router;

@@ -1,26 +1,54 @@
-import { DataTypes } from "sequelize";
-import db from "../db/connection";
+import {
+  Table,
+  Model,
+  Column,
+  DataType,
+  PrimaryKey,
+  ForeignKey,
+  BelongsTo,
+} from "sequelize-typescript";
+import Drivers from "./drivers.model";
+import Customer from "./customers.model";
 
-const Feedbacks = db.define(
-  "feedbacks",
-  {
-    id: {
-      type: DataTypes.BIGINT,
-      autoIncrement: true,
-      allowNull: false,
-      primaryKey: true,
-    },
-    comment: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    score: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-  },
+@Table({ tableName: "feedbacks", timestamps: false })
+class Feedback extends Model {
+  @PrimaryKey
+  @Column({
+    type: DataType.UUID,
+    defaultValue: DataType.UUIDV4,
+    primaryKey: true,
+  })
+  id!: string;
 
-  { updatedAt: false }
-);
+  @Column({
+    type: DataType.TEXT,
+    allowNull: false,
+  })
+  comment!: string;
 
-export default Feedbacks;
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+    validate: {
+      min: 1,
+      max: 5,
+    },
+  })
+  score!: number;
+
+  @ForeignKey(() => Drivers)
+  @Column({ type: DataType.UUID, allowNull: false })
+  driverId!: string;
+
+  @BelongsTo(() => Drivers)
+  driver!: Drivers;
+
+  @ForeignKey(() => Customer)
+  @Column({ type: DataType.UUID, allowNull: false })
+  customerId!: string;
+
+  @BelongsTo(() => Customer)
+  customer!: Customer;
+}
+
+export default Feedback;
