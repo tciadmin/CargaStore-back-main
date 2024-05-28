@@ -1,5 +1,5 @@
-import { Sequelize } from "sequelize-typescript";
-import Config from "../config";
+import { Sequelize } from 'sequelize-typescript';
+import Config from '../config';
 import {
   UserModel,
   CustomerModel,
@@ -9,9 +9,10 @@ import {
   TruckModel,
   ApplicationModel,
   FeedbackModel,
-} from "../models";
-import EmailCodes from "../models/emailCodes.model";
-import PasswordCodes from "../models/passwordCodes.model";
+  PayModel,
+} from '../models';
+import EmailCodes from '../models/emailCodes.model';
+import PasswordCodes from '../models/passwordCodes.model';
 const { nameDB, userDB, PasswordDB, hostDB, portDB } = Config;
 
 const db = new Sequelize({
@@ -19,10 +20,10 @@ const db = new Sequelize({
   username: userDB,
   password: PasswordDB,
   host: hostDB,
-  dialect: "mysql",
+  dialect: 'mysql',
   logging: false,
   port: +portDB,
-  timezone: "-05:00",
+  timezone: '-05:00',
   models: [
     EmailCodes,
     PasswordCodes,
@@ -34,6 +35,7 @@ const db = new Sequelize({
     TruckModel,
     ApplicationModel,
     FeedbackModel,
+    PayModel,
   ], // Aquí añades tus modelos
 });
 

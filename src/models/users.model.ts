@@ -8,11 +8,13 @@ import {
   AutoIncrement,
   AllowNull,
   Default,
-} from "sequelize-typescript";
-import Drivers from "./drivers.model";
-import Customer from "./customers.model";
+  HasMany,
+} from 'sequelize-typescript';
+import Drivers from './drivers.model';
+import Customer from './customers.model';
+import Pay from './pay.model';
 
-@Table({ tableName: "users", timestamps: false })
+@Table({ tableName: 'users', timestamps: false })
 class Users extends Model {
   @PrimaryKey
   @AutoIncrement
@@ -53,16 +55,19 @@ class Users extends Model {
   status!: boolean;
 
   @HasOne(() => Drivers, {
-    foreignKey: "userId",
-    as: "user_driver",
+    foreignKey: 'userId',
+    as: 'user_driver',
   })
   driver!: Drivers;
 
   @HasOne(() => Customer, {
-    foreignKey: "userId",
-    as: "user_customer",
+    foreignKey: 'userId',
+    as: 'user_customer',
   })
   customer!: Customer;
+
+  @HasMany(() => Pay)
+  pays!: Pay[];
 }
 
 export default Users;
