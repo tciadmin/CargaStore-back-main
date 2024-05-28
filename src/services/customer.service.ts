@@ -1,26 +1,27 @@
-import { Request, Response } from 'express';
-import { CustomerModel, UserModel } from '../models';
-import { CustomerInterface } from '../interface/customer.interface';
-import { HelperBody } from '../helpers';
+import { Request, Response } from "express";
+import { CustomerModel, UserModel } from "../models";
+import { CustomerInterface } from "../interface/customer.interface";
+import { HelperBody } from "../helpers";
 const { checkBody } = HelperBody;
 
 const createCustomer = async (req: Request, res: Response) => {
   const { userId } = req.params;
-  const { company_name, cuit, company_phone } = req.body;
+  const { company_name, ruc, address, company_phone } = req.body;
   try {
-    if (!company_name || !cuit || !company_phone) {
+    if (!company_name || !ruc || !address || !company_phone) {
       return res
         .status(400)
-        .json({ msg: 'Faltan parametros para crear cliente' });
+        .json({ msg: "Faltan parametros para crear cliente" });
     }
     const user = await UserModel.findByPk(userId);
     if (!user) {
-      return res.status(404).json({ msg: 'Usuario no encontrado' });
+      return res.status(404).json({ msg: "Usuario no encontrado" });
     }
     const CustomerData = {
       company_name,
-      cuit,
+      ruc,
       company_phone,
+      address,
     };
     const newCustomer = await CustomerModel.create({
       ...CustomerData,
@@ -28,7 +29,7 @@ const createCustomer = async (req: Request, res: Response) => {
     });
     await user.update({ customerId: newCustomer.id });
     return res.status(200).json({
-      msg: 'Cliente creado con éxito!!',
+      msg: "Cliente creado con éxito!!",
       customer: newCustomer,
     });
   } catch (error) {
@@ -38,17 +39,19 @@ const createCustomer = async (req: Request, res: Response) => {
 
 const editCustomer = async (req: Request, res: Response) => {
   const { customerId } = req.params;
-  const { company_name, cuit, company_phone } = req.body;
+  const { company_name, ruc, company_phone, address } = req.body;
   try {
     const customerData: CustomerInterface = {
       company_name,
-      cuit,
+      ruc,
       company_phone,
+      address,
     };
     const check = checkBody(customerData, [
-      'company_name',
-      'cuit',
-      'company_phone',
+      "company_name",
+      "ruc",
+      "company_phone",
+      "address",
     ]);
     if (check) {
       return res.status(400).json({ msg: check });
@@ -56,7 +59,7 @@ const editCustomer = async (req: Request, res: Response) => {
     await CustomerModel.update(customerData, {
       where: { id: customerId },
     });
-    res.status(200).json({ msg: 'Cliente editado con exito' });
+    res.status(200).json({ msg: "Cliente editado con exito" });
   } catch (error) {
     res.status(500).send(error);
   }

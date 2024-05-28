@@ -77,6 +77,13 @@ const createDriver = async (req: Request, res: Response) => {
 const getDriverByUserId = async (req: Request, res: Response) => {
   const { userId } = req.params;
   try {
+    // Obtener información del usuario
+    const user = await UserModel.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ msg: "Usuario no encontrado" });
+    }
+
+    // Obtener información del conductor asociado al usuario, incluyendo el camión
     const driver = await DriverModel.findOne({
       where: { userId },
       include: [
@@ -91,11 +98,50 @@ const getDriverByUserId = async (req: Request, res: Response) => {
       return res.status(404).json({ msg: "Conductor no encontrado" });
     }
 
+    // Mostrar la información obtenida
     return res.status(200).json({
+      user: {
+        name: user.name,
+        lastname: user.lastname,
+        email: user.email,
+      },
       driver,
     });
   } catch (error) {
     res.status(500).send(error);
   }
 };
-export default { createDriver, getDriverByUserId };
+
+const patchDriver = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  const { name, lastname, description, phone } = req.body;
+
+  try {
+    // Verificar que los campos no estén vacíos
+    if (!name || !lastname || !description || !phone) {
+      return res.status(400).json({ msg: "Faltan parámetros" });
+    }
+
+    // Update user's name and lastname
+    const user = await UserModel.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ msg: "Usuario no encontrado" });
+    }
+    await user.update({ name, lastname });
+
+    // Find and update driver's description
+    const driver = await DriverModel.findOne({ where: { userId } });
+    if (!driver) {
+      return res.status(404).json({ msg: "Conductor no encontrado" });
+    }
+    await driver.update({ description, phone });
+
+    return res
+      .status(200)
+      .json({ msg: "Usuario y conductor actualizados correctamente" });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+export default { createDriver, getDriverByUserId, patchDriver };

@@ -8,13 +8,14 @@ import {
   AllowNull,
   PrimaryKey,
   HasMany,
-} from 'sequelize-typescript';
-import Users from './users.model';
-import Truck from './trucks.model';
-import Application from './application.model';
-import Order from './orders.model';
+} from "sequelize-typescript";
+import Users from "./users.model";
+import Truck from "./trucks.model";
+import Application from "./application.model";
+import Order from "./orders.model";
+import Feedback from "./feedbacks.model";
 
-@Table({ tableName: 'drivers', timestamps: false })
+@Table({ tableName: "drivers", timestamps: false })
 export default class Drivers extends Model {
   @PrimaryKey
   @Column({
@@ -61,7 +62,7 @@ export default class Drivers extends Model {
   @Column(DataType.BIGINT)
   userId!: number;
 
-  @BelongsTo(() => Users, { as: 'user_driver' })
+  @BelongsTo(() => Users, { as: "user_driver" })
   user!: Users;
 
   @ForeignKey(() => Truck)
@@ -77,6 +78,17 @@ export default class Drivers extends Model {
   @HasMany(() => Application)
   applications!: Application[];
 
-  @HasMany(() => Order, { foreignKey: 'assignedDriverId' })
+  @HasMany(() => Order, { foreignKey: "assignedDriverId" })
   assignedOrders!: Order[];
+
+  @HasMany(() => Feedback)
+  feedbacks!: Feedback[];
+
+  async addOrder(feedbacks: Feedback): Promise<void> {
+    if (!this.feedbacks) {
+      this.feedbacks = [];
+    }
+    this.feedbacks.push(feedbacks);
+    await this.save();
+  }
 }

@@ -7,19 +7,21 @@ import {
   BelongsTo,
   ForeignKey,
   PrimaryKey,
-} from 'sequelize-typescript';
-import Order from './orders.model';
-import Users from './users.model';
+} from "sequelize-typescript";
+import Order from "./orders.model";
+import Users from "./users.model";
+import Feedback from "./feedbacks.model";
 
 interface CustomerAttributes {
   id?: string;
   company_name: string;
-  cuit: number;
+  ruc: number;
   company_phone: string;
+  address: string;
   userId?: number;
 }
 
-@Table({ tableName: 'customers', timestamps: false })
+@Table({ tableName: "customers", timestamps: false })
 export class Customer extends Model<CustomerAttributes> {
   @PrimaryKey
   @Column({
@@ -40,13 +42,19 @@ export class Customer extends Model<CustomerAttributes> {
     type: DataType.INTEGER,
     allowNull: false,
   })
-  cuit!: number;
+  ruc!: number;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
   company_phone!: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  address!: string;
 
   @ForeignKey(() => Users)
   @Column({
@@ -60,6 +68,9 @@ export class Customer extends Model<CustomerAttributes> {
 
   @HasMany(() => Order)
   orders!: Order[];
+
+  @HasMany(() => Feedback)
+  feedbacks!: Feedback[];
 
   async addOrder(order: Order): Promise<void> {
     if (!this.orders) {
