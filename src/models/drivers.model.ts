@@ -7,11 +7,14 @@ import {
   BelongsTo,
   AllowNull,
   PrimaryKey,
-} from "sequelize-typescript";
-import Users from "./users.model";
-import Truck from "./trucks.model";
+  HasMany,
+} from 'sequelize-typescript';
+import Users from './users.model';
+import Truck from './trucks.model';
+import Application from './application.model';
+import Order from './orders.model';
 
-@Table({ tableName: "drivers", timestamps: false })
+@Table({ tableName: 'drivers', timestamps: false })
 export default class Drivers extends Model {
   @PrimaryKey
   @Column({
@@ -58,7 +61,7 @@ export default class Drivers extends Model {
   @Column(DataType.BIGINT)
   userId!: number;
 
-  @BelongsTo(() => Users, { as: "user_driver" })
+  @BelongsTo(() => Users, { as: 'user_driver' })
   user!: Users;
 
   @ForeignKey(() => Truck)
@@ -70,4 +73,10 @@ export default class Drivers extends Model {
 
   @BelongsTo(() => Truck)
   truck!: Truck;
+
+  @HasMany(() => Application)
+  applications!: Application[];
+
+  @HasMany(() => Order, { foreignKey: 'assignedDriverId' })
+  assignedOrders!: Order[];
 }
