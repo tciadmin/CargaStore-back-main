@@ -14,7 +14,7 @@ import Customer from './customers.model';
 import Drivers from './drivers.model';
 import Application from './application.model';
 
-enum OrderStatus {
+export enum OrderStatus {
   PENDIENTE = 'pendiente',
   ASIGNADO = 'asignado',
   ENCURSO = 'en curso',
@@ -136,7 +136,17 @@ class Order extends Model {
 
   @ForeignKey(() => Drivers)
   @Column({ type: DataType.UUID, allowNull: true })
-  assignedDriverId!: string;
+  pendingAssignedDriverId!: string | null;
+
+  @BelongsTo(() => Drivers, {
+    foreignKey: 'pendingAssignedDriverId',
+    as: 'pendingAssignedDriver',
+  })
+  pendingAssignedDriver!: Drivers;
+
+  @ForeignKey(() => Drivers)
+  @Column({ type: DataType.UUID, allowNull: true })
+  assignedDriverId!: string | null;
 
   @BelongsTo(() => Drivers, {
     foreignKey: 'assignedDriverId',
