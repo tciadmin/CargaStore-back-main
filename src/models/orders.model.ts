@@ -8,25 +8,33 @@ import {
   BelongsTo,
   AutoIncrement,
   HasMany,
-} from 'sequelize-typescript';
-import Package from './packages.model';
-import Customer from './customers.model';
-import Drivers from './drivers.model';
-import Application from './application.model';
+} from "sequelize-typescript";
+import Package from "./packages.model";
+import Customer from "./customers.model";
+import Drivers from "./drivers.model";
+import Application from "./application.model";
 
+<<<<<<< Updated upstream
 export enum OrderStatus {
   PENDIENTE = 'pendiente',
   ASIGNADO = 'asignado',
   ENCURSO = 'en curso',
   FINALIZADO = 'finalizado',
+=======
+enum OrderStatus {
+  PENDIENTE = "pendiente",
+  ASIGNADO = "asignado",
+  ENCURSO = "en curso",
+  FINALIZADO = "finalizado",
+>>>>>>> Stashed changes
 }
 
 enum OrderType {
-  NATIONAL = 'national',
-  INTERNATIONAL = 'international',
+  NATIONAL = "national",
+  INTERNATIONAL = "international",
 }
 
-@Table({ tableName: 'orders', timestamps: false })
+@Table({ tableName: "orders", timestamps: false })
 class Order extends Model {
   @PrimaryKey
   @AutoIncrement
@@ -37,7 +45,7 @@ class Order extends Model {
     type: DataType.ENUM,
     values: Object.values(OrderStatus),
     allowNull: false,
-    defaultValue: 'pendiente',
+    defaultValue: "pendiente",
   })
   status!: OrderStatus;
 
@@ -149,13 +157,19 @@ class Order extends Model {
   assignedDriverId!: string | null;
 
   @BelongsTo(() => Drivers, {
-    foreignKey: 'assignedDriverId',
-    as: 'assignedDriver',
+    foreignKey: "assignedDriverId",
+    as: "assignedDriver",
   })
   assignedDriver!: Drivers;
 
   @HasMany(() => Application)
   applications!: Application[];
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  invoicePath!: string;
 
   async setPackage(newPackage: Package): Promise<void> {
     this.packageId = newPackage.id;

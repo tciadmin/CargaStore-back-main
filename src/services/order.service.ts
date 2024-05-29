@@ -1,14 +1,15 @@
-import { Request, Response } from 'express';
+import { Request, Response } from "express";
 import {
   ApplicationModel,
   CustomerModel,
   DriverModel,
   OrderModel,
   PackageModel,
-} from '../models';
-import { OrderInterface } from '../interface/order.interface';
-import { PackageInterface } from '../interface/package.interface';
-import { randomNumber } from '../utils/numberManager';
+} from "../models";
+import { OrderInterface } from "../interface/order.interface";
+import { PackageInterface } from "../interface/package.interface";
+import { randomNumber } from "../utils/numberManager";
+//import { AddInvoice } from "../interface/addInvoice.interface";
 
 const createOrder = async (req: Request, res: Response) => {
   const { customerId } = req.params;
@@ -55,7 +56,7 @@ const createOrder = async (req: Request, res: Response) => {
       !delivery_address ||
       !delivery_city
     ) {
-      return res.status(404).json({ msg: 'Faltan parametros' });
+      return res.status(404).json({ msg: "Faltan parametros" });
     }
     const packageData: PackageInterface = {
       product_name,
@@ -82,7 +83,7 @@ const createOrder = async (req: Request, res: Response) => {
     };
     const customer = await CustomerModel.findByPk(customerId);
     if (!customer) {
-      return res.status(404).json({ msg: 'Cliente no encontrado' });
+      return res.status(404).json({ msg: "Cliente no encontrado" });
     }
     const newPackage = await PackageModel.create(packageData);
     const order = await OrderModel.create({
@@ -94,9 +95,7 @@ const createOrder = async (req: Request, res: Response) => {
       package: newPackage,
     });
     await customer.addOrder(order);
-    return res
-      .status(200)
-      .json({ msg: 'Orden creada con exito!!', order });
+    return res.status(200).json({ msg: "Orden creada con exito!!", order });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -108,8 +107,8 @@ const orderListWithFilter = async (req: Request, res: Response) => {
     const allOrders = await OrderModel.findAll({
       where: { status: status, orderType: orderType },
       include: [
-        { model: PackageModel, as: 'package' },
-        { model: CustomerModel, as: 'customer' },
+        { model: PackageModel, as: "package" },
+        { model: CustomerModel, as: "customer" },
       ],
     });
     res.status(200).json({ orders: allOrders });
@@ -123,15 +122,13 @@ const orderDetail = async (req: Request, res: Response) => {
   try {
     const order = await OrderModel.findByPk(orderId, {
       include: [
-        { model: PackageModel, as: 'package' },
-        { model: CustomerModel, as: 'customer' },
+        { model: PackageModel, as: "package" },
+        { model: CustomerModel, as: "customer" },
         { model: ApplicationModel, include: [DriverModel] },
       ],
     });
     if (!order) {
-      return res
-        .status(404)
-        .json({ msg: 'No se encuentra la orden' });
+      return res.status(404).json({ msg: "No se encuentra la orden" });
     }
     res.status(200).json(order);
   } catch (error) {
@@ -171,7 +168,7 @@ const editOrder = async (req: Request, res: Response) => {
       delivery_city,
     };
     await OrderModel.update(orderData, { where: { id: orderId } });
-    res.status(200).json({ msg: 'Orden editada con exito' });
+    res.status(200).json({ msg: "Orden editada con exito" });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -182,10 +179,10 @@ const changeOrderStatus = async (req: Request, res: Response) => {
   const { status } = req.body;
   try {
     if (!status) {
-      return res.status(400).json({ msg: 'El estatus es requerido' });
+      return res.status(400).json({ msg: "El estatus es requerido" });
     }
     await OrderModel.update({ status }, { where: { id: orderId } });
-    res.status(200).json({ msg: 'Estado de orden cambiado' });
+    res.status(200).json({ msg: "Estado de orden cambiado" });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -195,7 +192,7 @@ const duplicateOrder = async (req: Request, res: Response) => {
   const { orderId } = req.params;
   try {
     const originalOrder = await OrderModel.findByPk(orderId, {
-      include: [{ model: PackageModel, as: 'package' }],
+      include: [{ model: PackageModel, as: "package" }],
     });
     const originalPackage = await PackageModel.findByPk(
       originalOrder?.packageId
@@ -203,7 +200,7 @@ const duplicateOrder = async (req: Request, res: Response) => {
     if (!originalOrder || !originalPackage) {
       return res
         .status(404)
-        .json({ msg: 'No se ha encontrado la orden original' });
+        .json({ msg: "No se ha encontrado la orden original" });
     }
     const duplicatePackage = await PackageModel.create({
       product_name: originalPackage.product_name,
@@ -231,11 +228,43 @@ const duplicateOrder = async (req: Request, res: Response) => {
       packageId: duplicatePackage.id,
     });
     res.status(200).json({
-      msg: 'Orden duplicada con exito',
+      msg: "Orden duplicada con exito",
       orden: duplicateOrder,
     });
   } catch (error) {
     res.status(500).send(error);
+  }
+};
+
+//agregar factura a orden
+
+//interface
+interface AddInvoice {
+  orderId: string;
+  invoicePath: string;
+}
+
+const addInvoiceToOrder = async ({
+  orderId,
+  invoicePath,
+}: AddInvoice): Promise<any> => {
+  if (!orderId || !invoicePath) {
+    throw new Error("orderId y invoicePath son requeridos");
+  }
+
+  try {
+    const order = await OrderModel.findByPk(orderId);
+    if (!order) {
+      throw new Error("Orden no encontrada");
+    }
+
+    order.invoicePath = invoicePath;
+    await order.save();
+
+    return { msg: "Factura subida y asociada a la orden", order };
+  } catch (error: any) {
+    // Agrega ": any" para especificar el tipo de error como "any"
+    throw new Error(`Error al asociar la factura a la orden: ${error.message}`);
   }
 };
 
@@ -246,4 +275,5 @@ export default {
   orderDetail,
   changeOrderStatus,
   duplicateOrder,
+  addInvoiceToOrder,
 };
