@@ -115,9 +115,9 @@
     "@types/node" "*"
 
 "@types/busboy@*":
-  version "1.5.3"
-  resolved "https://registry.npmjs.org/@types/busboy/-/busboy-1.5.3.tgz"
-  integrity sha512-YMBLFN/xBD8bnqywIlGyYqsNFXu6bsiY7h3Ae0kO17qEuTjsqeyYMRPSUDacIKIquws2Y6KjmxAyNx8xB3xQbw==
+  version "1.5.4"
+  resolved "https://registry.npmjs.org/@types/busboy/-/busboy-1.5.4.tgz"
+  integrity sha512-kG7WrUuAKK0NoyxfQHsVE6j1m01s6kMma64E+OZenQABMQyTJop1DumUWcLwAQ2JzpefU7PDYoRDKl8uZosFjw==
   dependencies:
     "@types/node" "*"
 
@@ -162,9 +162,9 @@
     "@types/ms" "*"
 
 "@types/express-fileupload@^1.4.1":
-  version "1.4.4"
-  resolved "https://registry.npmjs.org/@types/express-fileupload/-/express-fileupload-1.4.4.tgz"
-  integrity sha512-kxCs5oJ40JPhvh3LpxCeGfuSZIl8/6bk85u1YqNcIbfQCmUm3u+Ao1oOiSt/VdbEPs+V3JQg8giqxAyqXlpbWg==
+  version "1.5.0"
+  resolved "https://registry.npmjs.org/@types/express-fileupload/-/express-fileupload-1.5.0.tgz"
+  integrity sha512-Y9v88IC5ItAxkKwfnyIi1y0jSZwTMY4jqXUQLZ3jFhYJlLdRnN919bKBNM8jbVVD2cxywA/uEC1kNNpZQGwx7Q==
   dependencies:
     "@types/busboy" "*"
     "@types/express" "*"
@@ -930,9 +930,9 @@ etag@~1.8.1:
   integrity sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==
 
 express-fileupload@^1.4.0:
-  version "1.4.3"
-  resolved "https://registry.npmjs.org/express-fileupload/-/express-fileupload-1.4.3.tgz"
-  integrity sha512-vRzZo2YELm68DfR/CX8RMXgeK9BTAANxigrKACPjCXFGEzkCt/QWbqaIXP3W61uaX/hLj0CAo3/EVelpSQXkqA==
+  version "1.5.0"
+  resolved "https://registry.npmjs.org/express-fileupload/-/express-fileupload-1.5.0.tgz"
+  integrity sha512-jSW3w9evqM37VWkEPkL2Ck5wUo2a8qa03MH+Ou/0ZSTpNlQFBvSLjU12k2nYcHhaMPv4JVvv6+Ac1OuLgUZb7w==
   dependencies:
     busboy "^1.6.0"
 
