@@ -245,8 +245,6 @@ const duplicateOrder = async (req: Request, res: Response) => {
 const addInvoiceToOrder = async (req: Request, res: Response) => {
   const { orderId } = req.params;
 
-  console.log('req: ', req.file);
-
   try {
     const order = await OrderModel.findByPk(orderId);
     if (!order) {
