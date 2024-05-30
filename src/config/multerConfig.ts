@@ -1,8 +1,8 @@
-import multer from "multer";
-import path from "path";
-import { v4 as uuidv4 } from "uuid";
+import multer, { FileFilterCallback } from 'multer';
+import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
 
-const FOLDER_UPLOADS = "uploads/";
+const FOLDER_UPLOADS = 'uploads/';
 
 const generatorNameFile = (file: Express.Multer.File) =>
   `${uuidv4()}${path.extname(file.originalname)}`;
@@ -14,17 +14,13 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  fileFilter: (_req, file, cb) => {
-    const fileTypes = /pdf/;
-    const mimeType = fileTypes.test(file.mimetype);
-    const extName = fileTypes.test(
-      path.extname(file.originalname).toLowerCase()
-    );
-    if (mimeType && extName) {
-      return cb(null, true);
+  fileFilter: (_req, file, cb: FileFilterCallback) => {
+    if (file.mimetype === 'application/pdf') {
+      cb(null, true);
+    } else {
+      cb(new Error('Solo se permiten archivos PDF'));
     }
-    cb(new Error("El archivo debe ser un PDF válido"));
   },
 });
 
-export const uploadInvoice = upload.single("invoice");
+export const uploadInvoice = upload.single('invoice');

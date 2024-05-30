@@ -1,15 +1,15 @@
-import express, { Application } from "express";
-import fileUpload from "express-fileupload";
-import cors from "cors";
-import fs from "fs";
-import https from "https";
-import bodyParser from "body-parser";
-import compression from "compression";
-import db from "../db/connection";
-import Config from "../config";
-import { FilesController } from "../utils";
-import { ApiPaths } from "../routes";
-import morgan from "morgan";
+import express, { Application } from 'express';
+// import fileUpload from 'express-fileupload';
+import cors from 'cors';
+import fs from 'fs';
+import https from 'https';
+import bodyParser from 'body-parser';
+import compression from 'compression';
+import db from '../db/connection';
+import Config from '../config';
+import { FilesController } from '../utils';
+import { ApiPaths } from '../routes';
+import morgan from 'morgan';
 
 class Server {
   private app: Application;
@@ -27,7 +27,7 @@ class Server {
   async dbConnection() {
     try {
       await db.authenticate();
-      console.log("Database online");
+      console.log('Database online');
     } catch (error) {
       throw new Error(error as string);
     }
@@ -42,16 +42,16 @@ class Server {
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
     this.app.use(compression());
-    this.app.use(morgan("dev"));
+    this.app.use(morgan('dev'));
 
     // Fileupload - Carga de archivos
-    this.app.use(
-      fileUpload({
-        useTempFiles: true,
-        tempFileDir: "tmp",
-        createParentPath: true,
-      })
-    );
+    // this.app.use(
+    //   fileUpload({
+    //     useTempFiles: true,
+    //     tempFileDir: 'tmp',
+    //     createParentPath: true,
+    //   })
+    // );
   }
   /* eslint-disable @typescript-eslint/no-var-requires */
   routes() {
@@ -59,11 +59,11 @@ class Server {
       this.app.use(`/api${url}`, require(`../router/${router}`))
     );
 
-    this.app.get("/", async (_, res) => {
+    this.app.get('/', async (_, res) => {
       const html = await new Promise((resolve, reject) =>
         fs.readFile(
           `${__dirname}/../../../public/index.html`,
-          { encoding: "utf-8" },
+          { encoding: 'utf-8' },
           (err, html) => {
             if (err) {
               return reject(err);
@@ -74,23 +74,23 @@ class Server {
       );
       res.send(html);
     });
-    this.app.use("*", express.static("public/index.html"));
+    this.app.use('*', express.static('public/index.html'));
   }
 
   listen() {
     FilesController.existFolder();
     if (Config.dev) {
       this.app.listen(this.port, () => {
-        console.log("Servidor corriendo en el puerto", this.port);
+        console.log('Servidor corriendo en el puerto', this.port);
       });
     } else {
       const privateKey = fs.readFileSync(
         `${Config.urlCertificado}privkey.pem`,
-        "utf8"
+        'utf8'
       );
       const certificate = fs.readFileSync(
         `${Config.urlCertificado}cert.pem`,
-        "utf8"
+        'utf8'
       );
 
       const credentials = {
