@@ -53,6 +53,13 @@ export default class Drivers extends Model {
   description!: string;
 
   @Column({
+    type: DataType.FLOAT,
+    allowNull: false,
+    defaultValue: 5,
+  })
+  rating!: number;
+
+  @Column({
     type: DataType.INTEGER,
     allowNull: false,
   })
