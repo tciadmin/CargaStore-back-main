@@ -479,6 +479,19 @@ const changePassword = async (req: Request, res: Response) => {
   }
 };
 
+const singleUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const user = await UserModel.findByPk(userId);
+    if (!user) {
+      res.status(404).json({ msg: 'Usuario no encontrado' });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 export default {
   signIn,
   signUp,
@@ -487,4 +500,5 @@ export default {
   recoveryPassword,
   verifyCodePassword,
   changePassword,
+  singleUser,
 };
