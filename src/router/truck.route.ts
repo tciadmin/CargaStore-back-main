@@ -4,8 +4,9 @@ import { TruckService } from "../services";
 
 const router = Router();
 //Servicios
-const { patchTruck } = TruckService;
+const { patchTruck, getAllTrucks } = TruckService;
 
 router.patch("/update/:userId", patchTruck);
+router.get("/all", getAllTrucks);
 
 module.exports = router;
