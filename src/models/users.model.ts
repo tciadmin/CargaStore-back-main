@@ -9,12 +9,18 @@ import {
   AllowNull,
   Default,
   HasMany,
-} from 'sequelize-typescript';
-import Drivers from './drivers.model';
-import Customer from './customers.model';
-import Pay from './pay.model';
+} from "sequelize-typescript";
+import Drivers from "./drivers.model";
+import Customer from "./customers.model";
+import Pay from "./pay.model";
 
-@Table({ tableName: 'users', timestamps: false })
+export enum RoleType {
+  ADMIN = "admin",
+  DRIVER = "driver",
+  CUSTOMER = "customer",
+}
+
+@Table({ tableName: "users", timestamps: false })
 class Users extends Model {
   @PrimaryKey
   @AutoIncrement
@@ -44,6 +50,13 @@ class Users extends Model {
   })
   password!: string;
 
+  @Column({
+    type: DataType.ENUM,
+    values: Object.values(RoleType),
+    allowNull: true,
+  })
+  role!: RoleType | null;
+
   @AllowNull(false)
   @Default(false)
   @Column(DataType.BOOLEAN)
@@ -55,14 +68,14 @@ class Users extends Model {
   status!: boolean;
 
   @HasOne(() => Drivers, {
-    foreignKey: 'userId',
-    as: 'user_driver',
+    foreignKey: "userId",
+    as: "user_driver",
   })
   driver!: Drivers;
 
   @HasOne(() => Customer, {
-    foreignKey: 'userId',
-    as: 'user_customer',
+    foreignKey: "userId",
+    as: "user_customer",
   })
   customer!: Customer;
 

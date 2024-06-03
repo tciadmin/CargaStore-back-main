@@ -1,7 +1,23 @@
 import { Request, Response } from "express";
 import { DriverModel, TruckModel, UserModel } from "../models";
 import { TruckInterface } from "../interface/truck.interface";
-import { ChargeType, ChargeCapacity } from "../models/trucks.model";
+
+const getAllTrucks = async (req: Request, res: Response) => {
+  try {
+    const trucks = await TruckModel.findAll(); // Obtiene todos los camiones
+
+    if (trucks.length === 0) {
+      // Si no hay camiones, retorna un mensaje personalizado
+      return res.status(200).json({ msg: "No hay camiones aún" });
+    }
+
+    // Si hay camiones, retorna los camiones en formato JSON
+    return res.status(200).json({ trucks });
+  } catch (error) {
+    // Maneja cualquier error interno y retorna un mensaje de error
+    return res.status(500).json({ msg: "Error interno" });
+  }
+};
 
 const patchTruck = async (req: Request, res: Response) => {
   const { userId } = req.params;
@@ -71,4 +87,4 @@ const patchTruck = async (req: Request, res: Response) => {
   }
 };
 
-export default { patchTruck };
+export default { patchTruck, getAllTrucks };

@@ -2,22 +2,24 @@ import { Request, Response } from "express";
 import { DriverModel, TruckModel, UserModel } from "../models";
 import { DriverInterface } from "../interface/driver.interface";
 import { TruckInterface } from "../interface/truck.interface";
+import { RoleType } from "../models/users.model";
 
 const createDriver = async (req: Request, res: Response) => {
   const { userId } = req.params;
   const {
     picture, // string
-    num_license, //integer
-    description, //string
-    phone, //integer
-    brand, //string
-    model, //string
-    year, //integer
-    charge_type, //seca | peligrosa | refrigerada
-    num_plate, //matricula
-    capacity, //capacidad de carga en numero
-    charge_capacity, //capacidad de carga "toneladas"o "litros" o "kilos"
+    num_license, // integer
+    description, // string
+    phone, // integer
+    brand, // string
+    model, // string
+    year, // integer
+    charge_type, // seca | peligrosa | refrigerada
+    num_plate, // matricula
+    capacity, // capacidad de carga en numero
+    charge_capacity, // capacidad de carga "toneladas" o "litros" o "kilos"
   } = req.body;
+
   try {
     if (
       !picture ||
@@ -41,6 +43,7 @@ const createDriver = async (req: Request, res: Response) => {
       description,
       phone,
     };
+
     const truckData: TruckInterface = {
       brand,
       model,
@@ -50,22 +53,35 @@ const createDriver = async (req: Request, res: Response) => {
       capacity,
       charge_capacity,
     };
+
     const user = await UserModel.findByPk(userId);
     if (!user) {
       return res.status(404).json({ msg: "Usuario no encontrado" });
     }
 
+    // Verificar el rol del usuario
+    if (user.role !== null) {
+      // Arrojar error si el usuario tiene un rol diferente a null
+      return res
+        .status(400)
+        .json({ msg: "Error. Este usuario ya está asignado con otro rol" });
+    }
+
+    // Asignar el rol de 'driver' si el rol es null
+    user.role = RoleType.DRIVER;
+    await user.save();
+
     const newTruck = await TruckModel.create(truckData);
     const newDriver: DriverInterface = await DriverModel.create({
       ...driverData,
-      userId: user?.id,
-      user: user,
+      userId: user.id,
       truckId: newTruck.id,
-      truck: newTruck,
     });
+
     await user.update({ driverId: newDriver.id });
+
     return res.status(200).json({
-      msg: "Conductor creado con exito!!",
+      msg: "Conductor creado con éxito!!",
       driver: newDriver,
     });
   } catch (error) {
@@ -112,6 +128,15 @@ const getDriverByUserId = async (req: Request, res: Response) => {
   }
 };
 
+const getAllDrivers = async (req: Request, res: Response) => {
+  try {
+    const drivers = await DriverModel.findAll(); // Obtiene todos los registros de la tabla drivers
+    return res.status(200).json(drivers); // Retorna los conductores en formato JSON
+  } catch (error) {
+    return res.status(500).send(error); // Maneja cualquier error que ocurra
+  }
+};
+
 const patchDriver = async (req: Request, res: Response) => {
   const { userId } = req.params;
   const { name, lastname, description, phone } = req.body;
@@ -144,4 +169,4 @@ const patchDriver = async (req: Request, res: Response) => {
   }
 };
 
-export default { createDriver, getDriverByUserId, patchDriver };
+export default { createDriver, getDriverByUserId, patchDriver, getAllDrivers };
