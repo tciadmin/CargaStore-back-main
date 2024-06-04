@@ -11,6 +11,7 @@ import {
 import { OrderInterface } from '../interface/order.interface';
 import { PackageInterface } from '../interface/package.interface';
 import { randomNumber } from '../utils/numberManager';
+import { OrderStatus } from '../models/orders.model';
 //import { AddInvoice } from "../interface/addInvoice.interface";
 
 const createOrder = async (req: Request, res: Response) => {
@@ -341,6 +342,7 @@ const changeOrderState = async (req: Request, res: Response) => {
     const order = await OrderModel.findByPk(orderId, {
       attributes: [
         'id',
+        'status',
         'enPreparacion',
         'preparado',
         'retirado',
@@ -364,6 +366,7 @@ const changeOrderState = async (req: Request, res: Response) => {
       return res.status(200).json({ orderState: order });
     } else if (!order.enCamino) {
       order.enCamino = new Date();
+      order.status = OrderStatus.ENCURSO;
       await order.save();
       return res.status(200).json({ orderState: order });
     } else {
