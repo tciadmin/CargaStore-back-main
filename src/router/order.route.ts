@@ -15,6 +15,8 @@ const {
   editOrder,
   duplicateOrder,
   addInvoiceToOrder,
+  getOrderState,
+  changeOrderState,
 } = OrderService;
 
 router.post('/create/:customerId', createOrder);
@@ -35,6 +37,10 @@ router.patch(
   uploadInvoice,
   addInvoiceToOrder
 );
+
+router.get('/state/:orderId', getOrderState);
+
+router.patch('/change_state/:orderId', changeOrderState);
 
 // router.post("/resend_email", validJwt);
 

@@ -289,6 +289,68 @@ const findOrder = async (
   }
 };
 
+const getOrderState = async (req: Request, res: Response) => {
+  try {
+    const { orderId } = req.params;
+    const order = await OrderModel.findByPk(orderId, {
+      attributes: [
+        'enPreparacion',
+        'preparado',
+        'retirado',
+        'enCamino',
+      ],
+    });
+    if (!order) {
+      return res.status(404).json({ msg: 'Orden no encontrada' });
+    }
+    res.status(200).json({ orderState: order });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const changeOrderState = async (req: Request, res: Response) => {
+  try {
+    const { orderId } = req.params;
+    const order = await OrderModel.findByPk(orderId, {
+      attributes: [
+        'id',
+        'enPreparacion',
+        'preparado',
+        'retirado',
+        'enCamino',
+      ],
+    });
+    if (!order) {
+      return res.status(404).json({ msg: 'Orden no encontrada' });
+    }
+    if (!order.enPreparacion) {
+      order.enPreparacion = new Date();
+      await order.save();
+      return res.status(200).json({ orderState: order });
+    } else if (!order.preparado) {
+      order.preparado = new Date();
+      await order.save();
+      return res.status(200).json({ orderState: order });
+    } else if (!order.retirado) {
+      order.retirado = new Date();
+      await order.save();
+      return res.status(200).json({ orderState: order });
+    } else if (!order.enCamino) {
+      order.enCamino = new Date();
+      await order.save();
+      return res.status(200).json({ orderState: order });
+    } else {
+      return res.status(401).json({
+        msg: 'Los cuatro estados de la orden estan completos',
+        orderState: order,
+      });
+    }
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 export default {
   findOrder,
   editOrder,
@@ -298,4 +360,6 @@ export default {
   changeOrderStatus,
   duplicateOrder,
   addInvoiceToOrder,
+  getOrderState,
+  changeOrderState,
 };
