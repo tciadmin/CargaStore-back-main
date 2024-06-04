@@ -114,6 +114,30 @@ class Order extends Model {
   })
   delivery_city!: string;
 
+  @Column({
+    type: DataType.DATE,
+    defaultValue: null,
+  })
+  enPreparacion!: Date | null;
+
+  @Column({
+    type: DataType.DATE,
+    defaultValue: null,
+  })
+  preparado!: Date | null;
+
+  @Column({
+    type: DataType.DATE,
+    defaultValue: null,
+  })
+  retirado!: Date | null;
+
+  @Column({
+    type: DataType.DATE,
+    defaultValue: null,
+  })
+  enCamino!: Date | null;
+
   @ForeignKey(() => Customer)
   @Column({
     type: DataType.UUID,
