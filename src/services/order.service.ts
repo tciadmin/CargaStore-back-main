@@ -6,11 +6,14 @@ import {
   OrderModel,
   PackageModel,
   PayModel,
+  TruckModel,
+  UserModel,
 } from "../models";
 import { OrderInterface } from "../interface/order.interface";
 import { PackageInterface } from "../interface/package.interface";
 import { randomNumber } from "../utils/numberManager";
 import { OrderStatus } from "../models/orders.model";
+
 //import { AddInvoice } from "../interface/addInvoice.interface";
 
 const createOrder = async (req: Request, res: Response) => {
@@ -108,13 +111,37 @@ const orderListWithFilter = async (req: Request, res: Response) => {
   try {
     const allOrders = await OrderModel.findAll({
       where: { status: status, orderType: orderType },
+      attributes: {
+        exclude: ["contact_number", "receiving_company_RUC"],
+      },
       include: [
-        { model: PackageModel, as: "package" },
-        { model: CustomerModel, as: "customer" },
+        {
+          model: PackageModel,
+          as: "package",
+          attributes: ["product_name", "offered_price"],
+        },
+        {
+          model: DriverModel,
+          as: "assignedDriver",
+          attributes: ["picture", "num_license", "rating"],
+          include: [
+            {
+              model: UserModel,
+              as: "user_driver",
+              attributes: ["name", "lastname"],
+            },
+            {
+              model: TruckModel,
+              as: "truck",
+              attributes: ["capacity", "charge_capacity"],
+            },
+          ],
+        },
       ],
     });
     res.status(200).json({ orders: allOrders });
   } catch (error) {
+    console.log("Error: ", error);
     res.status(500).send(error);
   }
 };
@@ -280,6 +307,65 @@ const findOrder = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+const getOrderState = async (req: Request, res: Response) => {
+  try {
+    const { orderId } = req.params;
+    const order = await OrderModel.findByPk(orderId, {
+      attributes: ["enPreparacion", "preparado", "retirado", "enCamino"],
+    });
+    if (!order) {
+      return res.status(404).json({ msg: "Orden no encontrada" });
+    }
+    res.status(200).json({ orderState: order });
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const changeOrderState = async (req: Request, res: Response) => {
+  try {
+    const { orderId } = req.params;
+    const order = await OrderModel.findByPk(orderId, {
+      attributes: [
+        "id",
+        "status",
+        "enPreparacion",
+        "preparado",
+        "retirado",
+        "enCamino",
+      ],
+    });
+    if (!order) {
+      return res.status(404).json({ msg: "Orden no encontrada" });
+    }
+    if (!order.enPreparacion) {
+      order.enPreparacion = new Date();
+      await order.save();
+      return res.status(200).json({ orderState: order });
+    } else if (!order.preparado) {
+      order.preparado = new Date();
+      await order.save();
+      return res.status(200).json({ orderState: order });
+    } else if (!order.retirado) {
+      order.retirado = new Date();
+      await order.save();
+      return res.status(200).json({ orderState: order });
+    } else if (!order.enCamino) {
+      order.enCamino = new Date();
+      order.status = OrderStatus.ENCURSO;
+      await order.save();
+      return res.status(200).json({ orderState: order });
+    } else {
+      return res.status(401).json({
+        msg: "Los cuatro estados de la orden estan completos",
+        orderState: order,
+      });
+    }
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 export default {
   findOrder,
   editOrder,
@@ -289,4 +375,6 @@ export default {
   changeOrderStatus,
   duplicateOrder,
   addInvoiceToOrder,
+  getOrderState,
+  changeOrderState,
 };
