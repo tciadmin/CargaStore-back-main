@@ -88,7 +88,7 @@ const aceptOrder = async (req: Request, res: Response) => {
     // Crear instancia de Pay con estado "pendiente" para esta orden
     const newPay = await PayModel.create({
       total: order.package.offered_price,
-      userId: order.customerId,
+      customerId: order.customerId,
       driverId: order.assignedDriverId,
       status: PayStatus.PENDIENTE,
       orderId: orderId,

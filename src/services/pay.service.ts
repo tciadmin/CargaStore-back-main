@@ -5,7 +5,12 @@ import { PayInterface } from "../interface/pay.interface";
 
 const payDriver = async (req: Request, res: Response) => {
   try {
-    const { userId, driverId, total, orderId } = req.body as PayInterface;
+    const { userId, customerId, driverId, total, orderId } =
+      req.body as PayInterface;
+
+    if (userId === undefined) {
+      return res.status(400).json({ msg: "userId es requerido" });
+    }
 
     // Verificar si la orden asociada a orderId existe
     const orderExists = await OrderModel.findByPk(orderId);
@@ -23,6 +28,7 @@ const payDriver = async (req: Request, res: Response) => {
       pay = await PayModel.create({
         total: total,
         userId: userId,
+        customerId: customerId,
         driverId: driverId || null,
         status: PayStatus.ACREDITADO,
         orderId: orderId,
@@ -31,6 +37,7 @@ const payDriver = async (req: Request, res: Response) => {
       // Actualizar el pago existente
       pay.total = total;
       pay.userId = userId;
+      pay.customerId = customerId;
       pay.driverId = driverId || null;
       pay.status = PayStatus.ACREDITADO;
       await pay.save();

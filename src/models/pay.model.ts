@@ -5,10 +5,12 @@ import {
   ForeignKey,
   Model,
   PrimaryKey,
+  AllowNull,
   Table,
 } from "sequelize-typescript";
-import Users from "./users.model";
 import Drivers from "./drivers.model";
+import Customer from "./customers.model";
+import Users from "./users.model";
 import Order from "./orders.model";
 
 export enum PayStatus {
@@ -40,18 +42,27 @@ class Pay extends Model {
   })
   status!: PayStatus;
 
-  @ForeignKey(() => Users)
-  @Column({ type: DataType.BIGINT, allowNull: false })
-  userId!: number;
+  @ForeignKey(() => Customer)
+  @AllowNull(false)
+  @Column(DataType.UUID)
+  customerId!: string;
 
-  @BelongsTo(() => Users)
-  user!: Users;
+  @BelongsTo(() => Customer, { as: "customer_pay" })
+  customer!: Customer;
 
   @ForeignKey(() => Drivers)
-  @Column({ type: DataType.UUID, allowNull: true })
+  @AllowNull(true)
+  @Column(DataType.UUID)
   driverId!: string | null;
-  @BelongsTo(() => Drivers)
+  @BelongsTo(() => Drivers, { as: "driver_pay" })
   driver!: Drivers;
+
+  @ForeignKey(() => Users)
+  @AllowNull(false)
+  @Column(DataType.BIGINT)
+  userId!: number;
+  @BelongsTo(() => Users, { as: "users_pay" })
+  user!: Users;
 
   @ForeignKey(() => Order)
   @Column({ type: DataType.BIGINT, allowNull: false })
