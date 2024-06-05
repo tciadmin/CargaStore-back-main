@@ -10,7 +10,7 @@ import {
 import { OrderInterface } from "../interface/order.interface";
 import { PackageInterface } from "../interface/package.interface";
 import { randomNumber } from "../utils/numberManager";
-import { PayStatus } from "../models/pay.model";
+import { OrderStatus } from "../models/orders.model";
 //import { AddInvoice } from "../interface/addInvoice.interface";
 
 const createOrder = async (req: Request, res: Response) => {
