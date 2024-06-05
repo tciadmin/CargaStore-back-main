@@ -6,11 +6,17 @@ import {
   Model,
   PrimaryKey,
   Table,
-} from 'sequelize-typescript';
-import Users from './users.model';
-import Drivers from './drivers.model';
+} from "sequelize-typescript";
+import Users from "./users.model";
+import Drivers from "./drivers.model";
+import Order from "./orders.model";
 
-@Table({ tableName: 'pay', timestamps: false })
+export enum PayStatus {
+  PENDIENTE = "pendiente",
+  ACREDITADO = "acreditado",
+}
+
+@Table({ tableName: "pay", timestamps: false })
 class Pay extends Model {
   @PrimaryKey
   @Column({
@@ -26,6 +32,14 @@ class Pay extends Model {
   })
   total!: number;
 
+  @Column({
+    type: DataType.ENUM,
+    values: Object.values(PayStatus),
+    allowNull: false,
+    defaultValue: PayStatus.PENDIENTE,
+  })
+  status!: PayStatus;
+
   @ForeignKey(() => Users)
   @Column({ type: DataType.BIGINT, allowNull: false })
   userId!: number;
@@ -34,11 +48,17 @@ class Pay extends Model {
   user!: Users;
 
   @ForeignKey(() => Drivers)
-  @Column({ type: DataType.UUID, allowNull: false })
-  driverId!: number;
-
+  @Column({ type: DataType.UUID, allowNull: true })
+  driverId!: string | null;
   @BelongsTo(() => Drivers)
   driver!: Drivers;
+
+  @ForeignKey(() => Order)
+  @Column({ type: DataType.BIGINT, allowNull: false })
+  orderId!: string;
+
+  @BelongsTo(() => Order)
+  order!: Order;
 }
 
 export default Pay;
