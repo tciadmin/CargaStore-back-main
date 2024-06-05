@@ -13,20 +13,32 @@ const payDriver = async (req: Request, res: Response) => {
       return res.status(404).json({ msg: "La orden asociada no existe" });
     }
 
-    const pay = await PayModel.findOne({
+    // Crear o actualizar el pago si ya existe
+    let pay = await PayModel.findOne({
       where: { orderId: orderId, status: PayStatus.PENDIENTE },
     });
 
     if (!pay) {
-      return res.status(404).json({ msg: "Pago pendiente no encontrado" });
+      // Crear un nuevo pago si no existe
+      pay = await PayModel.create({
+        total: total,
+        userId: userId,
+        driverId: driverId || null,
+        status: PayStatus.ACREDITADO,
+        orderId: orderId,
+      });
+    } else {
+      // Actualizar el pago existente
+      pay.total = total;
+      pay.userId = userId;
+      pay.driverId = driverId || null;
+      pay.status = PayStatus.ACREDITADO;
+      await pay.save();
     }
 
-    pay.total = total;
-    pay.userId = userId;
-    pay.driverId = driverId || null; // Assign driverId or null if it's undefined
-    pay.status = PayStatus.ACREDITADO; // Asigna el status "acreditado"
-
-    await pay.save();
+    // Asociar el payId a la orden
+    orderExists.payId = pay.id;
+    await orderExists.save();
 
     res.status(200).json({ msg: "Pago acreditado", pay });
   } catch (error) {

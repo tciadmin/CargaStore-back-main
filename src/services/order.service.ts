@@ -16,27 +16,26 @@ import { PayStatus } from "../models/pay.model";
 const createOrder = async (req: Request, res: Response) => {
   const { customerId } = req.params;
   const {
-    product_name,
-    quantity,
-    type,
-    weight,
-    volume,
-    offered_price,
-    product_pic,
-    orderType,
-    receiving_company,
-    contact_number,
-    receiving_company_RUC,
-    pick_up_date,
-    pick_up_time,
-    pick_up_address,
-    pick_up_city,
-    delivery_date,
-    delivery_time,
-    delivery_address,
-    delivery_city,
+    product_name, //string
+    quantity, //integer
+    type, // 'Seca' | 'Peligrosa' | 'Refrigerada'
+    weight, //float
+    volume, //integer
+    offered_price, //integer
+    product_pic, //string
+    orderType, //'national' | 'international'
+    receiving_company, //string
+    contact_number, //integer
+    receiving_company_RUC, //integer
+    pick_up_date, //date
+    pick_up_time, //string
+    pick_up_address, //string
+    pick_up_city, //string
+    delivery_date, //date
+    delivery_time, //string
+    delivery_address, //string
+    delivery_city, //string
   } = req.body;
-
   try {
     if (
       !product_name ||
@@ -61,7 +60,6 @@ const createOrder = async (req: Request, res: Response) => {
     ) {
       return res.status(404).json({ msg: "Faltan parametros" });
     }
-
     const packageData: PackageInterface = {
       product_name,
       quantity,
@@ -71,7 +69,6 @@ const createOrder = async (req: Request, res: Response) => {
       offered_price,
       product_pic,
     };
-
     const orderData: OrderInterface = {
       orderType,
       receiving_company,
@@ -86,37 +83,21 @@ const createOrder = async (req: Request, res: Response) => {
       delivery_address,
       delivery_city,
     };
-
     const customer = await CustomerModel.findByPk(customerId);
     if (!customer) {
       return res.status(404).json({ msg: "Cliente no encontrado" });
     }
-
     const newPackage = await PackageModel.create(packageData);
-    const newOrder = await OrderModel.create({
+    const order = await OrderModel.create({
       id: randomNumber(4),
       ...orderData,
       customerId: customer.id,
+      customer: customer,
       packageId: newPackage.id,
+      package: newPackage,
     });
-
-    // Crear instancia de Pay con estado "pendiente"
-    const newPay = await PayModel.create({
-      total: offered_price, // Asume que el precio ofrecido es el total a pagar
-      userId: customer.id,
-      driverId: null, // Inicialmente sin conductor asignado
-      status: PayStatus.PENDIENTE,
-      orderId: newOrder.id,
-    });
-
-    // Asociar Pay con la orden
-    newOrder.payId = newPay.id;
-    await newOrder.save();
-
-    await customer.addOrder(newOrder);
-    return res
-      .status(200)
-      .json({ msg: "Orden creada con exito!!", order: newOrder });
+    await customer.addOrder(order);
+    return res.status(200).json({ msg: "Orden creada con exito!!", order });
   } catch (error) {
     res.status(500).send(error);
   }

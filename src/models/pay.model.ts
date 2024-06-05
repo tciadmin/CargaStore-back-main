@@ -50,7 +50,6 @@ class Pay extends Model {
   @ForeignKey(() => Drivers)
   @Column({ type: DataType.UUID, allowNull: true })
   driverId!: string | null;
-
   @BelongsTo(() => Drivers)
   driver!: Drivers;
 
