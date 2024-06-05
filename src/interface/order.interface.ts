@@ -15,5 +15,6 @@ export interface OrderInterface {
   delivery_city: string;
   customerId?: string;
   packageId?: string;
+  payId?: string;
   invoicePath?: string; // Agrega la ruta de la factura
 }

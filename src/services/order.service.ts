@@ -1,39 +1,42 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response } from "express";
 import {
   ApplicationModel,
   CustomerModel,
   DriverModel,
   OrderModel,
   PackageModel,
-} from '../models';
-import { OrderInterface } from '../interface/order.interface';
-import { PackageInterface } from '../interface/package.interface';
-import { randomNumber } from '../utils/numberManager';
+  PayModel,
+} from "../models";
+import { OrderInterface } from "../interface/order.interface";
+import { PackageInterface } from "../interface/package.interface";
+import { randomNumber } from "../utils/numberManager";
+import { PayStatus } from "../models/pay.model";
 //import { AddInvoice } from "../interface/addInvoice.interface";
 
 const createOrder = async (req: Request, res: Response) => {
   const { customerId } = req.params;
   const {
-    product_name, //string
-    quantity, //integer
-    type, // 'Seca' | 'Peligrosa' | 'Refrigerada'
-    weight, //float
-    volume, //integer
-    offered_price, //integer
-    product_pic, //string
-    orderType, //'national' | 'international'
-    receiving_company, //string
-    contact_number, //integer
-    receiving_company_RUC, //integer
-    pick_up_date, //date
-    pick_up_time, //string
-    pick_up_address, //string
-    pick_up_city, //string
-    delivery_date, //date
-    delivery_time, //string
-    delivery_address, //string
-    delivery_city, //string
+    product_name,
+    quantity,
+    type,
+    weight,
+    volume,
+    offered_price,
+    product_pic,
+    orderType,
+    receiving_company,
+    contact_number,
+    receiving_company_RUC,
+    pick_up_date,
+    pick_up_time,
+    pick_up_address,
+    pick_up_city,
+    delivery_date,
+    delivery_time,
+    delivery_address,
+    delivery_city,
   } = req.body;
+
   try {
     if (
       !product_name ||
@@ -56,8 +59,9 @@ const createOrder = async (req: Request, res: Response) => {
       !delivery_address ||
       !delivery_city
     ) {
-      return res.status(404).json({ msg: 'Faltan parametros' });
+      return res.status(404).json({ msg: "Faltan parametros" });
     }
+
     const packageData: PackageInterface = {
       product_name,
       quantity,
@@ -67,6 +71,7 @@ const createOrder = async (req: Request, res: Response) => {
       offered_price,
       product_pic,
     };
+
     const orderData: OrderInterface = {
       orderType,
       receiving_company,
@@ -81,23 +86,37 @@ const createOrder = async (req: Request, res: Response) => {
       delivery_address,
       delivery_city,
     };
+
     const customer = await CustomerModel.findByPk(customerId);
     if (!customer) {
-      return res.status(404).json({ msg: 'Cliente no encontrado' });
+      return res.status(404).json({ msg: "Cliente no encontrado" });
     }
+
     const newPackage = await PackageModel.create(packageData);
-    const order = await OrderModel.create({
+    const newOrder = await OrderModel.create({
       id: randomNumber(4),
       ...orderData,
       customerId: customer.id,
-      customer: customer,
       packageId: newPackage.id,
-      package: newPackage,
     });
-    await customer.addOrder(order);
+
+    // Crear instancia de Pay con estado "pendiente"
+    const newPay = await PayModel.create({
+      total: offered_price, // Asume que el precio ofrecido es el total a pagar
+      userId: customer.id,
+      driverId: null, // Inicialmente sin conductor asignado
+      status: PayStatus.PENDIENTE,
+      orderId: newOrder.id,
+    });
+
+    // Asociar Pay con la orden
+    newOrder.payId = newPay.id;
+    await newOrder.save();
+
+    await customer.addOrder(newOrder);
     return res
       .status(200)
-      .json({ msg: 'Orden creada con exito!!', order });
+      .json({ msg: "Orden creada con exito!!", order: newOrder });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -109,8 +128,8 @@ const orderListWithFilter = async (req: Request, res: Response) => {
     const allOrders = await OrderModel.findAll({
       where: { status: status, orderType: orderType },
       include: [
-        { model: PackageModel, as: 'package' },
-        { model: CustomerModel, as: 'customer' },
+        { model: PackageModel, as: "package" },
+        { model: CustomerModel, as: "customer" },
       ],
     });
     res.status(200).json({ orders: allOrders });
@@ -124,15 +143,13 @@ const orderDetail = async (req: Request, res: Response) => {
   try {
     const order = await OrderModel.findByPk(orderId, {
       include: [
-        { model: PackageModel, as: 'package' },
-        { model: CustomerModel, as: 'customer' },
+        { model: PackageModel, as: "package" },
+        { model: CustomerModel, as: "customer" },
         { model: ApplicationModel, include: [DriverModel] },
       ],
     });
     if (!order) {
-      return res
-        .status(404)
-        .json({ msg: 'No se encuentra la orden' });
+      return res.status(404).json({ msg: "No se encuentra la orden" });
     }
     res.status(200).json(order);
   } catch (error) {
@@ -172,7 +189,7 @@ const editOrder = async (req: Request, res: Response) => {
       delivery_city,
     };
     await OrderModel.update(orderData, { where: { id: orderId } });
-    res.status(200).json({ msg: 'Orden editada con exito' });
+    res.status(200).json({ msg: "Orden editada con exito" });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -183,10 +200,10 @@ const changeOrderStatus = async (req: Request, res: Response) => {
   const { status } = req.body;
   try {
     if (!status) {
-      return res.status(400).json({ msg: 'El estatus es requerido' });
+      return res.status(400).json({ msg: "El estatus es requerido" });
     }
     await OrderModel.update({ status }, { where: { id: orderId } });
-    res.status(200).json({ msg: 'Estado de orden cambiado' });
+    res.status(200).json({ msg: "Estado de orden cambiado" });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -196,7 +213,7 @@ const duplicateOrder = async (req: Request, res: Response) => {
   const { orderId } = req.params;
   try {
     const originalOrder = await OrderModel.findByPk(orderId, {
-      include: [{ model: PackageModel, as: 'package' }],
+      include: [{ model: PackageModel, as: "package" }],
     });
     const originalPackage = await PackageModel.findByPk(
       originalOrder?.packageId
@@ -204,7 +221,7 @@ const duplicateOrder = async (req: Request, res: Response) => {
     if (!originalOrder || !originalPackage) {
       return res
         .status(404)
-        .json({ msg: 'No se ha encontrado la orden original' });
+        .json({ msg: "No se ha encontrado la orden original" });
     }
     const duplicatePackage = await PackageModel.create({
       product_name: originalPackage.product_name,
@@ -232,7 +249,7 @@ const duplicateOrder = async (req: Request, res: Response) => {
       packageId: duplicatePackage.id,
     });
     res.status(200).json({
-      msg: 'Orden duplicada con exito',
+      msg: "Orden duplicada con exito",
       orden: duplicateOrder,
     });
   } catch (error) {
@@ -248,13 +265,12 @@ const addInvoiceToOrder = async (req: Request, res: Response) => {
   try {
     const order = await OrderModel.findByPk(orderId);
     if (!order) {
-      return res.status(404).json({ error: 'Orden no encontrada' });
+      return res.status(404).json({ error: "Orden no encontrada" });
     }
 
     if (!req.file) {
       return res.status(400).json({
-        error:
-          'El archivo no se subio o el tipo de archivo es incorrecto',
+        error: "El archivo no se subio o el tipo de archivo es incorrecto",
       });
     }
 
@@ -262,25 +278,19 @@ const addInvoiceToOrder = async (req: Request, res: Response) => {
     order.invoicePath = req.file.path;
     await order.save();
 
-    res
-      .status(200)
-      .json({ message: 'Factura subida con exito', order });
+    res.status(200).json({ message: "Factura subida con exito", order });
   } catch (error) {
     console.error(error);
     res.status(500).send(error);
   }
 };
 
-const findOrder = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const findOrder = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { orderId } = req.params;
     const order = await OrderModel.findByPk(orderId);
     if (!order) {
-      return res.status(404).json({ error: 'Orden no encontrada' });
+      return res.status(404).json({ error: "Orden no encontrada" });
     } else {
       next();
     }
