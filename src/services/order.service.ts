@@ -5,13 +5,15 @@ import {
   DriverModel,
   OrderModel,
   PackageModel,
+  PayModel,
   TruckModel,
   UserModel,
-} from '../models';
-import { OrderInterface } from '../interface/order.interface';
-import { PackageInterface } from '../interface/package.interface';
-import { randomNumber } from '../utils/numberManager';
-import { OrderStatus } from '../models/orders.model';
+} from "../models";
+import { OrderInterface } from "../interface/order.interface";
+import { PackageInterface } from "../interface/package.interface";
+import { randomNumber } from "../utils/numberManager";
+import { OrderStatus } from "../models/orders.model";
+
 //import { AddInvoice } from "../interface/addInvoice.interface";
 
 const createOrder = async (req: Request, res: Response) => {
@@ -110,28 +112,28 @@ const orderListWithFilter = async (req: Request, res: Response) => {
     const allOrders = await OrderModel.findAll({
       where: { status: status, orderType: orderType },
       attributes: {
-        exclude: ['contact_number', 'receiving_company_RUC'],
+        exclude: ["contact_number", "receiving_company_RUC"],
       },
       include: [
         {
           model: PackageModel,
-          as: 'package',
-          attributes: ['product_name', 'offered_price'],
+          as: "package",
+          attributes: ["product_name", "offered_price"],
         },
         {
           model: DriverModel,
-          as: 'assignedDriver',
-          attributes: ['picture', 'num_license', 'rating'],
+          as: "assignedDriver",
+          attributes: ["picture", "num_license", "rating"],
           include: [
             {
               model: UserModel,
-              as: 'user_driver',
-              attributes: ['name', 'lastname'],
+              as: "user_driver",
+              attributes: ["name", "lastname"],
             },
             {
               model: TruckModel,
-              as: 'truck',
-              attributes: ['capacity', 'charge_capacity'],
+              as: "truck",
+              attributes: ["capacity", "charge_capacity"],
             },
           ],
         },
@@ -139,7 +141,7 @@ const orderListWithFilter = async (req: Request, res: Response) => {
     });
     res.status(200).json({ orders: allOrders });
   } catch (error) {
-    console.log('Error: ', error);
+    console.log("Error: ", error);
     res.status(500).send(error);
   }
 };
@@ -309,15 +311,10 @@ const getOrderState = async (req: Request, res: Response) => {
   try {
     const { orderId } = req.params;
     const order = await OrderModel.findByPk(orderId, {
-      attributes: [
-        'enPreparacion',
-        'preparado',
-        'retirado',
-        'enCamino',
-      ],
+      attributes: ["enPreparacion", "preparado", "retirado", "enCamino"],
     });
     if (!order) {
-      return res.status(404).json({ msg: 'Orden no encontrada' });
+      return res.status(404).json({ msg: "Orden no encontrada" });
     }
     res.status(200).json({ orderState: order });
   } catch (error) {
@@ -330,16 +327,16 @@ const changeOrderState = async (req: Request, res: Response) => {
     const { orderId } = req.params;
     const order = await OrderModel.findByPk(orderId, {
       attributes: [
-        'id',
-        'status',
-        'enPreparacion',
-        'preparado',
-        'retirado',
-        'enCamino',
+        "id",
+        "status",
+        "enPreparacion",
+        "preparado",
+        "retirado",
+        "enCamino",
       ],
     });
     if (!order) {
-      return res.status(404).json({ msg: 'Orden no encontrada' });
+      return res.status(404).json({ msg: "Orden no encontrada" });
     }
     if (!order.enPreparacion) {
       order.enPreparacion = new Date();
@@ -360,7 +357,7 @@ const changeOrderState = async (req: Request, res: Response) => {
       return res.status(200).json({ orderState: order });
     } else {
       return res.status(401).json({
-        msg: 'Los cuatro estados de la orden estan completos',
+        msg: "Los cuatro estados de la orden estan completos",
         orderState: order,
       });
     }
