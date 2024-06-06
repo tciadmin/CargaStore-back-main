@@ -8,7 +8,6 @@ import {
   AutoIncrement,
   AllowNull,
   Default,
-  HasMany,
 } from "sequelize-typescript";
 import Drivers from "./drivers.model";
 import Customer from "./customers.model";
@@ -78,9 +77,6 @@ class Users extends Model {
     as: "user_customer",
   })
   customer!: Customer;
-
-  @HasMany(() => Pay)
-  pays!: Pay[];
 }
 
 export default Users;
