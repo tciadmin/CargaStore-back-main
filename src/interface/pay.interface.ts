@@ -3,7 +3,6 @@ export interface PayInterface {
   total: number;
   status: "pendiente" | "acreditado";
   customerId: string;
-  driverId?: string;
-  orderId?: string;
-  userId?: number;
+  driverId: string;
+  orderId?: number;
 }

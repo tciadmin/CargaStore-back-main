@@ -43,30 +43,22 @@ class Pay extends Model {
   status!: PayStatus;
 
   @ForeignKey(() => Customer)
-  @AllowNull(false)
-  @Column(DataType.UUID)
+  @Column({ type: DataType.UUID, allowNull: false })
   customerId!: string;
 
-  @BelongsTo(() => Customer, { as: "customer_pay" })
+  @BelongsTo(() => Customer)
   customer!: Customer;
 
   @ForeignKey(() => Drivers)
-  @AllowNull(true)
-  @Column(DataType.UUID)
-  driverId!: string | null;
-  @BelongsTo(() => Drivers, { as: "driver_pay" })
-  driver!: Drivers;
+  @Column({ type: DataType.UUID, allowNull: false })
+  driverId!: string;
 
-  @ForeignKey(() => Users)
-  @AllowNull(false)
-  @Column(DataType.BIGINT)
-  userId!: number;
-  @BelongsTo(() => Users, { as: "users_pay" })
-  user!: Users;
+  @BelongsTo(() => Drivers)
+  driver!: Drivers;
 
   @ForeignKey(() => Order)
   @Column({ type: DataType.BIGINT, allowNull: false })
-  orderId!: string;
+  orderId!: number;
 
   @BelongsTo(() => Order)
   order!: Order;

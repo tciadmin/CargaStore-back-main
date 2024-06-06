@@ -8,6 +8,7 @@ import {
   BelongsTo,
   AutoIncrement,
   HasMany,
+  HasOne,
 } from "sequelize-typescript";
 import Package from "./packages.model";
 import Customer from "./customers.model";
@@ -197,6 +198,9 @@ class Order extends Model {
     allowNull: true,
   })
   invoicePath!: string;
+
+  @HasOne(() => Pay)
+  pays!: Pay[];
 
   async setPackage(newPackage: Package): Promise<void> {
     this.packageId = newPackage.id;
