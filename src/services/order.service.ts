@@ -1,18 +1,17 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response } from 'express';
 import {
   ApplicationModel,
   CustomerModel,
   DriverModel,
   OrderModel,
   PackageModel,
-  PayModel,
   TruckModel,
   UserModel,
-} from "../models";
-import { OrderInterface } from "../interface/order.interface";
-import { PackageInterface } from "../interface/package.interface";
-import { randomNumber } from "../utils/numberManager";
-import { OrderStatus } from "../models/orders.model";
+} from '../models';
+import { OrderInterface } from '../interface/order.interface';
+import { PackageInterface } from '../interface/package.interface';
+import { randomNumber } from '../utils/numberManager';
+import { OrderStatus } from '../models/orders.model';
 
 //import { AddInvoice } from "../interface/addInvoice.interface";
 
@@ -61,7 +60,7 @@ const createOrder = async (req: Request, res: Response) => {
       !delivery_address ||
       !delivery_city
     ) {
-      return res.status(404).json({ msg: "Faltan parametros" });
+      return res.status(404).json({ msg: 'Faltan parametros' });
     }
     const packageData: PackageInterface = {
       product_name,
@@ -88,7 +87,7 @@ const createOrder = async (req: Request, res: Response) => {
     };
     const customer = await CustomerModel.findByPk(customerId);
     if (!customer) {
-      return res.status(404).json({ msg: "Cliente no encontrado" });
+      return res.status(404).json({ msg: 'Cliente no encontrado' });
     }
     const newPackage = await PackageModel.create(packageData);
     const order = await OrderModel.create({
@@ -100,7 +99,9 @@ const createOrder = async (req: Request, res: Response) => {
       package: newPackage,
     });
     await customer.addOrder(order);
-    return res.status(200).json({ msg: "Orden creada con exito!!", order });
+    return res
+      .status(200)
+      .json({ msg: 'Orden creada con exito!!', order });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -112,28 +113,28 @@ const orderListWithFilter = async (req: Request, res: Response) => {
     const allOrders = await OrderModel.findAll({
       where: { status: status, orderType: orderType },
       attributes: {
-        exclude: ["contact_number", "receiving_company_RUC"],
+        exclude: ['contact_number', 'receiving_company_RUC'],
       },
       include: [
         {
           model: PackageModel,
-          as: "package",
-          attributes: ["product_name", "offered_price"],
+          as: 'package',
+          attributes: ['product_name', 'offered_price'],
         },
         {
           model: DriverModel,
-          as: "assignedDriver",
-          attributes: ["picture", "num_license", "rating"],
+          as: 'assignedDriver',
+          attributes: ['picture', 'num_license', 'rating'],
           include: [
             {
               model: UserModel,
-              as: "user_driver",
-              attributes: ["name", "lastname"],
+              as: 'user_driver',
+              attributes: ['name', 'lastname'],
             },
             {
               model: TruckModel,
-              as: "truck",
-              attributes: ["capacity", "charge_capacity"],
+              as: 'truck',
+              attributes: ['capacity', 'charge_capacity'],
             },
           ],
         },
@@ -141,7 +142,7 @@ const orderListWithFilter = async (req: Request, res: Response) => {
     });
     res.status(200).json({ orders: allOrders });
   } catch (error) {
-    console.log("Error: ", error);
+    console.log('Error: ', error);
     res.status(500).send(error);
   }
 };
@@ -151,13 +152,15 @@ const orderDetail = async (req: Request, res: Response) => {
   try {
     const order = await OrderModel.findByPk(orderId, {
       include: [
-        { model: PackageModel, as: "package" },
-        { model: CustomerModel, as: "customer" },
+        { model: PackageModel, as: 'package' },
+        { model: CustomerModel, as: 'customer' },
         { model: ApplicationModel, include: [DriverModel] },
       ],
     });
     if (!order) {
-      return res.status(404).json({ msg: "No se encuentra la orden" });
+      return res
+        .status(404)
+        .json({ msg: 'No se encuentra la orden' });
     }
     res.status(200).json(order);
   } catch (error) {
@@ -197,7 +200,7 @@ const editOrder = async (req: Request, res: Response) => {
       delivery_city,
     };
     await OrderModel.update(orderData, { where: { id: orderId } });
-    res.status(200).json({ msg: "Orden editada con exito" });
+    res.status(200).json({ msg: 'Orden editada con exito' });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -208,10 +211,10 @@ const changeOrderStatus = async (req: Request, res: Response) => {
   const { status } = req.body;
   try {
     if (!status) {
-      return res.status(400).json({ msg: "El estatus es requerido" });
+      return res.status(400).json({ msg: 'El estatus es requerido' });
     }
     await OrderModel.update({ status }, { where: { id: orderId } });
-    res.status(200).json({ msg: "Estado de orden cambiado" });
+    res.status(200).json({ msg: 'Estado de orden cambiado' });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -221,7 +224,7 @@ const duplicateOrder = async (req: Request, res: Response) => {
   const { orderId } = req.params;
   try {
     const originalOrder = await OrderModel.findByPk(orderId, {
-      include: [{ model: PackageModel, as: "package" }],
+      include: [{ model: PackageModel, as: 'package' }],
     });
     const originalPackage = await PackageModel.findByPk(
       originalOrder?.packageId
@@ -229,7 +232,7 @@ const duplicateOrder = async (req: Request, res: Response) => {
     if (!originalOrder || !originalPackage) {
       return res
         .status(404)
-        .json({ msg: "No se ha encontrado la orden original" });
+        .json({ msg: 'No se ha encontrado la orden original' });
     }
     const duplicatePackage = await PackageModel.create({
       product_name: originalPackage.product_name,
@@ -257,7 +260,7 @@ const duplicateOrder = async (req: Request, res: Response) => {
       packageId: duplicatePackage.id,
     });
     res.status(200).json({
-      msg: "Orden duplicada con exito",
+      msg: 'Orden duplicada con exito',
       orden: duplicateOrder,
     });
   } catch (error) {
@@ -273,12 +276,13 @@ const addInvoiceToOrder = async (req: Request, res: Response) => {
   try {
     const order = await OrderModel.findByPk(orderId);
     if (!order) {
-      return res.status(404).json({ error: "Orden no encontrada" });
+      return res.status(404).json({ error: 'Orden no encontrada' });
     }
 
     if (!req.file) {
       return res.status(400).json({
-        error: "El archivo no se subio o el tipo de archivo es incorrecto",
+        error:
+          'El archivo no se subio o el tipo de archivo es incorrecto',
       });
     }
 
@@ -286,19 +290,25 @@ const addInvoiceToOrder = async (req: Request, res: Response) => {
     order.invoicePath = req.file.path;
     await order.save();
 
-    res.status(200).json({ message: "Factura subida con exito", order });
+    res
+      .status(200)
+      .json({ message: 'Factura subida con exito', order });
   } catch (error) {
     console.error(error);
     res.status(500).send(error);
   }
 };
 
-const findOrder = async (req: Request, res: Response, next: NextFunction) => {
+const findOrder = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { orderId } = req.params;
     const order = await OrderModel.findByPk(orderId);
     if (!order) {
-      return res.status(404).json({ error: "Orden no encontrada" });
+      return res.status(404).json({ error: 'Orden no encontrada' });
     } else {
       next();
     }
@@ -311,10 +321,15 @@ const getOrderState = async (req: Request, res: Response) => {
   try {
     const { orderId } = req.params;
     const order = await OrderModel.findByPk(orderId, {
-      attributes: ["enPreparacion", "preparado", "retirado", "enCamino"],
+      attributes: [
+        'enPreparacion',
+        'preparado',
+        'retirado',
+        'enCamino',
+      ],
     });
     if (!order) {
-      return res.status(404).json({ msg: "Orden no encontrada" });
+      return res.status(404).json({ msg: 'Orden no encontrada' });
     }
     res.status(200).json({ orderState: order });
   } catch (error) {
@@ -327,16 +342,16 @@ const changeOrderState = async (req: Request, res: Response) => {
     const { orderId } = req.params;
     const order = await OrderModel.findByPk(orderId, {
       attributes: [
-        "id",
-        "status",
-        "enPreparacion",
-        "preparado",
-        "retirado",
-        "enCamino",
+        'id',
+        'status',
+        'enPreparacion',
+        'preparado',
+        'retirado',
+        'enCamino',
       ],
     });
     if (!order) {
-      return res.status(404).json({ msg: "Orden no encontrada" });
+      return res.status(404).json({ msg: 'Orden no encontrada' });
     }
     if (!order.enPreparacion) {
       order.enPreparacion = new Date();
@@ -357,7 +372,7 @@ const changeOrderState = async (req: Request, res: Response) => {
       return res.status(200).json({ orderState: order });
     } else {
       return res.status(401).json({
-        msg: "Los cuatro estados de la orden estan completos",
+        msg: 'Los cuatro estados de la orden estan completos',
         orderState: order,
       });
     }
