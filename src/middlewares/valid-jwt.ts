@@ -29,4 +29,4 @@ const ValidJWT = async (req: Request, res: Response, next: () => void) => {
   }
 };
 
-export default { ValidJWT };
+export default ValidJWT;

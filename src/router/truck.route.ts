@@ -1,12 +1,12 @@
 import { Router } from "express";
 import { TruckService } from "../services";
-// import validJwt from '../middlewares/valid-jwt';
+import ValidJWT from "../middlewares/valid-jwt";
 
 const router = Router();
 //Servicios
 const { patchTruck, getAllTrucks } = TruckService;
 
-router.patch("/update/:userId", patchTruck);
-router.get("/all", getAllTrucks);
+router.patch("/update/:userId", ValidJWT, patchTruck);
+router.get("/all", ValidJWT, getAllTrucks);
 
 module.exports = router;
