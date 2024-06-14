@@ -13,12 +13,15 @@ import Order from './orders.model';
 interface PackageAttributes {
   id?: string;
   product_name: string;
+  image1?: string | null;
+  image2?: string | null;
+  image3?: string | null;
+  image4?: string | null;
   quantity: number;
   type: 'seca' | 'peligrosa' | 'refrigerada';
   weight: number;
   volume: number;
   offered_price: number;
-  product_pic: string;
   orderId?: string | undefined;
   order?: Order;
 }
@@ -45,6 +48,30 @@ class Package extends Model<PackageAttributes> {
     allowNull: false,
   })
   product_name!: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  image1!: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  image2!: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  image3!: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  image4!: string;
 
   @Column({
     type: DataType.INTEGER,
@@ -76,12 +103,6 @@ class Package extends Model<PackageAttributes> {
     allowNull: false,
   })
   offered_price!: number;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
-  product_pic!: string;
 
   @AllowNull(false)
   @CreatedAt

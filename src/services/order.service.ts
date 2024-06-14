@@ -12,11 +12,19 @@ import { OrderInterface } from '../interface/order.interface';
 import { PackageInterface } from '../interface/package.interface';
 import { randomNumber } from '../utils/numberManager';
 import { OrderStatus } from '../models/orders.model';
+import { isMulterRequestFiles } from '../config/multerConfig';
 
 //import { AddInvoice } from "../interface/addInvoice.interface";
 
 const createOrder = async (req: Request, res: Response) => {
   const { customerId } = req.params;
+  if (!isMulterRequestFiles(req.files)) {
+    return res
+      .status(400)
+      .json({ msg: 'Error al subir los archivos' });
+  }
+  const files = req.files;
+  // const files = req.files as { [fieldname: string]: Express.Multer.File[] };
   const {
     product_name, //string
     quantity, //integer
@@ -24,7 +32,6 @@ const createOrder = async (req: Request, res: Response) => {
     weight, //float
     volume, //integer
     offered_price, //integer
-    product_pic, //string
     orderType, //'national' | 'international'
     receiving_company, //string
     contact_number, //integer
@@ -46,7 +53,6 @@ const createOrder = async (req: Request, res: Response) => {
       !weight ||
       !volume ||
       !offered_price ||
-      !product_pic ||
       !receiving_company ||
       !orderType ||
       !contact_number ||
@@ -64,12 +70,15 @@ const createOrder = async (req: Request, res: Response) => {
     }
     const packageData: PackageInterface = {
       product_name,
+      image1: files?.image1 ? files.image1[0].path : null,
+      image2: files?.image2 ? files.image2[0].path : null,
+      image3: files?.image3 ? files.image3[0].path : null,
+      image4: files?.image4 ? files.image4[0].path : null,
       quantity,
       type,
       weight,
       volume,
       offered_price,
-      product_pic,
     };
     const orderData: OrderInterface = {
       orderType,
@@ -185,20 +194,22 @@ const editOrder = async (req: Request, res: Response) => {
     delivery_city,
   } = req.body;
   try {
-    const orderData: OrderInterface = {
-      orderType,
-      receiving_company,
-      contact_number,
-      receiving_company_RUC,
-      pick_up_date,
-      pick_up_time,
-      pick_up_address,
-      pick_up_city,
-      delivery_date,
-      delivery_time,
-      delivery_address,
-      delivery_city,
-    };
+    const orderData =
+      // :OrderInterface
+      {
+        orderType,
+        receiving_company,
+        contact_number,
+        receiving_company_RUC,
+        pick_up_date,
+        pick_up_time,
+        pick_up_address,
+        pick_up_city,
+        delivery_date,
+        delivery_time,
+        delivery_address,
+        delivery_city,
+      };
     await OrderModel.update(orderData, { where: { id: orderId } });
     res.status(200).json({ msg: 'Orden editada con exito' });
   } catch (error) {
@@ -241,7 +252,6 @@ const duplicateOrder = async (req: Request, res: Response) => {
       weight: originalPackage.weight,
       volume: originalPackage.volume,
       offered_price: originalPackage.offered_price,
-      product_pic: originalPackage.product_pic,
     });
     const duplicateOrder = await OrderModel.create({
       orderType: originalOrder.orderType,

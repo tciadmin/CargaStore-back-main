@@ -9,26 +9,26 @@ import {
   AutoIncrement,
   HasMany,
   HasOne,
-} from "sequelize-typescript";
-import Package from "./packages.model";
-import Customer from "./customers.model";
-import Drivers from "./drivers.model";
-import Application from "./application.model";
-import Pay from "./pay.model";
+} from 'sequelize-typescript';
+import Package from './packages.model';
+import Customer from './customers.model';
+import Drivers from './drivers.model';
+import Application from './application.model';
+import Pay from './pay.model';
 
 export enum OrderStatus {
-  PENDIENTE = "pendiente",
-  ASIGNADO = "asignado",
-  ENCURSO = "en curso",
-  FINALIZADO = "finalizado",
+  PENDIENTE = 'pendiente',
+  ASIGNADO = 'asignado',
+  ENCURSO = 'en curso',
+  FINALIZADO = 'finalizado',
 }
 
 enum OrderType {
-  NATIONAL = "national",
-  INTERNATIONAL = "international",
+  NATIONAL = 'national',
+  INTERNATIONAL = 'international',
 }
 
-@Table({ tableName: "orders", timestamps: false })
+@Table({ tableName: 'orders', timestamps: false })
 class Order extends Model {
   @PrimaryKey
   @AutoIncrement
@@ -165,8 +165,8 @@ class Order extends Model {
   pendingAssignedDriverId!: string | null;
 
   @BelongsTo(() => Drivers, {
-    foreignKey: "pendingAssignedDriverId",
-    as: "pendingAssignedDriver",
+    foreignKey: 'pendingAssignedDriverId',
+    as: 'pendingAssignedDriver',
   })
   pendingAssignedDriver!: Drivers;
 
@@ -175,8 +175,8 @@ class Order extends Model {
   assignedDriverId!: string | null;
 
   @BelongsTo(() => Drivers, {
-    foreignKey: "assignedDriverId",
-    as: "assignedDriver",
+    foreignKey: 'assignedDriverId',
+    as: 'assignedDriver',
   })
   assignedDriver!: Drivers;
 
@@ -188,8 +188,8 @@ class Order extends Model {
   payId!: string | null;
 
   @BelongsTo(() => Pay, {
-    foreignKey: "payId",
-    as: "pay",
+    foreignKey: 'payId',
+    as: 'pay',
   })
   pay!: Pay;
 
