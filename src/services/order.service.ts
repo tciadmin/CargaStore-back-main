@@ -180,36 +180,55 @@ const orderDetail = async (req: Request, res: Response) => {
 const editOrder = async (req: Request, res: Response) => {
   const { orderId } = req.params;
   const {
-    orderType,
-    receiving_company,
-    contact_number,
-    receiving_company_RUC,
-    pick_up_date,
-    pick_up_time,
-    pick_up_address,
-    pick_up_city,
-    delivery_date,
-    delivery_time,
-    delivery_address,
-    delivery_city,
+    product_name, //string
+    quantity, //integer
+    type, // 'Seca' | 'Peligrosa' | 'Refrigerada'
+    weight, //float
+    volume, //integer
+    offered_price, //integer
+    orderType, //'national' | 'international'
+    receiving_company, //string
+    contact_number, //integer
+    receiving_company_RUC, //integer
+    pick_up_date, //date
+    pick_up_time, //string
+    pick_up_address, //string
+    pick_up_city, //string
+    delivery_date, //date
+    delivery_time, //string
+    delivery_address, //string
+    delivery_city, //string
   } = req.body;
   try {
-    const orderData =
-      // :OrderInterface
-      {
-        orderType,
-        receiving_company,
-        contact_number,
-        receiving_company_RUC,
-        pick_up_date,
-        pick_up_time,
-        pick_up_address,
-        pick_up_city,
-        delivery_date,
-        delivery_time,
-        delivery_address,
-        delivery_city,
-      };
+    const packageData: PackageInterface = {
+      product_name,
+      quantity,
+      type,
+      weight,
+      volume,
+      offered_price,
+    };
+    const orderData: OrderInterface = {
+      orderType,
+      receiving_company,
+      contact_number,
+      receiving_company_RUC,
+      pick_up_date,
+      pick_up_time,
+      pick_up_address,
+      pick_up_city,
+      delivery_date,
+      delivery_time,
+      delivery_address,
+      delivery_city,
+    };
+    const order = await OrderModel.findByPk(orderId);
+    if (!order) {
+      return res.status(404).json({ msg: 'Orden no encontrada' });
+    }
+    await PackageModel.update(packageData, {
+      where: { id: order.packageId },
+    });
     await OrderModel.update(orderData, { where: { id: orderId } });
     res.status(200).json({ msg: 'Orden editada con exito' });
   } catch (error) {
