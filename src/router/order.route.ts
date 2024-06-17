@@ -20,7 +20,7 @@ const {
 
 router.post(
   '/create/:customerId',
-  ValidJWT,
+  // ValidJWT,
   uploadImages,
   createOrder
 );
@@ -31,7 +31,11 @@ router.get('/list_order', ValidJWT, orderListWithFilter);
 
 router.get('/detail/:orderId', ValidJWT, orderDetail);
 
-router.put('/edit/:orderId', ValidJWT, editOrder);
+router.put(
+  '/edit/:orderId',
+  //  ValidJWT,
+  editOrder
+);
 
 router.patch('/change_status/:orderId', ValidJWT, changeOrderStatus);
 
