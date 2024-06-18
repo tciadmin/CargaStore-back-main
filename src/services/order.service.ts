@@ -13,6 +13,7 @@ import { PackageInterface } from '../interface/package.interface';
 import { randomNumber } from '../utils/numberManager';
 import { OrderStatus } from '../models/orders.model';
 import { isMulterRequestFiles } from '../config/multerConfig';
+import { WhereOptions } from 'sequelize';
 
 //import { AddInvoice } from "../interface/addInvoice.interface";
 
@@ -117,10 +118,18 @@ const createOrder = async (req: Request, res: Response) => {
 };
 
 const orderListWithFilter = async (req: Request, res: Response) => {
-  const { status, orderType } = req.query; //pendiente | asignada | en curso | finalizada
+  const { status, orderType, customerId } = req.query as {
+    status?: string;
+    orderType?: string;
+    customerId?: string;
+  }; //pendiente | asignada | en curso | finalizada
+  const whereConditions: WhereOptions = {};
+  if (status) whereConditions.status = status;
+  if (orderType) whereConditions.orderType = orderType;
+  if (customerId) whereConditions.customerId = customerId;
   try {
     const allOrders = await OrderModel.findAll({
-      where: { status: status, orderType: orderType },
+      where: whereConditions,
       attributes: {
         exclude: ['contact_number', 'receiving_company_RUC'],
       },
