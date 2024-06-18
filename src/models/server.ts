@@ -10,6 +10,7 @@ import Config from '../config';
 import { FilesController } from '../utils';
 import { ApiPaths } from '../routes';
 import morgan from 'morgan';
+import { optionCors } from '../config/corsConfig';
 
 class Server {
   private app: Application;
@@ -35,7 +36,7 @@ class Server {
 
   middleware() {
     // CORS
-    this.app.use(cors());
+    this.app.use(cors(optionCors));
 
     // Lectura y parseo del body
     this.app.use(express.json());
