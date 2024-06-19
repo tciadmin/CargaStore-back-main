@@ -174,6 +174,7 @@ const signUp = async (req: Request, res: Response) => {
     await transaction.commit();
     res.json({
       msg: '¡Usuario registrado!, revise su correo electronico para validarlo.',
+      user: newUser,
     });
   } catch (error) {
     await transaction.rollback();
