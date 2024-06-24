@@ -6,7 +6,11 @@ const router = Router();
 //Servicios
 const { createCustomer, editCustomer } = CustomerService;
 
-router.post('/create/:userId', ValidJWT, createCustomer);
+router.post(
+  '/create/:userId',
+  //  ValidJWT,
+  createCustomer
+);
 
 router.put('/edit/:customerId', ValidJWT, editCustomer);
 

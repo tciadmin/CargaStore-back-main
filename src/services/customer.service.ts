@@ -1,34 +1,34 @@
-import { Request, Response } from "express";
-import { CustomerModel, UserModel } from "../models";
-import { CustomerInterface } from "../interface/customer.interface";
-import { HelperBody } from "../helpers";
+import { Request, Response } from 'express';
+import { CustomerModel, UserModel } from '../models';
+import { CustomerInterface } from '../interface/customer.interface';
+import { HelperBody } from '../helpers';
 const { checkBody } = HelperBody;
-import { RoleType } from "../models/users.model";
+import { RoleType } from '../models/users.model';
 
 const createCustomer = async (req: Request, res: Response) => {
   const { userId } = req.params;
-  const { company_name, ruc, address, company_phone } = req.body;
+  const { company_name, city, address, company_phone } = req.body;
 
   try {
     // Verificar que todos los parámetros requeridos estén presentes
-    if (!company_name || !ruc || !address || !company_phone) {
+    if (!company_name || !city || !address || !company_phone) {
       return res
         .status(400)
-        .json({ msg: "Faltan parametros para crear cliente" });
+        .json({ msg: 'Faltan parametros para crear cliente' });
     }
 
     // Buscar el usuario por ID
     const user = await UserModel.findByPk(userId);
     if (!user) {
-      return res.status(404).json({ msg: "Usuario no encontrado" });
+      return res.status(404).json({ msg: 'Usuario no encontrado' });
     }
 
     // Verificar el rol del usuario
     if (user.role !== null) {
       // Arrojar error si el usuario tiene un rol diferente a null
-      return res
-        .status(400)
-        .json({ msg: "Error. Este usuario ya está asignado con otro rol" });
+      return res.status(400).json({
+        msg: 'Error. Este usuario ya está asignado con otro rol',
+      });
     }
 
     // Asignar el rol de 'customer' si el rol es null
@@ -38,7 +38,7 @@ const createCustomer = async (req: Request, res: Response) => {
     // Crear los datos del cliente
     const CustomerData = {
       company_name,
-      ruc,
+      city,
       company_phone,
       address,
     };
@@ -53,7 +53,7 @@ const createCustomer = async (req: Request, res: Response) => {
     await user.update({ customerId: newCustomer.id });
 
     return res.status(200).json({
-      msg: "Cliente creado con éxito!!",
+      msg: 'Cliente creado con éxito!!',
       customer: newCustomer,
     });
   } catch (error) {
@@ -63,19 +63,23 @@ const createCustomer = async (req: Request, res: Response) => {
 
 const editCustomer = async (req: Request, res: Response) => {
   const { customerId } = req.params;
-  const { company_name, ruc, company_phone, address } = req.body;
+  const { company_name, ruc, company_phone, address, country, city } =
+    req.body;
   try {
     const customerData: CustomerInterface = {
       company_name,
       ruc,
       company_phone,
       address,
+      country,
+      city,
     };
     const check = checkBody(customerData, [
-      "company_name",
-      "ruc",
-      "company_phone",
-      "address",
+      'company_name',
+      'ruc',
+      'company_phone',
+      'address',
+      'city',
     ]);
     if (check) {
       return res.status(400).json({ msg: check });
@@ -83,7 +87,7 @@ const editCustomer = async (req: Request, res: Response) => {
     await CustomerModel.update(customerData, {
       where: { id: customerId },
     });
-    res.status(200).json({ msg: "Cliente editado con exito" });
+    res.status(200).json({ msg: 'Cliente editado con exito' });
   } catch (error) {
     res.status(500).send(error);
   }

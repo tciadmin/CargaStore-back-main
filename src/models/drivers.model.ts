@@ -29,26 +29,26 @@ export default class Drivers extends Model {
 
   @Column({
     type: DataType.STRING,
-    allowNull: false,
+    allowNull: true,
   })
   picture!: string;
 
   @Column({
     type: DataType.INTEGER,
-    allowNull: false,
+    allowNull: true,
   })
   num_license!: number;
 
   @Column({
     type: DataType.BOOLEAN,
     allowNull: false,
-    defaultValue: false,
+    defaultValue: true,
   })
   iess!: boolean;
 
   @Column({
     type: DataType.TEXT,
-    allowNull: false,
+    allowNull: true,
   })
   description!: string;
 
@@ -61,7 +61,7 @@ export default class Drivers extends Model {
 
   @Column({
     type: DataType.INTEGER,
-    allowNull: false,
+    allowNull: true,
   })
   phone!: number;
 

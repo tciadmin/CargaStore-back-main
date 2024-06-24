@@ -1,4 +1,4 @@
-import { ChargeCapacity, ChargeType } from "../models/trucks.model";
+import { ChargeType } from '../models/trucks.model';
 
 export interface TruckInterface {
   id?: string;
@@ -6,7 +6,6 @@ export interface TruckInterface {
   model: string;
   year: number;
   charge_type: ChargeType;
-  num_plate: string; // Agregado: num_plate de tipo string
-  capacity: number; // Agregado: capacity de tipo number
-  charge_capacity: ChargeCapacity;
+  num_plate?: string; // Agregado: num_plate de tipo string
+  charge_capacity: string;
 }
