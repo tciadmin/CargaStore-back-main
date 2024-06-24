@@ -5,21 +5,17 @@ import {
   Column,
   Model,
   HasOne,
-} from "sequelize-typescript";
-import { TruckInterface } from "../interface/truck.interface";
-import Drivers from "./drivers.model";
+} from 'sequelize-typescript';
+import { TruckInterface } from '../interface/truck.interface';
+import Drivers from './drivers.model';
 
 enum ChargeType {
-  SECA = "seca",
-  PELIGROSA = "peligrosa",
-  REFRIGERADA = "refrigerada",
+  SECA = 'seca',
+  PELIGROSA = 'peligrosa',
+  REFRIGERADA = 'refrigerada',
 }
-enum ChargeCapacity {
-  TONELADAS = "toneladas",
-  LITROS = "litros",
-  KILOS = "kilos",
-}
-@Table({ tableName: "trucks", timestamps: false })
+
+@Table({ tableName: 'trucks', timestamps: false })
 class Truck extends Model<TruckInterface> {
   @PrimaryKey
   @Column({
@@ -49,24 +45,17 @@ class Truck extends Model<TruckInterface> {
   })
   charge_type!: ChargeType;
 
-  @Column({
-    type: DataType.ENUM,
-    values: Object.values(ChargeCapacity),
-    allowNull: false,
-  })
-  charge_capacity!: ChargeCapacity;
+  @Column({ type: DataType.STRING, allowNull: false })
+  charge_capacity!: string;
 
-  @Column({ type: DataType.STRING, allowNull: false }) // Agregado: num_plate
+  @Column({ type: DataType.STRING, allowNull: true }) // Agregado: num_plate
   num_plate!: string;
 
-  @Column({ type: DataType.INTEGER, allowNull: false }) // Agregado: capacity
-  capacity!: number;
-
   @HasOne(() => Drivers, {
-    foreignKey: "DriverId",
-    as: "truck_driver",
+    foreignKey: 'DriverId',
+    as: 'truck_driver',
   })
   driver!: Drivers;
 }
-export type { ChargeType, ChargeCapacity };
+export type { ChargeType };
 export default Truck;
