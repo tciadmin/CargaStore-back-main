@@ -10,6 +10,9 @@ import {
   PasswordCodesModel,
   UserModel,
   EmailCodesModel,
+  DriverModel,
+  TruckModel,
+  CustomerModel,
 } from '../models';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -52,6 +55,32 @@ const signIn = async (req: Request, res: Response) => {
       where: { email, status: true },
     });
 
+    let signInUser;
+    if (user.role === 'driver') {
+      signInUser = await UserModel.findOne({
+        where: { email, status: true },
+        include: [
+          {
+            model: DriverModel,
+            as: 'driver',
+            include: [{ model: TruckModel, as: 'truck' }],
+          },
+        ],
+      });
+    } else if (user.role === 'customer') {
+      signInUser = await UserModel.findOne({
+        where: { email, status: true },
+        include: [
+          {
+            model: CustomerModel,
+            as: 'customer',
+          },
+        ],
+      });
+    } else {
+      throw new Error('Rol desconocido');
+    }
+
     if (!user)
       return res.status(404).json({ msg: 'Usuario no encontrado' });
 
@@ -77,7 +106,7 @@ const signIn = async (req: Request, res: Response) => {
     delete user.dataValues.createdAt;
     delete user.dataValues.status;
 
-    res.json({ token, user });
+    res.json({ token, user: signInUser });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: 'Error interno' });
@@ -115,7 +144,7 @@ const signUp = async (req: Request, res: Response) => {
     //Validamos el formato del body
     const valid = validRegexBody(body, {
       email: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z]{2,6}$',
-      password: '^(?=.{8,})(?=.*[A-Z])(?=.*[0-9])', //minimo 8 caracteres, 1 mayuscula y 1 numero
+      password: '^.{1,8}$', //maximo 8 caracteres
     });
 
     if (valid) {

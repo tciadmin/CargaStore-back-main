@@ -3,6 +3,9 @@ import { DriverModel, TruckModel, UserModel } from '../models';
 import { DriverInterface } from '../interface/driver.interface';
 import { TruckInterface } from '../interface/truck.interface';
 import { RoleType } from '../models/users.model';
+import Config from '../config';
+import jwt from 'jsonwebtoken';
+const { secret } = Config;
 
 const createDriver = async (req: Request, res: Response) => {
   const { userId } = req.params;
@@ -58,9 +61,21 @@ const createDriver = async (req: Request, res: Response) => {
 
     await user.update({ driverId: newDriver.id });
 
+    const newUser = await UserModel.findByPk(userId, {
+      include: [
+        {
+          model: DriverModel,
+          as: 'driver',
+          include: [{ model: TruckModel, as: 'truck' }],
+        },
+      ],
+    });
+    const token = jwt.sign({ id: userId }, secret);
+
     return res.status(200).json({
-      msg: 'Conductor creado con éxito!!',
-      driver: newDriver,
+      msg: 'Conductor registrado!, revise su correo electronico para validarlo.',
+      token,
+      user: newUser,
     });
   } catch (error) {
     res.status(500).send(error);
