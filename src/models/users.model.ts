@@ -68,13 +68,13 @@ class Users extends Model {
 
   @HasOne(() => Drivers, {
     foreignKey: 'userId',
-    as: 'user_driver',
+    as: 'driver',
   })
   driver!: Drivers;
 
   @HasOne(() => Customer, {
     foreignKey: 'userId',
-    as: 'user_customer',
+    as: 'customer',
   })
   customer!: Customer;
 }

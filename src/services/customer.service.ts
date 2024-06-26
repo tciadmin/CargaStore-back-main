@@ -4,6 +4,9 @@ import { CustomerInterface } from '../interface/customer.interface';
 import { HelperBody } from '../helpers';
 const { checkBody } = HelperBody;
 import { RoleType } from '../models/users.model';
+import Config from '../config';
+import jwt from 'jsonwebtoken';
+const { secret } = Config;
 
 const createCustomer = async (req: Request, res: Response) => {
   const { userId } = req.params;
@@ -52,9 +55,21 @@ const createCustomer = async (req: Request, res: Response) => {
     // Actualizar el ID del cliente en el usuario
     await user.update({ customerId: newCustomer.id });
 
+    const newUser = await UserModel.findByPk(userId, {
+      include: [
+        {
+          model: CustomerModel,
+          as: 'customer',
+        },
+      ],
+    });
+
+    const token = jwt.sign({ id: userId }, secret);
+
     return res.status(200).json({
-      msg: 'Cliente creado con éxito!!',
-      customer: newCustomer,
+      msg: '¡Usuario registrado!, revise su correo electronico para validarlo.',
+      token,
+      user: newUser,
     });
   } catch (error) {
     res.status(500).send(error);
