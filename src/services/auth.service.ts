@@ -513,10 +513,35 @@ const singleUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
     const user = await UserModel.findByPk(userId);
+
     if (!user) {
       res.status(404).json({ msg: 'Usuario no encontrado' });
     }
-    res.status(200).json(user);
+    let sessionUser;
+    if (user?.role === 'driver') {
+      sessionUser = await UserModel.findByPk(userId, {
+        include: [
+          {
+            model: DriverModel,
+            as: 'driver',
+            include: [{ model: TruckModel, as: 'truck' }],
+          },
+        ],
+      });
+    } else if (user?.role === 'customer') {
+      sessionUser = await UserModel.findByPk(userId, {
+        include: [
+          {
+            model: CustomerModel,
+            as: 'customer',
+          },
+        ],
+      });
+    } else {
+      throw new Error('Rol desconocido');
+    }
+    const token = jwt.sign({ id: user.id }, secret);
+    res.status(200).json({ token, user: sessionUser });
   } catch (error) {
     res.status(500).send(error);
   }
