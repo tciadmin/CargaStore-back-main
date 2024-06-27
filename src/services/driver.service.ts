@@ -62,6 +62,9 @@ const createDriver = async (req: Request, res: Response) => {
     await user.save();
 
     const newUser = await UserModel.findByPk(userId, {
+      attributes: {
+        exclude: ['password'],
+      },
       include: [
         {
           model: DriverModel,
