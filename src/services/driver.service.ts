@@ -41,6 +41,14 @@ const createDriver = async (req: Request, res: Response) => {
       return res.status(404).json({ msg: 'Usuario no encontrado' });
     }
 
+    const newTruck = await TruckModel.create(truckData);
+    const newDriver: DriverInterface = await DriverModel.create({
+      userId: user.id,
+      truckId: newTruck.id,
+    });
+
+    await user.update({ driverId: newDriver.id });
+
     // Verificar el rol del usuario
     if (user.role !== null) {
       // Arrojar error si el usuario tiene un rol diferente a null
@@ -52,14 +60,6 @@ const createDriver = async (req: Request, res: Response) => {
     // Asignar el rol de 'driver' si el rol es null
     user.role = RoleType.DRIVER;
     await user.save();
-
-    const newTruck = await TruckModel.create(truckData);
-    const newDriver: DriverInterface = await DriverModel.create({
-      userId: user.id,
-      truckId: newTruck.id,
-    });
-
-    await user.update({ driverId: newDriver.id });
 
     const newUser = await UserModel.findByPk(userId, {
       include: [

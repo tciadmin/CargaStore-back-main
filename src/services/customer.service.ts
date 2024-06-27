@@ -26,18 +26,6 @@ const createCustomer = async (req: Request, res: Response) => {
       return res.status(404).json({ msg: 'Usuario no encontrado' });
     }
 
-    // Verificar el rol del usuario
-    if (user.role !== null) {
-      // Arrojar error si el usuario tiene un rol diferente a null
-      return res.status(400).json({
-        msg: 'Error. Este usuario ya está asignado con otro rol',
-      });
-    }
-
-    // Asignar el rol de 'customer' si el rol es null
-    user.role = RoleType.CUSTOMER;
-    await user.save();
-
     // Crear los datos del cliente
     const CustomerData = {
       company_name,
@@ -54,6 +42,18 @@ const createCustomer = async (req: Request, res: Response) => {
 
     // Actualizar el ID del cliente en el usuario
     await user.update({ customerId: newCustomer.id });
+
+    // Verificar el rol del usuario
+    if (user.role !== null) {
+      // Arrojar error si el usuario tiene un rol diferente a null
+      return res.status(400).json({
+        msg: 'Error. Este usuario ya está asignado con otro rol',
+      });
+    }
+
+    // Asignar el rol de 'customer' si el rol es null
+    user.role = RoleType.CUSTOMER;
+    await user.save();
 
     const newUser = await UserModel.findByPk(userId, {
       include: [
