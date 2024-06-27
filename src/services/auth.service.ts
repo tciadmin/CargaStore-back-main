@@ -59,6 +59,9 @@ const signIn = async (req: Request, res: Response) => {
     if (user.role === 'driver') {
       signInUser = await UserModel.findOne({
         where: { email, status: true },
+        attributes: {
+          exclude: ['password'],
+        },
         include: [
           {
             model: DriverModel,
@@ -70,6 +73,9 @@ const signIn = async (req: Request, res: Response) => {
     } else if (user.role === 'customer') {
       signInUser = await UserModel.findOne({
         where: { email, status: true },
+        attributes: {
+          exclude: ['password'],
+        },
         include: [
           {
             model: CustomerModel,
