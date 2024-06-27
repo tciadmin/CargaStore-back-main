@@ -153,12 +153,11 @@ const signUp = async (req: Request, res: Response) => {
 
     //Validamos que el usuario no exista ya
     const { email, password, name, lastname } = body;
-    const user = await UserModel.findOne({ where: { email } });
+    const user = await UserModel.findOne({
+      where: { email, name, lastname },
+    });
 
-    if (user)
-      return res
-        .status(403)
-        .json({ msg: 'Este correo ya está registrado' });
+    if (user) return res.status(200).json({ user });
 
     //Creamos el hash para la contraseña
     body.password = await bcrypt.hash(password, 10);
