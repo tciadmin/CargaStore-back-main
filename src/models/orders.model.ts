@@ -87,12 +87,6 @@ class Order extends Model {
   pick_up_address!: string;
 
   @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
-  pick_up_city!: string;
-
-  @Column({
     type: DataType.DATE,
     allowNull: false,
   })
@@ -109,12 +103,6 @@ class Order extends Model {
     allowNull: false,
   })
   delivery_address!: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
-  delivery_city!: string;
 
   @Column({
     type: DataType.DATE,

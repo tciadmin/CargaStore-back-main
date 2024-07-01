@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { OrderService } from '../services';
 import { uploadInvoice, uploadImages } from '../config/multerConfig';
-import ValidJWT from '../middlewares/valid-jwt';
+// import ValidJWT from '../middlewares/valid-jwt';
 
 const router = Router();
 //Servicios
@@ -25,7 +25,11 @@ router.post(
   createOrder
 );
 
-router.post('/duplicate/:orderId', ValidJWT, duplicateOrder);
+router.post(
+  '/duplicate/:orderId',
+  // ValidJWT,
+  duplicateOrder
+);
 
 router.get(
   '/list_order',
@@ -33,24 +37,47 @@ router.get(
   orderListWithFilter
 );
 
-router.get('/detail/:orderId', ValidJWT, orderDetail);
+router.get(
+  '/detail/:orderId',
+  // ValidJWT,
+  orderDetail
+);
 
-router.put('/edit/:orderId', ValidJWT, editOrder);
+router.put(
+  '/edit/:orderId',
+  // ValidJWT,
+  editOrder
+);
 
-router.patch('/change_status/:orderId', ValidJWT, changeOrderStatus);
+router.patch(
+  '/change_status/:orderId',
+  // ValidJWT,
+  changeOrderStatus
+);
 
 router.patch(
   '/add_invoice/:orderId',
-  ValidJWT,
+  // ValidJWT,
   findOrder,
   uploadInvoice,
   addInvoiceToOrder
 );
 
-router.get('/state/:orderId', ValidJWT, getOrderState);
+router.get(
+  '/state/:orderId',
+  // ValidJWT,
+  getOrderState
+);
 
-router.patch('/change_state/:orderId', ValidJWT, changeOrderState);
+router.patch(
+  '/change_state/:orderId',
+  //  ValidJWT,
+  changeOrderState
+);
 
-router.post('/resend_email', ValidJWT);
+router.post(
+  '/resend_email'
+  // ValidJWT
+);
 
 module.exports = router;
