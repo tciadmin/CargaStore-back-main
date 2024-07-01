@@ -150,7 +150,7 @@ const signUp = async (req: Request, res: Response) => {
     //Validamos el formato del body
     const valid = validRegexBody(body, {
       email: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z]{2,6}$',
-      password: '^.{1,8}$', //maximo 8 caracteres
+      password: '^.{9,}$', //minimo 8 caracteres
     });
 
     if (valid) {
