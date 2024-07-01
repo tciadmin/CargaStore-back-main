@@ -20,14 +20,18 @@ const {
 
 router.post(
   '/create/:customerId',
-  ValidJWT,
+  // ValidJWT,
   uploadImages,
   createOrder
 );
 
 router.post('/duplicate/:orderId', ValidJWT, duplicateOrder);
 
-router.get('/list_order', ValidJWT, orderListWithFilter);
+router.get(
+  '/list_order',
+  // ValidJWT,
+  orderListWithFilter
+);
 
 router.get('/detail/:orderId', ValidJWT, orderDetail);
 

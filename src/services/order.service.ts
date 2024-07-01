@@ -101,7 +101,7 @@ const createOrder = async (req: Request, res: Response) => {
     }
     const newPackage = await PackageModel.create(packageData);
     const order = await OrderModel.create({
-      id: randomNumber(4),
+      id: randomNumber(5),
       ...orderData,
       customerId: customer.id,
       customer: customer,
@@ -152,7 +152,7 @@ const orderListWithFilter = async (req: Request, res: Response) => {
             {
               model: TruckModel,
               as: 'truck',
-              attributes: ['capacity', 'charge_capacity'],
+              attributes: ['charge_capacity'],
             },
           ],
         },
