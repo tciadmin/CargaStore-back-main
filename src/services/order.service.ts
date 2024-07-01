@@ -40,11 +40,9 @@ const createOrder = async (req: Request, res: Response) => {
     pick_up_date, //date
     pick_up_time, //string
     pick_up_address, //string
-    pick_up_city, //string
     delivery_date, //date
     delivery_time, //string
     delivery_address, //string
-    delivery_city, //string
   } = req.body;
   try {
     if (
@@ -61,11 +59,9 @@ const createOrder = async (req: Request, res: Response) => {
       !pick_up_date ||
       !pick_up_time ||
       !pick_up_address ||
-      !pick_up_city ||
       !delivery_date ||
       !delivery_time ||
-      !delivery_address ||
-      !delivery_city
+      !delivery_address
     ) {
       return res.status(404).json({ msg: 'Faltan parametros' });
     }
@@ -89,11 +85,9 @@ const createOrder = async (req: Request, res: Response) => {
       pick_up_date,
       pick_up_time,
       pick_up_address,
-      pick_up_city,
       delivery_date,
       delivery_time,
       delivery_address,
-      delivery_city,
     };
     const customer = await CustomerModel.findByPk(customerId);
     if (!customer) {
@@ -137,7 +131,7 @@ const orderListWithFilter = async (req: Request, res: Response) => {
         {
           model: PackageModel,
           as: 'package',
-          attributes: ['product_name', 'offered_price'],
+          attributes: ['product_name', 'offered_price', 'type'],
         },
         {
           model: DriverModel,
@@ -152,7 +146,7 @@ const orderListWithFilter = async (req: Request, res: Response) => {
             {
               model: TruckModel,
               as: 'truck',
-              attributes: ['charge_capacity'],
+              attributes: ['charge_capacity', 'brand', 'model'],
             },
           ],
         },
@@ -202,11 +196,9 @@ const editOrder = async (req: Request, res: Response) => {
     pick_up_date, //date
     pick_up_time, //string
     pick_up_address, //string
-    pick_up_city, //string
     delivery_date, //date
     delivery_time, //string
     delivery_address, //string
-    delivery_city, //string
   } = req.body;
   try {
     const packageData: PackageInterface = {
@@ -225,11 +217,9 @@ const editOrder = async (req: Request, res: Response) => {
       pick_up_date,
       pick_up_time,
       pick_up_address,
-      pick_up_city,
       delivery_date,
       delivery_time,
       delivery_address,
-      delivery_city,
     };
     const order = await OrderModel.findByPk(orderId);
     if (!order) {
@@ -289,11 +279,9 @@ const duplicateOrder = async (req: Request, res: Response) => {
       pick_up_date: originalOrder.pick_up_date,
       pick_up_time: originalOrder.pick_up_time,
       pick_up_address: originalOrder.pick_up_address,
-      pick_up_city: originalOrder.pick_up_city,
       delivery_date: originalOrder.delivery_date,
       delivery_time: originalOrder.delivery_time,
       delivery_address: originalOrder.delivery_address,
-      delivery_city: originalOrder.delivery_city,
       customerId: originalOrder.customerId,
       packageId: duplicatePackage.id,
     });
