@@ -146,7 +146,12 @@ const orderListWithFilter = async (req: Request, res: Response) => {
             {
               model: TruckModel,
               as: 'truck',
-              attributes: ['charge_capacity', 'brand', 'model'],
+              attributes: [
+                'charge_capacity',
+                'brand',
+                'model',
+                'num_plate',
+              ],
             },
           ],
         },
