@@ -131,7 +131,12 @@ const orderListWithFilter = async (req: Request, res: Response) => {
         {
           model: PackageModel,
           as: 'package',
-          attributes: ['product_name', 'offered_price', 'type'],
+          attributes: [
+            'image1',
+            'product_name',
+            'offered_price',
+            'type',
+          ],
         },
         {
           model: DriverModel,
