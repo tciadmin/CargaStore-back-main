@@ -4,8 +4,9 @@ import ValidJWT from "../middlewares/valid-jwt";
 
 const router = Router();
 
-const { getAllCustomersAndDrivers } = UserService;
+const { getAllCustomersAndDrivers, patchUser } = UserService;
 
 router.get("/all", ValidJWT, getAllCustomersAndDrivers); // Ruta para obtener todos los clientes y conductores
+router.put("/patchDataUser", ValidJWT, patchUser); // Ruta para obtener todos los clientes y conductores
 
 module.exports = router;

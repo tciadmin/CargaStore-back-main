@@ -14,12 +14,11 @@ const ValidJWT = async (req: Request, res: Response, next: () => void) => {
   token = token.split(" ")[1] || "";
   if (token) {
     verify(token, secret, async (err: VerifyErrors | null, decoded) => {
-      if (typeof req.ip === "object") {
-        return res.status(503).json({
-          msg: "Not provided ip",
-        });
+      if (!decoded || typeof decoded !== "object") {
+        console.error("Invalid JWT token");
+        return res.status(403).json({ msg: "Forbidden" });
       }
-      req.body["decoded"] = decoded;
+      req.headers.id = decoded.id;
       next();
     });
   } else {
