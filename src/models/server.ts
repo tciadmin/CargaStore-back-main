@@ -11,6 +11,7 @@ import { FilesController } from '../utils';
 import { ApiPaths } from '../routes';
 import morgan from 'morgan';
 import { optionCors } from '../config/corsConfig';
+import path from 'path';
 
 class Server {
   private app: Application;
@@ -46,6 +47,12 @@ class Server {
     this.app.use(morgan('dev'));
 
     // Fileupload - Carga de archivos
+    this.app.use(
+      '/api/uploads/package_images',
+      express.static(
+        path.join(__dirname, '../../../uploads/package_images')
+      )
+    );
     // this.app.use(
     //   fileUpload({
     //     useTempFiles: true,
