@@ -97,6 +97,7 @@ const editCustomer = async (req: Request, res: Response) => {
       'ruc',
       'company_phone',
       'address',
+      'country',
       'city',
     ]);
     if (check) {
