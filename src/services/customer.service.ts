@@ -80,9 +80,11 @@ const createCustomer = async (req: Request, res: Response) => {
 };
 
 const editCustomer = async (req: Request, res: Response) => {
+  
   const { customerId } = req.params;
   const { company_name, ruc, company_phone, address, country, city } =
     req.body;
+
   try {
     const customerData: CustomerInterface = {
       company_name,
@@ -97,6 +99,7 @@ const editCustomer = async (req: Request, res: Response) => {
       'ruc',
       'company_phone',
       'address',
+      'country',
       'city',
     ]);
     if (check) {

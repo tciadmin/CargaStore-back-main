@@ -8,11 +8,12 @@ import jwt from 'jsonwebtoken';
 const { secret } = Config;
 
 const createDriver = async (req: Request, res: Response) => {
+   
   const { userId } = req.params;
-  const {
+  let {
     brand, // string
     model, // string
-    year, // integer
+    year , // integer
     charge_type, // seca | peligrosa | refrigerada
     charge_capacity, // string
   } = req.body;
@@ -35,22 +36,24 @@ const createDriver = async (req: Request, res: Response) => {
       charge_type,
       charge_capacity,
     };
-
+    
     const user = await UserModel.findByPk(userId);
     if (!user) {
       return res.status(404).json({ msg: 'Usuario no encontrado' });
     }
 
     const newTruck = await TruckModel.create(truckData);
+    console.log(newTruck)
+
     const newDriver: DriverInterface = await DriverModel.create({
-      userId: user.id,
+      userId: userId,
       truckId: newTruck.id,
     });
 
     await user.update({ driverId: newDriver.id });
 
     // Verificar el rol del usuario
-    if (user.role !== null) {
+    if (user.role !== "driver") {
       // Arrojar error si el usuario tiene un rol diferente a null
       return res.status(400).json({
         msg: 'Error. Este usuario ya está asignado con otro rol',
