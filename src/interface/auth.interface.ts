@@ -9,6 +9,7 @@ export interface SignUpBody {
   name: string;
   lastname: string;
   confirmPassword: string;
+  role: "driver" | "customer";
   id?: number;
 }
 

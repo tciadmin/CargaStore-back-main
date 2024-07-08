@@ -123,7 +123,9 @@ const signIn = async (req: Request, res: Response) => {
 const signUp = async (req: Request, res: Response) => {
   const transaction = await db.transaction();
   try {
+    
     const body: SignUpBody = req.body;
+    
     //Checkeamos el body recibido
     const check = checkBody(body, [
       'email',
@@ -131,6 +133,7 @@ const signUp = async (req: Request, res: Response) => {
       'confirmPassword',
       'name',
       'lastname',
+      'role'
     ]);
     if (check) {
       return res.status(400).json({ msg: check });
