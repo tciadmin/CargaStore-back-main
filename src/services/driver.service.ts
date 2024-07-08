@@ -2,18 +2,16 @@ import { Request, Response } from 'express';
 import { DriverModel, TruckModel, UserModel } from '../models';
 import { DriverInterface } from '../interface/driver.interface';
 import { TruckInterface } from '../interface/truck.interface';
-import { RoleType } from '../models/users.model';
 import Config from '../config';
 import jwt from 'jsonwebtoken';
 const { secret } = Config;
 
 const createDriver = async (req: Request, res: Response) => {
-   
   const { userId } = req.params;
-  let {
+  const {
     brand, // string
     model, // string
-    year , // integer
+    year, // integer
     charge_type, // seca | peligrosa | refrigerada
     charge_capacity, // string
   } = req.body;
@@ -36,14 +34,14 @@ const createDriver = async (req: Request, res: Response) => {
       charge_type,
       charge_capacity,
     };
-    
+
     const user = await UserModel.findByPk(userId);
     if (!user) {
       return res.status(404).json({ msg: 'Usuario no encontrado' });
     }
 
     const newTruck = await TruckModel.create(truckData);
-    console.log(newTruck)
+    console.log(newTruck);
 
     const newDriver: DriverInterface = await DriverModel.create({
       userId: userId,
@@ -51,18 +49,6 @@ const createDriver = async (req: Request, res: Response) => {
     });
 
     await user.update({ driverId: newDriver.id });
-
-    // Verificar el rol del usuario
-    if (user.role !== "driver") {
-      // Arrojar error si el usuario tiene un rol diferente a null
-      return res.status(400).json({
-        msg: 'Error. Este usuario ya está asignado con otro rol',
-      });
-    }
-
-    // Asignar el rol de 'driver' si el rol es null
-    user.role = RoleType.DRIVER;
-    await user.save();
 
     const newUser = await UserModel.findByPk(userId, {
       attributes: {
