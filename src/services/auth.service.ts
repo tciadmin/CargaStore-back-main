@@ -83,7 +83,16 @@ const signIn = async (req: Request, res: Response) => {
           },
         ],
       });
-    } else {
+    } else if(user.role === 'admin'){
+       signInUser = await UserModel.findOne({
+        where: { email, status: true },
+        attributes: {
+          exclude: ['password'],
+        },
+       
+      });
+    }
+    else{
       throw new Error('Rol desconocido');
     }
 
