@@ -94,6 +94,7 @@ const signIn = async (req: Request, res: Response) => {
     else{
       throw new Error('Rol desconocido');
     }
+    
     if (!user)
       return res.status(404).json({ msg: 'Usuario no encontrado' });
 
