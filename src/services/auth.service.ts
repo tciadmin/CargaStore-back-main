@@ -88,8 +88,7 @@ const signIn = async (req: Request, res: Response) => {
         where: { email, status: true },
         attributes: {
           exclude: ['password'],
-        },
-       
+        },       
       });
     }
     else{
