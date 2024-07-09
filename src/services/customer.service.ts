@@ -3,7 +3,6 @@ import { CustomerModel, UserModel } from '../models';
 import { CustomerInterface } from '../interface/customer.interface';
 import { HelperBody } from '../helpers';
 const { checkBody } = HelperBody;
-import { RoleType } from '../models/users.model';
 import Config from '../config';
 import jwt from 'jsonwebtoken';
 const { secret } = Config;
@@ -43,18 +42,6 @@ const createCustomer = async (req: Request, res: Response) => {
     // Actualizar el ID del cliente en el usuario
     await user.update({ customerId: newCustomer.id });
 
-    // Verificar el rol del usuario
-    if (user.role !== null) {
-      // Arrojar error si el usuario tiene un rol diferente a null
-      return res.status(400).json({
-        msg: 'Error. Este usuario ya está asignado con otro rol',
-      });
-    }
-
-    // Asignar el rol de 'customer' si el rol es null
-    user.role = RoleType.CUSTOMER;
-    await user.save();
-
     const newUser = await UserModel.findByPk(userId, {
       attributes: {
         exclude: ['password'],
@@ -80,7 +67,6 @@ const createCustomer = async (req: Request, res: Response) => {
 };
 
 const editCustomer = async (req: Request, res: Response) => {
-  
   const { customerId } = req.params;
   const { company_name, ruc, company_phone, address, country, city } =
     req.body;
