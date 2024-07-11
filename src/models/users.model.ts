@@ -66,6 +66,12 @@ class Users extends Model {
   @Column(DataType.BOOLEAN)
   status!: boolean;
 
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  profile_image!: string;
+
   @HasOne(() => Drivers, {
     foreignKey: 'userId',
     as: 'driver',
