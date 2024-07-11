@@ -27,24 +27,57 @@ export default class Drivers extends Model {
   })
   id!: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: true,
-  })
-  picture!: string;
+  
 
   @Column({
     type: DataType.INTEGER,
     allowNull: true,
   })
   num_license!: number;
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  pdf_license!: string;
 
   @Column({
     type: DataType.BOOLEAN,
     allowNull: false,
-    defaultValue: true,
+    defaultValue: false,
   })
   iess!: boolean;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  pdf_iess!: string;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  })
+  port_permit!: boolean;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  pdf_port_permit!: string;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  })
+  insurance_policy!: boolean;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  img_insurance_policy!: string;
 
   @Column({
     type: DataType.TEXT,
