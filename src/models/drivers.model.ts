@@ -49,33 +49,33 @@ export default class Drivers extends Model {
 
   @Column({
     type: DataType.STRING,
-    allowNull: false,
+    allowNull: true,
   })
   pdf_iess!: string;
 
   @Column({
     type: DataType.BOOLEAN,
-    allowNull: false,
+    allowNull: true,
     defaultValue: false,
   })
   port_permit!: boolean;
 
   @Column({
     type: DataType.STRING,
-    allowNull: false,
+    allowNull: true,
   })
   pdf_port_permit!: string;
 
   @Column({
     type: DataType.BOOLEAN,
-    allowNull: false,
+    allowNull: true,
     defaultValue: false,
   })
   insurance_policy!: boolean;
 
   @Column({
     type: DataType.STRING,
-    allowNull: false,
+    allowNull: true,
   })
   img_insurance_policy!: string;
 
@@ -88,7 +88,7 @@ export default class Drivers extends Model {
   @Column({
     type: DataType.FLOAT,
     allowNull: false,
-    defaultValue: 5,
+    defaultValue: 0,
   })
   rating!: number;
 
