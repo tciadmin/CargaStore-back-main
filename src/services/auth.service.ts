@@ -83,10 +83,18 @@ const signIn = async (req: Request, res: Response) => {
           },
         ],
       });
-    } else {
+    } else if(user.role === 'admin'){
+       signInUser = await UserModel.findOne({
+        where: { email, status: true },
+        attributes: {
+          exclude: ['password'],
+        },       
+      });
+    }
+    else{
       throw new Error('Rol desconocido');
     }
-
+    
     if (!user)
       return res.status(404).json({ msg: 'Usuario no encontrado' });
 
@@ -528,6 +536,9 @@ const singleUser = async (req: Request, res: Response) => {
     let sessionUser;
     if (user?.role === 'driver') {
       sessionUser = await UserModel.findByPk(userId, {
+        attributes: {
+          exclude: ['password'],
+        },
         include: [
           {
             model: DriverModel,
@@ -538,6 +549,9 @@ const singleUser = async (req: Request, res: Response) => {
       });
     } else if (user?.role === 'customer') {
       sessionUser = await UserModel.findByPk(userId, {
+        attributes: {
+          exclude: ['password'],
+        },
         include: [
           {
             model: CustomerModel,
@@ -545,7 +559,15 @@ const singleUser = async (req: Request, res: Response) => {
           },
         ],
       });
-    } else {
+    }else if (user?.role === 'admin') {
+      sessionUser = await UserModel.findByPk(userId,{
+        attributes: {
+          exclude: ['password'],
+        },
+      });
+    } 
+    
+    else {
       throw new Error('Rol desconocido');
     }
     const token = jwt.sign({ id: user.id }, secret);
