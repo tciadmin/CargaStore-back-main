@@ -24,8 +24,8 @@ export enum OrderStatus {
 }
 
 enum OrderType {
-  NATIONAL = 'national',
-  INTERNATIONAL = 'international',
+  NACIONAL = 'nacional',
+  INTERNACIONAL = 'internacional',
 }
 
 @Table({ tableName: 'orders', timestamps: false })

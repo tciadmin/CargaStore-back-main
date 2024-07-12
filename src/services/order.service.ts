@@ -20,11 +20,13 @@ import { WhereOptions } from 'sequelize';
 const createOrder = async (req: Request, res: Response) => {
   const { customerId } = req.params;
   if (!isMulterRequestFiles(req.files)) {
+    console.log('error al subir los archivos: ', req.files);
     return res
       .status(400)
       .json({ msg: 'Error al subir los archivos' });
   }
   const files = req.files;
+  console.log('files: ', files);
   // const files = req.files as { [fieldname: string]: Express.Multer.File[] };
   const {
     product_name, //string
@@ -33,7 +35,7 @@ const createOrder = async (req: Request, res: Response) => {
     weight, //float
     volume, //integer
     offered_price, //integer
-    orderType, //'national' | 'international'
+    orderType, //'nacional' | 'internacional'
     receiving_company, //string
     contact_number, //integer
     receiving_company_RUC, //integer
@@ -63,6 +65,7 @@ const createOrder = async (req: Request, res: Response) => {
       !delivery_time ||
       !delivery_address
     ) {
+      console.log('faltan parametros');
       return res.status(404).json({ msg: 'Faltan parametros' });
     }
     const packageData: PackageInterface = {
@@ -91,6 +94,7 @@ const createOrder = async (req: Request, res: Response) => {
     };
     const customer = await CustomerModel.findByPk(customerId);
     if (!customer) {
+      console.log('cliente no encontrado');
       return res.status(404).json({ msg: 'Cliente no encontrado' });
     }
     const newPackage = await PackageModel.create(packageData);
