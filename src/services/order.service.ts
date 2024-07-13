@@ -32,9 +32,9 @@ const createOrder = async (req: Request, res: Response) => {
     product_name, //string
     quantity, //integer
     type, // 'Seca' | 'Peligrosa' | 'Refrigerada'
-    weight, //float
-    volume, //integer
-    offered_price, //integer
+    weight, //string
+    volume, //string
+    offered_price, //string
     orderType, //'nacional' | 'internacional'
     receiving_company, //string
     contact_number, //integer
@@ -111,6 +111,7 @@ const createOrder = async (req: Request, res: Response) => {
       .status(200)
       .json({ msg: 'Orden creada con exito!!', order });
   } catch (error) {
+    console.error('Error: ', error);
     res.status(500).send(error);
   }
 };
@@ -145,12 +146,12 @@ const orderListWithFilter = async (req: Request, res: Response) => {
         {
           model: DriverModel,
           as: 'assignedDriver',
-          attributes: ['picture', 'num_license', 'rating'],
+          attributes: ['num_license', 'rating'],
           include: [
             {
               model: UserModel,
               as: 'user_driver',
-              attributes: ['name', 'lastname'],
+              attributes: ['name', 'lastname', 'profile_image'],
             },
             {
               model: TruckModel,
@@ -179,7 +180,35 @@ const orderDetail = async (req: Request, res: Response) => {
     const order = await OrderModel.findByPk(orderId, {
       include: [
         { model: PackageModel, as: 'package' },
-        { model: CustomerModel, as: 'customer' },
+        {
+          model: CustomerModel,
+          as: 'customer',
+          include: [
+            {
+              model: UserModel,
+              as: 'user',
+              attributes: {
+                exclude: ['password'],
+              },
+            },
+          ],
+        },
+        {
+          model: DriverModel,
+          as: 'assignedDriver',
+          attributes: ['num_license', 'rating'],
+          include: [
+            {
+              model: UserModel,
+              as: 'user_driver',
+              attributes: ['name', 'lastname', 'profile_image'],
+            },
+            {
+              model: TruckModel,
+              as: 'truck',
+            },
+          ],
+        },
         { model: ApplicationModel, include: [DriverModel] },
       ],
     });
@@ -200,9 +229,9 @@ const editOrder = async (req: Request, res: Response) => {
     product_name, //string
     quantity, //integer
     type, // 'Seca' | 'Peligrosa' | 'Refrigerada'
-    weight, //float
-    volume, //integer
-    offered_price, //integer
+    weight, //string
+    volume, //string
+    offered_price, //string
     orderType, //'national' | 'international'
     receiving_company, //string
     contact_number, //integer
@@ -279,6 +308,10 @@ const duplicateOrder = async (req: Request, res: Response) => {
     }
     const duplicatePackage = await PackageModel.create({
       product_name: originalPackage.product_name,
+      image1: originalPackage.image1,
+      image2: originalPackage.image2,
+      image3: originalPackage.image3,
+      image4: originalPackage.image4,
       quantity: originalPackage.quantity,
       type: originalPackage.type,
       weight: originalPackage.weight,

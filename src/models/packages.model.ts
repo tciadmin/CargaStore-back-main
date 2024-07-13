@@ -19,9 +19,9 @@ interface PackageAttributes {
   image4?: string | null;
   quantity: number;
   type: 'seca' | 'peligrosa' | 'refrigerada';
-  weight: number;
-  volume: number;
-  offered_price: number;
+  weight: string;
+  volume: string;
+  offered_price: string;
   orderId?: string | undefined;
   order?: Order;
 }
@@ -87,22 +87,22 @@ class Package extends Model<PackageAttributes> {
   type!: PackageType;
 
   @Column({
-    type: DataType.FLOAT,
+    type: DataType.STRING,
     allowNull: false,
   })
-  weight!: number;
+  weight!: string;
 
   @Column({
-    type: DataType.INTEGER,
+    type: DataType.STRING,
     allowNull: false,
   })
-  volume!: number;
+  volume!: string;
 
   @Column({
-    type: DataType.INTEGER,
+    type: DataType.STRING,
     allowNull: false,
   })
-  offered_price!: number;
+  offered_price!: string;
 
   @AllowNull(false)
   @CreatedAt
