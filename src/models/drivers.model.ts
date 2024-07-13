@@ -27,8 +27,6 @@ export default class Drivers extends Model {
   })
   id!: string;
 
-  
-
   @Column({
     type: DataType.INTEGER,
     allowNull: true,

@@ -7,8 +7,8 @@ export interface PackageInterface {
   image4?: string | null;
   quantity: number;
   type: 'seca' | 'peligrosa' | 'refrigerada';
-  weight: number;
-  volume: number;
-  offered_price: number;
+  weight: string;
+  volume: string;
+  offered_price: string;
   orderId?: string;
 }
