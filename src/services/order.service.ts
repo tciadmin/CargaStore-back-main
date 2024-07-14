@@ -209,7 +209,30 @@ const orderDetail = async (req: Request, res: Response) => {
             },
           ],
         },
-        { model: ApplicationModel, include: [DriverModel] },
+        {
+          model: ApplicationModel,
+          include: [
+            {
+              model: DriverModel,
+              as: 'driver',
+              attributes: ['rating'],
+              include: [
+                {
+                  model: UserModel,
+                  as: 'user_driver',
+                  attributes: ['name', 'lastname', 'profile_image'],
+                },
+                {
+                  model: TruckModel,
+                  as: 'truck',
+                  attributes: {
+                    exclude: ['year', 'num_plate'],
+                  },
+                },
+              ],
+            },
+          ],
+        },
       ],
     });
     if (!order) {
