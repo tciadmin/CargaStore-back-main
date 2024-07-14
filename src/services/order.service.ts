@@ -451,6 +451,7 @@ const changeOrderState = async (req: Request, res: Response) => {
     }
     if (!order.enPreparacion) {
       order.enPreparacion = new Date();
+      order.status = OrderStatus.ENCURSO;
       await order.save();
       return res.status(200).json({ orderState: order });
     } else if (!order.preparado) {
@@ -463,7 +464,6 @@ const changeOrderState = async (req: Request, res: Response) => {
       return res.status(200).json({ orderState: order });
     } else if (!order.enCamino) {
       order.enCamino = new Date();
-      order.status = OrderStatus.ENCURSO;
       await order.save();
       return res.status(200).json({ orderState: order });
     } else {
