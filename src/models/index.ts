@@ -12,3 +12,7 @@ export { default as TruckModel } from './trucks.model';
 export { default as ApplicationModel } from './application.model';
 export { default as FeedbackModel } from './feedbacks.model';
 export { default as PayModel } from './pay.model';
+export { default as MessageModel } from './message.model';
+export { default as ChatModel } from './chat.model';
+
+

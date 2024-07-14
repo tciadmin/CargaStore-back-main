@@ -17,4 +17,8 @@ export const ApiPaths: IApiPaths[] = [
   { url: '/feedback', router: 'feedback.route' },
   { url: '/pay', router: 'pay.route' },
   { url: '/users', router: 'user.route' },
+  { url: '/chat', router: 'chat.route' },
+  { url: '/message', router: 'message.route' },
+
+
 ];
