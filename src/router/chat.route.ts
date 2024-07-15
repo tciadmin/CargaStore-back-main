@@ -4,12 +4,17 @@ import chatService from '../services/chat.service';
 
 const router = Router();
 //Servicios
-const { createNewChat } = chatService;
+const { createNewChat, getAllUserChat } = chatService;
 
 router.post(
   '/create/',
   ValidJWT,
   createNewChat
+);
+router.get(
+  '/getAll',
+  [ValidJWT],
+  getAllUserChat
 );
 
 

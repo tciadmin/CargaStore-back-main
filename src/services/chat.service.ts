@@ -1,6 +1,48 @@
 import { Request, Response } from "express";
-import { ChatModel } from "../models";
+import { ChatModel, MessageModel, UserModel } from "../models";
+import { Op } from "sequelize";
+const getAllUserChat = async (req:Request, res:Response)=>{
+    try{
+        const userId = req.headers.id;
+        if(!userId){
+            return res.status(401).json({ msg: "Usuario no autorizado" });
+        }
 
+        const chats = await ChatModel.findAll({
+            where: {
+              [Op.or]: [
+                { person1ID: userId },
+                { person2ID: userId }
+              ]
+            }
+          })
+          const respuesta : Array<object> = []
+        if(chats.length > 0){
+            for (const e of chats) {
+                const ultimoMensaje = await MessageModel.findOne({
+                    where: {
+                        chatID: e.id
+                    },
+                    include: [{
+                        model: UserModel,
+                        as: 'user',
+                        attributes: ['id', 'name', 'lastname','profile_image'] // Ajusta los atributos que quieres traer
+                    }]
+                });
+                if (ultimoMensaje) {
+                    respuesta.push(ultimoMensaje.dataValues);
+                }
+            }
+
+            
+        }
+          
+       return  res.status(200).json( respuesta)
+    }catch(error){
+        console.log(error)
+       return res.status(500).json(error)
+    }
+}
 const createNewChat = async (req: Request, res: Response) => {
     try {
         const  userId  = req.headers.id;
@@ -27,4 +69,4 @@ const createNewChat = async (req: Request, res: Response) => {
 };
 
 
-export default {createNewChat};
+export default {createNewChat, getAllUserChat};
