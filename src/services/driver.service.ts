@@ -105,6 +105,7 @@ const getDriverByUserId = async (req: Request, res: Response) => {
         name: user.name,
         lastname: user.lastname,
         email: user.email,
+        profile_image: user.profile_image,
       },
       driver,
     });
@@ -125,7 +126,7 @@ const getAllDrivers = async (req: Request, res: Response) => {
 const patchDriver = async (req: Request, res: Response) => {
   const { userId } = req.params;
   const { name, lastname, description, phone } = req.body;
-  console.log(req.body)
+  console.log(req.body);
 
   try {
     // Verificar que los campos no estén vacíos

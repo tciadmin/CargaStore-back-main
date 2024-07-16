@@ -6,11 +6,11 @@ import {
   PrimaryKey,
   ForeignKey,
   BelongsTo,
-} from "sequelize-typescript";
-import Drivers from "./drivers.model";
-import Customer from "./customers.model";
+} from 'sequelize-typescript';
+import Drivers from './drivers.model';
+import Customer from './customers.model';
 
-@Table({ tableName: "feedbacks", timestamps: false })
+@Table({ tableName: 'feedbacks', timestamps: true })
 class Feedback extends Model {
   @PrimaryKey
   @Column({

@@ -12,7 +12,11 @@ router.post(
   //  ValidJWT,
   createDriver
 );
-router.get('/get/:userId', ValidJWT, getDriverByUserId);
+router.get(
+  '/get/:userId',
+  // ValidJWT,
+  getDriverByUserId
+);
 router.patch('/patch/:userId', ValidJWT, patchDriver);
 
 module.exports = router;
