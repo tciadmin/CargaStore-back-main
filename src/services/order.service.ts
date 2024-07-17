@@ -141,6 +141,7 @@ const orderListWithFilter = async (req: Request, res: Response) => {
             'product_name',
             'offered_price',
             'type',
+            'weight',
           ],
         },
         {
