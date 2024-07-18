@@ -14,9 +14,23 @@ const getAllUserChat = async (req:Request, res:Response)=>{
                 { person1ID: userId },
                 { person2ID: userId }
               ]
-            }
+            },
+            include: [
+                {
+                  model: UserModel,
+                  as: 'person1', 
+                  attributes: ['id', 'name', 'lastname', 'profile_image']
+                },
+                {
+                  model: UserModel,
+                  as: 'person2', 
+                  attributes: ['id', 'name', 'lastname', 'profile_image']
+                }
+              ]
+            
           })
-          const respuesta : Array<object> = []
+          const respuesta : Array<object> = [];
+          let contador = 0;
         if(chats.length > 0){
             for (const e of chats) {
                 const ultimoMensaje = await MessageModel.findOne({
@@ -27,14 +41,20 @@ const getAllUserChat = async (req:Request, res:Response)=>{
                         model: UserModel,
                         as: 'user',
                         attributes: ['id', 'name', 'lastname','profile_image'] // Ajusta los atributos que quieres traer
-                    }]
+                    }
+                ]
                 });
                 if (ultimoMensaje) {
-                    respuesta.push(ultimoMensaje.dataValues);
+                    const userChat : any= chats[contador].toJSON();
+                    const personWithChat = userChat.person1.id != userId ? userChat.person1 : userChat.person2
+                    const mensajeCompleto = {
+                        ...ultimoMensaje.dataValues,
+                        personWithChat
+                    }                    
+                    respuesta.push(mensajeCompleto);
                 }
-            }
-
-            
+            }   
+            contador++;         
         }
           
        return  res.status(200).json( respuesta)

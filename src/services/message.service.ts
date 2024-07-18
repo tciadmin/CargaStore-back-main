@@ -50,7 +50,7 @@ const getLastMessage = async (req: Request, res: Response) => {
             where: { chatID },
             order: [['createdAt', 'DESC']],
           });
-      
+          
           if (!latestMessage) {
             return res.status(404).json({ msg: "No se encontraron mensajes para este chat" });
           }
@@ -66,7 +66,7 @@ const getAllMessages = async (req: Request, res: Response) => {
     try {
         const userId = req.headers.id as string;
         
-        const { chatID } = req.body;
+        const { chatID } = req.params;
         if (!userId) {
             return res.status(401).json({ msg: "Usuario no autorizado" })
         }

@@ -22,7 +22,7 @@ const ValidJWT = async (req: Request, res: Response, next: () => void) => {
       next();
     });
   } else {
-    res.status(503).json({
+    res.status(401).json({
       msg: "Not provided token",
     });
   }

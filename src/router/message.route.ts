@@ -14,12 +14,12 @@ router.post(
 );
 router.get(
     '/getLast',
-    ValidJWT,
+    [ValidJWT],
     getLastMessage
 )
 router.get(
-    '/getAll',
-    ValidJWT,
+    '/getAll/:chatID',
+    [ValidJWT],
     getAllMessages
 )
 

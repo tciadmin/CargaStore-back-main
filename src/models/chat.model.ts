@@ -32,7 +32,7 @@ import Users from './users.model';
   @Column(DataType.BIGINT)
   person1ID!: number;
 
-  @BelongsTo(() => Users,  'person1ID' )
+  @BelongsTo(() => Users, { foreignKey: 'person1ID', as: 'person1' })
   user!: Users;
 
 
@@ -41,11 +41,12 @@ import Users from './users.model';
   @Column(DataType.BIGINT)
   person2ID!: number;
 
-  @BelongsTo(() => Users,  'person2ID' )
-  user2!: Users;
+  @BelongsTo(() => Users, { foreignKey: 'person2ID', as: 'person2' })
+    user2!: Users;
   
     
   }
+ 
   
   export default Chat;
   

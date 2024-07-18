@@ -47,6 +47,12 @@ import { ChatModel } from '.';
         allowNull: false,
       })
       message!: string;
+
+      @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+      })
+      readStatus!: boolean;
   
     @Column({
         type: DataType.STRING,
