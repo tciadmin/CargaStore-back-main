@@ -141,6 +141,7 @@ const orderListWithFilter = async (req: Request, res: Response) => {
             'product_name',
             'offered_price',
             'type',
+            'weight',
           ],
         },
         {
@@ -151,7 +152,7 @@ const orderListWithFilter = async (req: Request, res: Response) => {
             {
               model: UserModel,
               as: 'user_driver',
-              attributes: ['name', 'lastname', 'profile_image'],
+              attributes: ['id', 'name', 'lastname', 'profile_image'],
             },
             {
               model: TruckModel,

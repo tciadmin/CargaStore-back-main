@@ -70,7 +70,7 @@ const getFeedbacks = async (req: Request, res: Response) => {
       where: { driverId: driver.id },
     });
 
-    return res.status(200).json({ feedbacks });
+    return res.status(200).json(feedbacks);
   } catch (error) {
     res.status(500).send(error);
   }

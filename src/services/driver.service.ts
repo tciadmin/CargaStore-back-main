@@ -105,6 +105,7 @@ const getDriverByUserId = async (req: Request, res: Response) => {
         name: user.name,
         lastname: user.lastname,
         email: user.email,
+        profile_image: user.profile_image,
       },
       driver,
     });
