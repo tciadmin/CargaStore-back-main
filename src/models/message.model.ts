@@ -50,7 +50,7 @@ import { ChatModel } from '.';
 
       @Column({
         type: DataType.BOOLEAN,
-        allowNull: false,
+        allowNull: true,
       })
       readStatus!: boolean;
   
