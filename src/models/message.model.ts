@@ -1,75 +1,69 @@
 import {
-    Model,
-    Table,
-    Column,
-    DataType,
-    BelongsTo,
-    ForeignKey,
-    PrimaryKey,
-    AllowNull,
-  } from 'sequelize-typescript';
+  Model,
+  Table,
+  Column,
+  DataType,
+  BelongsTo,
+  ForeignKey,
+  PrimaryKey,
+  AllowNull,
+} from 'sequelize-typescript';
 import Users from './users.model';
 import { ChatModel } from '.';
 
-  
-  interface MessageAttributes {
-    id?: string;
-    chatID?: string;
-    emisorID?: number;  
-    image?: string;
-    message?: string;
-    datetime?: Date;
-  }
-  
-  @Table({ tableName: 'messages', timestamps: true })
-  export class Message extends Model<MessageAttributes> {
-    @PrimaryKey
-    @Column({
-      type: DataType.UUID,
-      defaultValue: DataType.UUIDV4,
-      primaryKey: true,
-      allowNull: false,
-    })
-    id!: string;
+interface MessageAttributes {
+  id?: string;
+  chatID?: string;
+  emisorID?: number;
+  image?: string;
+  message?: string;
+  datetime?: Date;
+}
 
-    @ForeignKey(() => ChatModel)
-    @AllowNull(false)
-    @Column(DataType.UUIDV4)
-    chatID!: string;
+@Table({ tableName: 'messages', timestamps: true })
+export class Message extends Model<MessageAttributes> {
+  @PrimaryKey
+  @Column({
+    type: DataType.UUID,
+    defaultValue: DataType.UUIDV4,
+    primaryKey: true,
+    allowNull: false,
+  })
+  id!: string;
 
-    @BelongsTo(() => ChatModel,  'chatID' )
-    chat!: ChatModel;
+  @ForeignKey(() => ChatModel)
+  @AllowNull(false)
+  @Column(DataType.UUID)
+  chatID!: string;
 
+  @BelongsTo(() => ChatModel, 'chatID')
+  chat!: ChatModel;
 
+  @Column({
+    type: DataType.STRING,
+    allowNull: false,
+  })
+  message!: string;
 
-    @Column({
-        type: DataType.STRING,
-        allowNull: false,
-      })
-      message!: string;
+  @Column({
+    type: DataType.BOOLEAN,
+    allowNull: true,
+  })
+  readStatus!: boolean;
 
-      @Column({
-        type: DataType.BOOLEAN,
-        allowNull: true,
-      })
-      readStatus!: boolean;
-  
-    @Column({
-        type: DataType.STRING,
-        allowNull: true,
-      })
-      image!: string;
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  image!: string;
 
-      
+  @ForeignKey(() => Users)
+  @AllowNull(false)
+  @Column(DataType.BIGINT)
+  emisorID!: number;
 
-    @ForeignKey(() => Users)
-    @AllowNull(false)
-    @Column(DataType.BIGINT)
-    emisorID!: number;
+  @BelongsTo(() => Users, 'emisorID')
+  user!: Users;
+}
 
-    @BelongsTo(() => Users,  'emisorID' )
-    user!: Users;
-  }
-  
-  export default Message;
-  
+export default Message;

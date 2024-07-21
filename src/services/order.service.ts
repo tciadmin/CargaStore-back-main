@@ -145,6 +145,22 @@ const orderListWithFilter = async (req: Request, res: Response) => {
           ],
         },
         {
+          model: CustomerModel,
+          as: 'customer',
+          attributes: ['country'],
+          include: [
+            {
+              model: UserModel,
+              as: 'user',
+              attributes: ['name', 'lastname'],
+            },
+          ],
+        },
+        {
+          model: ApplicationModel,
+          attributes: ['id'],
+        },
+        {
           model: DriverModel,
           as: 'assignedDriver',
           attributes: ['num_license', 'rating'],
