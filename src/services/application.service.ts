@@ -24,7 +24,15 @@ const applyForOrder = async (req: Request, res: Response) => {
       driverId,
       orderId,
     });
-    res.status(201).json(application);
+    res
+      .status(201)
+      .json({
+        application,
+        msg: {
+          msg1: 'Postulación enviada',
+          msg2: 'Si te asignan el envío recibirás una notificación',
+        },
+      });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -42,12 +50,10 @@ const assignDriverToOrder = async (req: Request, res: Response) => {
     order.pendingAssignedDriverId = driverId;
     await order.save();
 
-    res
-      .status(200)
-      .json({
-        msg: 'Conductor asignado a orden con exito',
-        pendingAssignedDriverId: order.pendingAssignedDriverId,
-      });
+    res.status(200).json({
+      msg: 'Conductor asignado a orden con exito',
+      pendingAssignedDriverId: order.pendingAssignedDriverId,
+    });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -57,12 +63,33 @@ const declineOrder = async (req: Request, res: Response) => {
   try {
     const { orderId } = req.params;
     const order = await OrderModel.findByPk(orderId);
+
     if (!order) {
       return res.status(404).json({ msg: 'Orden no encontrada' });
     }
+
+    const application = await ApplicationModel.findOne({
+      where: {
+        orderId: orderId,
+        driverId: order.pendingAssignedDriverId,
+      },
+    });
+
+    if (!application) {
+      return res
+        .status(404)
+        .json({ message: 'Application not found' });
+    }
+
+    await application.destroy();
+
     order.pendingAssignedDriverId = null;
     await order.save();
-    res.status(200).json({ msg: 'Orden rechazada' });
+    res.status(200).json({
+      msg: 'Orden rechazada',
+      deletedApplication: application,
+      pendingAssignedDriverId: order.pendingAssignedDriverId,
+    });
   } catch (error) {
     res.status(500).send(error);
   }
