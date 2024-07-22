@@ -20,6 +20,7 @@ const createNewMessage = async (req: Request, res: Response) => {
             return res.status(401).json({ msg: "El usuario no pertenece al chat" })
         }
         let objetoRespuesta: object = { emisorID: parseInt(userId), chatID, message, readStatus: readStatus === true ? true : false };
+        
         await MessageModel.create(objetoRespuesta)
         return res.status(201).json({ msg: "El mensaje se envió con éxito" });
     } catch (error) {
