@@ -117,15 +117,27 @@ const createOrder = async (req: Request, res: Response) => {
 };
 
 const orderListWithFilter = async (req: Request, res: Response) => {
-  const { status, orderType, customerId } = req.query as {
-    status?: string;
+  const {
+    status,
+    orderType,
+    customerId,
+    pendingAssignedDriverId,
+    assignedDriverId,
+  } = req.query as {
+    status?: string; //pendiente | asignada | en curso | finalizada
     orderType?: string;
     customerId?: string;
-  }; //pendiente | asignada | en curso | finalizada
+    pendingAssignedDriverId?: string;
+    assignedDriverId?: string;
+  };
   const whereConditions: WhereOptions = {};
   if (status) whereConditions.status = status;
   if (orderType) whereConditions.orderType = orderType;
   if (customerId) whereConditions.customerId = customerId;
+  if (pendingAssignedDriverId)
+    whereConditions.pendingAssignedDriverId = pendingAssignedDriverId;
+  if (assignedDriverId)
+    whereConditions.assignedDriverId = assignedDriverId;
   try {
     const allOrders = await OrderModel.findAll({
       where: whereConditions,
