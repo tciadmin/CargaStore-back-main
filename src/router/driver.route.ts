@@ -4,8 +4,12 @@ import ValidJWT from '../middlewares/valid-jwt';
 
 const router = Router();
 //Servicios
-const { createDriver, getDriverByUserId, patchDriver } =
-  DriverService;
+const {
+  createDriver,
+  getDriverByUserId,
+  patchDriver,
+  getAllDrivers,
+} = DriverService;
 
 router.post(
   '/create/:userId',
@@ -18,5 +22,7 @@ router.get(
   getDriverByUserId
 );
 router.patch('/patch/:userId', ValidJWT, patchDriver);
+
+router.get('/list', getAllDrivers);
 
 module.exports = router;
