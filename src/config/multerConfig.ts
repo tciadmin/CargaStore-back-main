@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 const INVOICE_UPLOADS = 'uploads/invoice/';
 
-const IMAGE_UPLOADS = 'uploads/package_images/';
+const IMAGE_UPLOADS = 'uploads/images/';
 
 const generatorNameFile = (file: Express.Multer.File) =>
   `${uuidv4()}${path.extname(file.originalname)}`;
@@ -52,6 +52,8 @@ export const uploadImages = image.fields([
   { name: 'image4', maxCount: 1 },
 ]);
 
+export const uploadImageProfile = image.single('profile_image');
+
 interface MulterFile {
   fieldname: string;
   originalname: string;
@@ -78,4 +80,30 @@ const isMulterRequestFiles = (
   );
 };
 
-export { isMulterRequestFiles };
+interface MulterSingleFile {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  size: number;
+  destination: string;
+  filename: string;
+  path: string;
+}
+
+const isMulterSingleFile = (file: any): file is MulterSingleFile => {
+  return (
+    file &&
+    typeof file === 'object' &&
+    typeof file.fieldname === 'string' &&
+    typeof file.originalname === 'string' &&
+    typeof file.encoding === 'string' &&
+    typeof file.mimetype === 'string' &&
+    typeof file.size === 'number' &&
+    typeof file.destination === 'string' &&
+    typeof file.filename === 'string' &&
+    typeof file.path === 'string'
+  );
+};
+
+export { isMulterRequestFiles, isMulterSingleFile };

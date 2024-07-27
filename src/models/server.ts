@@ -48,10 +48,8 @@ class Server {
 
     // Fileupload - Carga de archivos
     this.app.use(
-      '/api/uploads/package_images',
-      express.static(
-        path.join(__dirname, '../../../uploads/package_images')
-      )
+      '/api/uploads/images',
+      express.static(path.join(__dirname, '../../../uploads/images'))
     );
     // this.app.use(
     //   fileUpload({
