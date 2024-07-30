@@ -527,11 +527,16 @@ const changePassword = async (req: Request, res: Response) => {
 
 const singleUser = async (req: Request, res: Response) => {
   try {
+    
     const { userId } = req.params;
+    console.log(userId)
+    if ( !userId) {
+      res.status(400).json({ msg: 'Usuario no encontrado' });
+    }
     const user = await UserModel.findByPk(userId);
 
-    if (!user) {
-      res.status(404).json({ msg: 'Usuario no encontrado' });
+    if (!user ) {
+      res.status(400).json({ msg: 'Usuario no encontrado' });
     }
     let sessionUser;
     if (user?.role === 'driver') {
