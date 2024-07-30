@@ -116,7 +116,16 @@ const getDriverByUserId = async (req: Request, res: Response) => {
 
 const getAllDrivers = async (req: Request, res: Response) => {
   try {
-    const drivers = await DriverModel.findAll(); // Obtiene todos los registros de la tabla drivers
+    const drivers = await DriverModel.findAll({
+      attributes: ['userId'],
+      include: [
+        {
+          model: UserModel,
+          as: 'user_driver',
+          attributes: ['profile_image', 'name', 'lastname'],
+        },
+      ],
+    }); // Obtiene todos los registros de la tabla drivers
     return res.status(200).json(drivers); // Retorna los conductores en formato JSON
   } catch (error) {
     return res.status(500).send(error); // Maneja cualquier error que ocurra

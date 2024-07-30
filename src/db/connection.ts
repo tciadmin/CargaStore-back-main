@@ -11,7 +11,7 @@ import {
   FeedbackModel,
   PayModel,
   ChatModel,
-  MessageModel
+  MessageModel,
 } from '../models';
 import EmailCodes from '../models/emailCodes.model';
 import PasswordCodes from '../models/passwordCodes.model';
@@ -43,7 +43,7 @@ const db = new Sequelize({
     FeedbackModel,
     PayModel,
     ChatModel,
-    MessageModel
+    MessageModel,
   ], // Aquí añades tus modelos
 });
 
@@ -70,6 +70,8 @@ const db = new Sequelize({
 //     ApplicationModel,
 //     FeedbackModel,
 //     PayModel,
+//     ChatModel,
+//     MessageModel,
 //   ], // Aquí añades tus modelos
 // });
 
