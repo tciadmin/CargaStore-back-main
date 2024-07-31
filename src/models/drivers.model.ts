@@ -8,6 +8,7 @@ import {
   AllowNull,
   PrimaryKey,
   HasMany,
+  CreatedAt,
 } from 'sequelize-typescript';
 import Users from './users.model';
 import Truck from './trucks.model';
@@ -32,11 +33,6 @@ export default class Drivers extends Model {
     allowNull: true,
   })
   num_license!: number;
-  @Column({
-    type: DataType.STRING,
-    allowNull: true,
-  })
-  pdf_license!: string;
 
   @Column({
     type: DataType.BOOLEAN,
@@ -78,6 +74,12 @@ export default class Drivers extends Model {
   img_insurance_policy!: string;
 
   @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  img_driver_license!: string;
+
+  @Column({
     type: DataType.TEXT,
     allowNull: true,
   })
@@ -86,7 +88,7 @@ export default class Drivers extends Model {
   @Column({
     type: DataType.FLOAT,
     allowNull: false,
-    defaultValue: 0,
+    defaultValue: 5,
   })
   rating!: number;
 
@@ -95,6 +97,28 @@ export default class Drivers extends Model {
     allowNull: true,
   })
   phone!: number;
+
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+  })
+  order_count!: number;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  })
+  validate_by_admin!: boolean;
+
+  @CreatedAt
+  @Column({
+    type: DataType.DATE,
+    allowNull: false,
+    defaultValue: DataType.NOW,
+  })
+  createdAt!: Date;
 
   @ForeignKey(() => Users)
   @AllowNull(false)

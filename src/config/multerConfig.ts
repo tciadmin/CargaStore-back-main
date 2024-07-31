@@ -1,4 +1,5 @@
 import multer, { FileFilterCallback } from 'multer';
+// import { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -45,6 +46,18 @@ const image = multer({
 
 export const uploadInvoice = invoice.single('invoice');
 
+export const uploadImageProfile = image.single('profile_image');
+
+export const imagesLegalDocuments = image.fields([
+  { name: 'img_driver_license', maxCount: 1 },
+  { name: 'img_insurance_policy', maxCount: 1 },
+]);
+
+export const pdfLegalDocuments = invoice.fields([
+  { name: 'pdf_iess', maxCount: 1 },
+  { name: 'pdf_port_permit', maxCount: 1 },
+]);
+
 export const uploadImages = image.fields([
   { name: 'image1', maxCount: 1 },
   { name: 'image2', maxCount: 1 },
@@ -52,7 +65,29 @@ export const uploadImages = image.fields([
   { name: 'image4', maxCount: 1 },
 ]);
 
-export const uploadImageProfile = image.single('profile_image');
+// const upload = multer();
+
+// export const combineUploads = upload.fields([
+//   { name: 'pdf_iess', maxCount: 1 },
+//   { name: 'pdf_port_permit', maxCount: 1 },
+//   { name: 'img_driver_license', maxCount: 1 },
+//   { name: 'img_insurance_policy', maxCount: 1 },
+// ]);
+
+// export const handleUploads = (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   combineUploads(req, res, function (err) {
+//     console.log('req.files in multer: ', req.files?.pdf_iess);
+//     if (err) {
+//       console.log('upload error: ', err);
+//       return res.status(400).json({ error: err.message });
+//     }
+//     next();
+//   });
+// };
 
 interface MulterFile {
   fieldname: string;
