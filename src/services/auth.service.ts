@@ -96,7 +96,7 @@ const signIn = async (req: Request, res: Response) => {
     }
     
     if (!user)
-      return res.status(404).json({ msg: 'Usuario no encontrado' });
+      return res.status(400).json({ msg: 'Usuario no encontrado' });
 
     //Comparamos la contraseña
     const isPasswordValid = await bcrypt.compare(
@@ -105,7 +105,7 @@ const signIn = async (req: Request, res: Response) => {
     );
 
     if (!isPasswordValid)
-      return res.status(404).json({ msg: 'Contraseña incorrecta' });
+      return res.status(400).json({ msg: 'Contraseña incorrecta' });
 
     //Comprobamos si el usuario ya verificó su perfil
     if (!user.verified_email)
@@ -248,7 +248,7 @@ const verifyEmail = async (req: Request, res: Response) => {
     });
 
     if (!user)
-      return res.status(404).json({ msg: 'Usuario no encontrado' });
+      return res.status(400).json({ msg: 'Usuario no encontrado' });
 
     if (user.verified_email)
       return res
@@ -314,7 +314,7 @@ const resendVerifyEmail = async (req: Request, res: Response) => {
     });
 
     if (!user)
-      return res.status(404).json({ msg: 'Usuario no encontrado.' });
+      return res.status(400).json({ msg: 'Usuario no encontrado.' });
 
     if (user.verified_email)
       return res
@@ -527,11 +527,16 @@ const changePassword = async (req: Request, res: Response) => {
 
 const singleUser = async (req: Request, res: Response) => {
   try {
+    
     const { userId } = req.params;
+    console.log(userId)
+    if ( !userId) {
+      res.status(400).json({ msg: 'Usuario no encontrado' });
+    }
     const user = await UserModel.findByPk(userId);
 
-    if (!user) {
-      res.status(404).json({ msg: 'Usuario no encontrado' });
+    if (!user ) {
+      res.status(400).json({ msg: 'Usuario no encontrado' });
     }
     let sessionUser;
     if (user?.role === 'driver') {

@@ -1,5 +1,4 @@
 import express, { Application } from 'express';
-// import fileUpload from 'express-fileupload';
 import cors from 'cors';
 import fs from 'fs';
 import https from 'https';
@@ -12,18 +11,30 @@ import { ApiPaths } from '../routes';
 import morgan from 'morgan';
 import { optionCors } from '../config/corsConfig';
 import path from 'path';
+import { Server as SocketIOServer } from 'socket.io';  // Importar Socket.IO
+import http from 'http';  // Importar http para servidor HTTP
+import messageService from '../services/message.service';
 
 class Server {
   private app: Application;
   private port: string | number;
-
+  private server: http.Server;  
+  private io: SocketIOServer; 
   constructor() {
     this.app = express();
     this.port = Config.port || 3000;
+    this.server = http.createServer(this.app);  
+    this.io = new SocketIOServer(this.server, {
+      cors: {
+        origin: '*', 
+        methods: ['GET', 'POST']
+      }
+    });  
 
     this.dbConnection();
     this.middleware();
     this.routes();
+    this.sockets();  // Añadir la configuración de sockets
   }
 
   async dbConnection() {
@@ -36,30 +47,19 @@ class Server {
   }
 
   middleware() {
-    // CORS
     this.app.use(cors(optionCors));
-
-    // Lectura y parseo del body
     this.app.use(express.json());
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
     this.app.use(compression());
     this.app.use(morgan('dev'));
 
-    // Fileupload - Carga de archivos
     this.app.use(
       '/api/uploads/images',
       express.static(path.join(__dirname, '../../../uploads/images'))
     );
-    // this.app.use(
-    //   fileUpload({
-    //     useTempFiles: true,
-    //     tempFileDir: 'tmp',
-    //     createParentPath: true,
-    //   })
-    // );
   }
-  /* eslint-disable @typescript-eslint/no-var-requires */
+
   routes() {
     ApiPaths.forEach(({ url, router }) =>
       this.app.use(`/api${url}`, require(`../router/${router}`))
@@ -83,12 +83,32 @@ class Server {
     this.app.use('*', express.static('public/index.html'));
   }
 
-  listen() {
+  sockets() {
+    this.io.on('connection', (socket) => {
+      socket.on('joinChat', (chatId) => {
+        socket.join(chatId);
+        console.log(`Usuario ${socket.id} se conecto al chat:  ${chatId}`);
+      });
+      
+      socket.on('message', async (msg:string, chatID:string,emisor:string) => {
+        const mensajeEnviado = await messageService.createNewMessage(emisor, msg, chatID, '' ,false)
+        console.log(mensajeEnviado)
+        this.io.to(chatID).emit('message', { emisor, msg});
+      });
+      
+      socket.on('disconnect', () => {
+        console.log('usuario desconectado');
+      });
+    });
+  }
+
+  async listen() {
     FilesController.existFolder();
     if (Config.dev) {
-      this.app.listen(this.port, () => {
+      this.server.listen(this.port, () => {
         console.log('Servidor corriendo en el puerto', this.port);
       });
+
     } else {
       const privateKey = fs.readFileSync(
         `${Config.urlCertificado}privkey.pem`,
@@ -103,11 +123,13 @@ class Server {
         key: privateKey,
         cert: certificate,
       };
-      const httpsServer = https.createServer(credentials, this.app);
-
-      httpsServer.listen(Config.port, () => {
+      const httpsServer =  https.createServer(credentials, this.app);
+       this.io.attach(httpsServer); 
+       this.sockets();
+       httpsServer.listen(Config.port, () => {
         console.log(`HTTPS Server running on port ${Config.port}`);
       });
+
     }
   }
 }
