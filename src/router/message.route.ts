@@ -5,13 +5,9 @@ import messageService from '../services/message.service';
 
 const router = Router();
 //Servicios
-const { createNewMessage, getLastMessage, getAllMessages } = messageService;
+const {  getLastMessage, getAllMessages } = messageService;
 
-router.post(
-  '/create/',
-  ValidJWT,
-  createNewMessage
-);
+
 router.get(
     '/getLast',
     [ValidJWT],
