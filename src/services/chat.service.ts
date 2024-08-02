@@ -75,6 +75,26 @@ const createNewChat = async (req: Request, res: Response) => {
             return res.status(400).json({ msg: "No se envió ID del receptor en el body" })
         }
 
+        const existingChat = await ChatModel.findOne({
+            where: {
+                [Op.or]: [
+                    {
+                        person1ID: userId,
+                        person2ID: person2ID
+                    },
+                    {
+                        person1ID: person2ID,
+                        person2ID: userId
+                    }
+                ]
+            }
+        });
+
+        if (existingChat) {
+            return res.status(400).json({ msg: "Ya existe un chat entre estos usuarios" });
+        }
+
+
         const responseJson: object = {
             person1ID: userId,
             person2ID
