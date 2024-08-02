@@ -83,18 +83,17 @@ const signIn = async (req: Request, res: Response) => {
           },
         ],
       });
-    } else if(user.role === 'admin'){
-       signInUser = await UserModel.findOne({
+    } else if (user.role === 'admin') {
+      signInUser = await UserModel.findOne({
         where: { email, status: true },
         attributes: {
           exclude: ['password'],
-        },       
+        },
       });
-    }
-    else{
+    } else {
       throw new Error('Rol desconocido');
     }
-    
+
     if (!user)
       return res.status(404).json({ msg: 'Usuario no encontrado' });
 
@@ -108,10 +107,10 @@ const signIn = async (req: Request, res: Response) => {
       return res.status(404).json({ msg: 'Contraseña incorrecta' });
 
     //Comprobamos si el usuario ya verificó su perfil
-    if (!user.verified_email)
-      return res
-        .status(400)
-        .json({ msg: 'El usuario no está verificado' });
+    // if (!user.verified_email)
+    //   return res
+    //     .status(400)
+    //     .json({ msg: 'El usuario no está verificado' });
 
     //Creamos el token de inicio de sesion
     const token = jwt.sign({ id: user.id }, secret);
@@ -131,9 +130,8 @@ const signIn = async (req: Request, res: Response) => {
 const signUp = async (req: Request, res: Response) => {
   const transaction = await db.transaction();
   try {
-    
     const body: SignUpBody = req.body;
-    
+
     //Checkeamos el body recibido
     const check = checkBody(body, [
       'email',
@@ -141,7 +139,7 @@ const signUp = async (req: Request, res: Response) => {
       'confirmPassword',
       'name',
       'lastname',
-      'role'
+      'role',
     ]);
     if (check) {
       return res.status(400).json({ msg: check });
@@ -559,15 +557,13 @@ const singleUser = async (req: Request, res: Response) => {
           },
         ],
       });
-    }else if (user?.role === 'admin') {
-      sessionUser = await UserModel.findByPk(userId,{
+    } else if (user?.role === 'admin') {
+      sessionUser = await UserModel.findByPk(userId, {
         attributes: {
           exclude: ['password'],
         },
       });
-    } 
-    
-    else {
+    } else {
       throw new Error('Rol desconocido');
     }
     const token = jwt.sign({ id: user.id }, secret);
