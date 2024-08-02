@@ -46,6 +46,7 @@ const createFeedback = async (req: Request, res: Response) => {
       0
     );
     const averageRating = totalRating / allFeedBack.length;
+    driver.feedback_count = driver.feedback_count + 1;
     driver.rating = parseFloat(averageRating.toFixed(1));
     await driver?.save();
 

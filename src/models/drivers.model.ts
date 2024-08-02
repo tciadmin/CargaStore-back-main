@@ -106,6 +106,13 @@ export default class Drivers extends Model {
   order_count!: number;
 
   @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+  })
+  feedback_count!: number;
+
+  @Column({
     type: DataType.BOOLEAN,
     allowNull: false,
     defaultValue: false,
