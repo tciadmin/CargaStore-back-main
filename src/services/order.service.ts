@@ -330,15 +330,31 @@ const editOrder = async (req: Request, res: Response) => {
   }
 };
 
-const changeOrderStatus = async (req: Request, res: Response) => {
-  const { orderId } = req.params;
-  const { status } = req.body;
+const finishOrder = async (req: Request, res: Response) => {
+  const { orderId, driverId } = req.params;
   try {
-    if (!status) {
-      return res.status(400).json({ msg: 'El estatus es requerido' });
+    const order = await OrderModel.findByPk(orderId);
+    const driver = await DriverModel.findByPk(driverId);
+    if (!order) {
+      console.log('orden no encontrada');
+      return res.status(404).json({ msg: 'Orden no encontrada' });
     }
-    await OrderModel.update({ status }, { where: { id: orderId } });
-    res.status(200).json({ msg: 'Estado de orden cambiado' });
+    if (order.status !== 'en curso') {
+      console.log('no puedes dar por finalizada esta orden');
+      return res
+        .status(400)
+        .json({ msg: 'No puedes dar por finalizada esta orden' });
+    }
+    if (!driver) {
+      console.log('conductor no encontrado');
+      return res.status(404).json({ msg: 'Conductor no encontrado' });
+    }
+    order.status = OrderStatus.FINALIZADO;
+    await order.save();
+    await driver.update({ order_count: driver.order_count + 1 });
+    res
+      .status(200)
+      .json({ msg: 'Orden finalizada', orderStatus: order.status });
   } catch (error) {
     res.status(500).send(error);
   }
@@ -512,7 +528,7 @@ export default {
   orderListWithFilter,
   createOrder,
   orderDetail,
-  changeOrderStatus,
+  finishOrder,
   duplicateOrder,
   addInvoiceToOrder,
   getOrderState,

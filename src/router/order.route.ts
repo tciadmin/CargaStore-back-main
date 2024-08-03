@@ -7,7 +7,7 @@ const router = Router();
 //Servicios
 const {
   findOrder,
-  changeOrderStatus,
+  finishOrder,
   orderListWithFilter,
   createOrder,
   orderDetail,
@@ -50,9 +50,9 @@ router.put(
 );
 
 router.patch(
-  '/change_status/:orderId',
+  '/finish/:orderId/:driverId',
   // ValidJWT,
-  changeOrderStatus
+  finishOrder
 );
 
 router.patch(
