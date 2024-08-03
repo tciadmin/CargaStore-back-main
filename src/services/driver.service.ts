@@ -301,7 +301,9 @@ const validateDriver = async (req: Request, res: Response) => {
     } else {
       msg = 'Conductor validado';
     }
-    res.status(200).json({ msg });
+    res
+      .status(200)
+      .json({ msg, validate_by_admin: driver.validate_by_admin });
   } catch (error) {
     console.log('error: ', error);
     res.status(500).send(error);
