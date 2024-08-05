@@ -141,28 +141,76 @@ const patchDriver = async (req: Request, res: Response) => {
   try {
     // Verificar que los campos no estén vacíos
     if (!name || !lastname || !description || !phone) {
-      return res.status(400).json({ msg: 'Faltan parámetros' });
+      console.log('req.body: ', req.body);
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: 'Faltan parámetros',
+        },
+      });
     }
 
     // Update user's name and lastname
     const user = await UserModel.findByPk(userId);
     if (!user) {
-      return res.status(404).json({ msg: 'Usuario no encontrado' });
+      return res.status(404).json({
+        message: {
+          type: 'error',
+          msg: 'Usuario no encontrado',
+        },
+      });
     }
-    await user.update({ name, lastname });
 
-    // Find and update driver's description
     const driver = await DriverModel.findOne({ where: { userId } });
     if (!driver) {
-      return res.status(404).json({ msg: 'Conductor no encontrado' });
+      return res.status(404).json({
+        message: {
+          type: 'error',
+          msg: 'Conductor no encontrado',
+        },
+      });
     }
-    await driver.update({ description, phone });
 
-    return res.status(200).json({
-      msg: 'Usuario y conductor actualizados correctamente',
-    });
+    let profileImageUpdated = false;
+    if (req.file) {
+      if (user?.profile_image) {
+        fs.unlinkSync(user.profile_image);
+      }
+      await UserModel.update(
+        { profile_image: req.file.path },
+        { where: { id: userId } }
+      );
+
+      profileImageUpdated = true;
+    }
+    const [userUpdated] = await UserModel.update(
+      { name, lastname },
+      { where: { id: userId } }
+    );
+
+    // Find and update driver's description
+    const [driverUpdated] = await DriverModel.update(
+      { description, phone },
+      { where: { userId } }
+    );
+
+    if (profileImageUpdated || userUpdated || driverUpdated) {
+      const singleUser = await UserModel.findByPk(userId);
+      const singleDriver = await DriverModel.findOne({
+        where: { userId },
+      });
+      return res.status(200).json({
+        message: {
+          type: 'success',
+          msg: 'Usuario y conductor actualizados correctamente',
+        },
+        user: singleUser,
+        driver: singleDriver,
+      });
+    }
   } catch (error) {
-    res.status(500).send(error);
+    console.log('ERROR: ', error);
+    res.status(500).send({ msg: 'Error interno' });
   }
 };
 const findDriver = async (
@@ -301,7 +349,9 @@ const validateDriver = async (req: Request, res: Response) => {
     } else {
       msg = 'Conductor validado';
     }
-    res.status(200).json({ msg });
+    res
+      .status(200)
+      .json({ msg, validate_by_admin: driver.validate_by_admin });
   } catch (error) {
     console.log('error: ', error);
     res.status(500).send(error);

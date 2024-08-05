@@ -1,5 +1,5 @@
 import multer, { FileFilterCallback } from 'multer';
-// import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -46,7 +46,36 @@ const image = multer({
 
 export const uploadInvoice = invoice.single('invoice');
 
-export const uploadImageProfile = image.single('profile_image');
+export const uploadImageProfile = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  image.single('profile_image')(req, res, (err) => {
+    if (err) {
+      console.log('Error al subir foto de perfil');
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: 'Error al subir foto de perfil',
+        },
+      });
+    }
+    if (!req.file) {
+      return next(); // Continue to the next middleware if no file
+    }
+    if (!isMulterSingleFile(req.file)) {
+      console.log('error al subir los archivos: ', req.file);
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: 'Error al subir foto de perfil',
+        },
+      });
+    }
+    next();
+  });
+};
 
 export const imagesLegalDocuments = image.fields([
   { name: 'img_driver_license', maxCount: 1 },
@@ -64,30 +93,6 @@ export const uploadImages = image.fields([
   { name: 'image3', maxCount: 1 },
   { name: 'image4', maxCount: 1 },
 ]);
-
-// const upload = multer();
-
-// export const combineUploads = upload.fields([
-//   { name: 'pdf_iess', maxCount: 1 },
-//   { name: 'pdf_port_permit', maxCount: 1 },
-//   { name: 'img_driver_license', maxCount: 1 },
-//   { name: 'img_insurance_policy', maxCount: 1 },
-// ]);
-
-// export const handleUploads = (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   combineUploads(req, res, function (err) {
-//     console.log('req.files in multer: ', req.files?.pdf_iess);
-//     if (err) {
-//       console.log('upload error: ', err);
-//       return res.status(400).json({ error: err.message });
-//     }
-//     next();
-//   });
-// };
 
 interface MulterFile {
   fieldname: string;

@@ -10,6 +10,15 @@ const createFeedback = async (req: Request, res: Response) => {
     // Validaciones
     const driver = await DriversModel.findByPk(driverId);
     const customer = await CustomerModel.findByPk(customerId);
+    const existingFeedback = await FeedbackModel.findOne({
+      where: { customerId, driverId },
+    });
+    if (existingFeedback) {
+      console.log('Ya haz opinado de este conductor');
+      return res
+        .status(404)
+        .json({ msg: 'Ya haz opinado de este conductor' });
+    }
     if (!driver) {
       return res.status(404).json({ msg: 'Conductor no encontrado' });
     }

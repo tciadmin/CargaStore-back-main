@@ -9,7 +9,7 @@ const { getAllCustomersAndDrivers, patchUser } = UserService;
 
 router.get('/all', ValidJWT, getAllCustomersAndDrivers); // Ruta para obtener todos los clientes y conductores
 router.patch(
-  '/patchDataUser',
+  '/patchDataUser/:userId',
   //   ValidJWT,
   uploadImageProfile,
   patchUser
