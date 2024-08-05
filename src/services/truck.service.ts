@@ -34,7 +34,12 @@ const patchTruck = async (req: Request, res: Response) => {
     const user = await UserModel.findByPk(userId);
 
     if (!user) {
-      return res.status(404).json({ msg: 'Usuario no encontrado' });
+      return res.status(404).json({
+        message: {
+          type: 'error',
+          msg: 'Usuario no encontrado',
+        },
+      });
     }
 
     const driver = await DriverModel.findOne({
@@ -48,21 +53,42 @@ const patchTruck = async (req: Request, res: Response) => {
     });
 
     if (!driver || !driver.truck) {
-      return res.status(404).json({ msg: 'Camión no encontrado' });
+      return res.status(404).json({
+        message: {
+          type: 'error',
+          msg: 'Camión no encontrado',
+        },
+      });
     }
 
     const truck = driver.truck;
 
     // Verificar que ninguno de los atributos esté vacío
     if (
-      brand === undefined ||
-      model === undefined ||
-      year === undefined ||
-      charge_type === undefined ||
-      num_plate === undefined ||
-      charge_capacity === undefined
+      !brand ||
+      !model ||
+      !year ||
+      !charge_type ||
+      !num_plate ||
+      !charge_capacity
     ) {
-      return res.status(400).json({ msg: 'Faltan atributos' });
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: 'Faltan atributos',
+        },
+      });
+    }
+
+    const regex = /^\d{4}$/;
+
+    if (!regex.test(String(year))) {
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: 'Año debe ser un número de exactamente cuatro dígitos.',
+        },
+      });
     }
 
     // Actualizar solo los atributos proporcionados en el cuerpo de la solicitud
@@ -76,7 +102,10 @@ const patchTruck = async (req: Request, res: Response) => {
     await truck.save();
 
     return res.status(200).json({
-      msg: 'Camión actualizado con éxito',
+      message: {
+        type: 'success',
+        msg: 'Datos del camión actualizado',
+      },
       truck,
     });
   } catch (error) {

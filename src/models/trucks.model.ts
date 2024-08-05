@@ -10,9 +10,9 @@ import { TruckInterface } from '../interface/truck.interface';
 import Drivers from './drivers.model';
 
 enum ChargeType {
-  SECA = 'seca',
-  PELIGROSA = 'peligrosa',
-  REFRIGERADA = 'refrigerada',
+  SECA = 'Seca',
+  PELIGROSA = 'Peligrosa',
+  REFRIGERADA = 'Refrigerada',
 }
 
 @Table({ tableName: 'trucks', timestamps: false })

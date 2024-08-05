@@ -9,7 +9,7 @@ export interface DriverInterface {
   insurance_policy?: boolean;
   img_insurance_policy?: string;
   img_driver_license?: string;
-  phone?: number;
+  phone?: string;
   order_count?: number;
   iess?: boolean;
   pdf_iess?: string;
