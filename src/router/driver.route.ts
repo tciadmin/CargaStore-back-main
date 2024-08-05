@@ -1,9 +1,10 @@
 import { Router } from 'express';
 import { DriverService } from '../services';
-import ValidJWT from '../middlewares/valid-jwt';
+// import ValidJWT from '../middlewares/valid-jwt';
 import {
   imagesLegalDocuments,
   pdfLegalDocuments,
+  uploadImageProfile,
 } from '../config/multerConfig';
 
 const router = Router();
@@ -30,7 +31,12 @@ router.get(
   // ValidJWT,
   getDriverByUserId
 );
-router.patch('/patch/:userId', ValidJWT, patchDriver);
+router.patch(
+  '/patch/:userId',
+  // ValidJWT,
+  uploadImageProfile,
+  patchDriver
+);
 
 router.patch(
   '/patch/legal_documents/:driverId',
