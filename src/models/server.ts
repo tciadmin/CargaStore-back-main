@@ -11,30 +11,30 @@ import { ApiPaths } from '../routes';
 import morgan from 'morgan';
 import { optionCors } from '../config/corsConfig';
 import path from 'path';
-import { Server as SocketIOServer } from 'socket.io';  // Importar Socket.IO
-import http from 'http';  // Importar http para servidor HTTP
+import { Server as SocketIOServer } from 'socket.io'; // Importar Socket.IO
+import http from 'http'; // Importar http para servidor HTTP
 import messageService from '../services/message.service';
 
 class Server {
   private app: Application;
   private port: string | number;
-  private server: http.Server;  
-  private io: SocketIOServer; 
+  private server: http.Server;
+  private io: SocketIOServer;
   constructor() {
     this.app = express();
     this.port = Config.port || 3000;
-    this.server = http.createServer(this.app);  
+    this.server = http.createServer(this.app);
     this.io = new SocketIOServer(this.server, {
       cors: {
-        origin: '*', 
-        methods: ['GET', 'POST']
-      }
-    });  
+        origin: '*',
+        methods: ['GET', 'POST'],
+      },
+    });
 
     this.dbConnection();
     this.middleware();
     this.routes();
-    this.sockets();  // Añadir la configuración de sockets
+    this.sockets(); // Añadir la configuración de sockets
   }
 
   async dbConnection() {
@@ -60,10 +60,11 @@ class Server {
     );
   }
 
-  routes() {
-    ApiPaths.forEach(({ url, router }) =>
-      this.app.use(`/api${url}`, require(`../router/${router}`))
-    );
+  async routes() {
+    for (const { url, router } of ApiPaths) {
+      const route = await import(`../router/${router}`);
+      this.app.use(`/api${url}`, route.default);
+    }
 
     this.app.get('/', async (_, res) => {
       const html = await new Promise((resolve, reject) =>
@@ -87,15 +88,27 @@ class Server {
     this.io.on('connection', (socket) => {
       socket.on('joinChat', (chatId) => {
         socket.join(chatId);
-        console.log(`Usuario ${socket.id} se conecto al chat:  ${chatId}`);
+        console.log(
+          `Usuario ${socket.id} se conecto al chat:  ${chatId}`
+        );
       });
-      
-      socket.on('message', async (msg:string, chatID:string,emisor:string) => {
-        const mensajeEnviado = await messageService.createNewMessage(emisor, msg, chatID, '' ,false)
-        console.log(mensajeEnviado)
-        this.io.to(chatID).emit('message', { emisor, msg});
-      });
-      
+
+      socket.on(
+        'message',
+        async (msg: string, chatID: string, emisor: string) => {
+          const mensajeEnviado =
+            await messageService.createNewMessage(
+              emisor,
+              msg,
+              chatID,
+              '',
+              false
+            );
+          console.log(mensajeEnviado);
+          this.io.to(chatID).emit('message', { emisor, msg });
+        }
+      );
+
       socket.on('disconnect', () => {
         console.log('usuario desconectado');
       });
@@ -108,7 +121,6 @@ class Server {
       this.server.listen(this.port, () => {
         console.log('Servidor corriendo en el puerto', this.port);
       });
-
     } else {
       const privateKey = fs.readFileSync(
         `${Config.urlCertificado}privkey.pem`,
@@ -123,13 +135,12 @@ class Server {
         key: privateKey,
         cert: certificate,
       };
-      const httpsServer =  https.createServer(credentials, this.app);
-       this.io.attach(httpsServer); 
-       this.sockets();
-       httpsServer.listen(Config.port, () => {
+      const httpsServer = https.createServer(credentials, this.app);
+      this.io.attach(httpsServer);
+      this.sockets();
+      httpsServer.listen(Config.port, () => {
         console.log(`HTTPS Server running on port ${Config.port}`);
       });
-
     }
   }
 }

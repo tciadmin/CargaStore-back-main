@@ -93,10 +93,10 @@ export default class Drivers extends Model {
   rating!: number;
 
   @Column({
-    type: DataType.INTEGER,
+    type: DataType.STRING,
     allowNull: true,
   })
-  phone!: number;
+  phone!: string;
 
   @Column({
     type: DataType.INTEGER,

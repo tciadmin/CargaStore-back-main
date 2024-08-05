@@ -150,6 +150,17 @@ const patchDriver = async (req: Request, res: Response) => {
       });
     }
 
+    const phoneRegex = /^\d{10}$/;
+
+    if (!phoneRegex.test(phone)) {
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: 'El número de teléfono debe tener exactamente 10 dígitos.',
+        },
+      });
+    }
+
     // Update user's name and lastname
     const user = await UserModel.findByPk(userId);
     if (!user) {
@@ -202,7 +213,7 @@ const patchDriver = async (req: Request, res: Response) => {
       return res.status(200).json({
         message: {
           type: 'success',
-          msg: 'Usuario y conductor actualizados correctamente',
+          msg: 'Datos del conductor actualizados',
         },
         user: singleUser,
         driver: singleDriver,
