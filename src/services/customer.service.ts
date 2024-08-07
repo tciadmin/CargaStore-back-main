@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
 import { CustomerModel, UserModel } from '../models';
 import { CustomerInterface } from '../interface/customer.interface';
-import { HelperBody } from '../helpers';
-const { checkBody } = HelperBody;
 import Config from '../config';
 import jwt from 'jsonwebtoken';
 const { secret } = Config;
@@ -80,22 +78,31 @@ const editCustomer = async (req: Request, res: Response) => {
       country,
       city,
     };
-    const check = checkBody(customerData, [
-      'company_name',
-      'ruc',
-      'company_phone',
-      'address',
-      'country',
-      'city',
-    ]);
-    if (check) {
-      return res.status(400).json({ msg: check });
+    if (
+      !company_name ||
+      !ruc ||
+      !company_phone ||
+      !address ||
+      !country ||
+      !city
+    ) {
+      return res.status(400).json({
+        message: { type: 'error', msg: 'Faltan parametros' },
+      });
     }
     await CustomerModel.update(customerData, {
       where: { id: customerId },
     });
-    res.status(200).json({ msg: 'Cliente editado con exito' });
+    const customer = await CustomerModel.findByPk(customerId);
+    res.status(200).json({
+      message: {
+        type: 'success',
+        msg: 'Datos editados',
+      },
+      customer,
+    });
   } catch (error) {
+    console.log('ERROR: ', error);
     res.status(500).send(error);
   }
 };
