@@ -252,94 +252,78 @@ const patchDriverLegalDocuments = async (
   const { num_license, iess, port_permit, insurance_policy } =
     req.body;
   try {
+    if (!isMulterRequestFiles(req.files)) {
+      console.log('error al subir los archivos: ', req.files);
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: 'Error al subir los archivos',
+        },
+      });
+    }
+    const files = req.files;
+    console.log('files: ', files);
+    const {
+      img_insurance_policy,
+      img_driver_license,
+      pdf_iess,
+      pdf_port_permit,
+    } = files;
     const driver = await DriverModel.findByPk(driverId);
     if (!driver) {
-      return res.status(404).json({ msg: 'Conductor no encontrado' });
+      return res.status(404).json({
+        message: {
+          type: 'error',
+          msg: 'Conductor no encontrado',
+        },
+      });
     }
-    await driver?.update({
+    if (!num_license || !iess || !port_permit || !insurance_policy) {
+      return res.status(404).json({
+        message: {
+          type: 'error',
+          msg: 'Faltan parametros',
+        },
+      });
+    }
+    const updatedData: Partial<DriverInterface> = {
       num_license,
       iess,
       port_permit,
       insurance_policy,
-    });
-    res.status(200).json({ msg: 'Documentos legales editado' });
-  } catch (error) {
-    res.status(500).send(error);
-  }
-};
-
-const patchPdfLegalDocumentsDriver = async (
-  req: Request,
-  res: Response
-) => {
-  const { driverId } = req.params;
-  try {
-    if (!isMulterRequestFiles(req.files)) {
-      return res.status(400).json({ msg: 'Error al subir los pdf' });
-    }
-    const files = req.files;
-
-    const driver = await DriverModel.findByPk(driverId);
-    if (driver?.pdf_iess) {
-      fs.unlinkSync(driver?.pdf_iess);
-    }
-    if (driver?.pdf_port_permit) {
-      fs.unlinkSync(driver?.pdf_port_permit);
-    }
-
-    const updatedData: Partial<DriverInterface> = {
-      pdf_iess: files.pdf_iess
-        ? files.pdf_iess[0].path
-        : driver?.pdf_iess,
-      pdf_port_permit: files.pdf_port_permit
-        ? files.pdf_port_permit[0].path
+      img_insurance_policy: img_insurance_policy
+        ? img_insurance_policy[0].path
+        : driver?.img_insurance_policy,
+      img_driver_license: img_driver_license
+        ? img_driver_license[0].path
+        : driver?.img_driver_license,
+      pdf_iess: pdf_iess ? pdf_iess[0].path : driver?.pdf_iess,
+      pdf_port_permit: pdf_port_permit
+        ? pdf_port_permit[0].path
         : driver?.pdf_port_permit,
     };
-
-    await driver?.update(updatedData);
-
-    res.status(200).json({ msg: 'pdf actualizados con exito' });
-  } catch (error) {
-    console.log('error: ', error);
-    res.status(500).send(error);
-  }
-};
-
-const patchImagesLegalDocuments = async (
-  req: Request,
-  res: Response
-) => {
-  const { driverId } = req.params;
-  try {
-    if (!isMulterRequestFiles(req.files)) {
-      return res
-        .status(400)
-        .json({ msg: 'Error al subir las imagenes' });
-    }
-    const files = req.files;
-
-    const driver = await DriverModel.findByPk(driverId);
-    if (driver?.img_insurance_policy) {
+    if (img_insurance_policy && driver?.img_insurance_policy) {
       fs.unlinkSync(driver?.img_insurance_policy);
     }
-    if (driver?.img_driver_license) {
-      fs.unlinkSync(driver?.img_driver_license);
+    if (img_driver_license && driver.img_driver_license) {
+      fs.unlinkSync(driver.img_driver_license);
+    }
+    if (pdf_iess && driver.pdf_iess) {
+      fs.unlinkSync(driver.pdf_iess);
+    }
+    if (pdf_port_permit && driver.pdf_port_permit) {
+      fs.unlinkSync(driver.pdf_port_permit);
     }
 
-    const updatedData: Partial<DriverInterface> = {
-      img_insurance_policy: files.img_insurance_policy
-        ? files.img_insurance_policy[0].path
-        : driver?.img_insurance_policy,
-      img_driver_license: files.img_driver_license
-        ? files.img_driver_license[0].path
-        : driver?.img_driver_license,
-    };
-
     await driver?.update(updatedData);
-
-    res.status(200).json({ msg: 'imagenes actualizadas con exito' });
+    res.status(200).json({
+      message: {
+        type: 'success',
+        msg: 'Documentos legales editado',
+      },
+    });
   } catch (error) {
-    console.log('error: ', error);
+    console.log('ERROR: ', error);
     res.status(500).send(error);
   }
 };
@@ -375,8 +359,6 @@ export default {
   patchDriver,
   findDriver,
   patchDriverLegalDocuments,
-  patchPdfLegalDocumentsDriver,
-  patchImagesLegalDocuments,
   validateDriver,
   getAllDrivers,
 };

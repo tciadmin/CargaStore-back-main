@@ -61,11 +61,10 @@ export default class Drivers extends Model {
   pdf_port_permit!: string;
 
   @Column({
-    type: DataType.BOOLEAN,
+    type: DataType.STRING,
     allowNull: true,
-    defaultValue: false,
   })
-  insurance_policy!: boolean;
+  insurance_policy!: string;
 
   @Column({
     type: DataType.STRING,
