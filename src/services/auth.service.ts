@@ -37,7 +37,12 @@ const signIn = async (req: Request, res: Response) => {
     const { body } = req;
     const check = checkBody(body, ['email', 'password']);
     if (check) {
-      return res.status(400).json({ msg: check });
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: check,
+        },
+      });
     }
 
     body.email = body.email.toLowerCase();
@@ -47,13 +52,26 @@ const signIn = async (req: Request, res: Response) => {
     });
 
     if (valid) {
-      return res.status(400).json({ msg: valid });
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: valid,
+        },
+      });
     }
 
     const { email, password }: LoginBody = body;
     const user: any = await UserModel.findOne({
       where: { email, status: true },
     });
+
+    if (!user)
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: 'Usuario no encontrado',
+        },
+      });
 
     let signInUser;
     if (user.role === 'driver') {
@@ -94,9 +112,6 @@ const signIn = async (req: Request, res: Response) => {
       throw new Error('Rol desconocido');
     }
 
-    if (!user)
-      return res.status(400).json({ msg: 'Usuario no encontrado' });
-
     //Comparamos la contraseña
     const isPasswordValid = await bcrypt.compare(
       password,
@@ -104,7 +119,12 @@ const signIn = async (req: Request, res: Response) => {
     );
 
     if (!isPasswordValid)
-      return res.status(400).json({ msg: 'Contraseña incorrecta' });
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: 'Contraseña incorrecta',
+        },
+      });
 
     //Comprobamos si el usuario ya verificó su perfil
     // if (!user.verified_email)
@@ -169,10 +189,16 @@ const signUp = async (req: Request, res: Response) => {
     //Validamos que el usuario no exista ya
     const { email, password, name, lastname } = body;
     const user = await UserModel.findOne({
-      where: { email, name, lastname },
+      where: { email },
     });
 
-    if (user) return res.status(200).json({ user });
+    if (user)
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: 'Ya existe un usuario con este correo',
+        },
+      });
 
     //Creamos el hash para la contraseña
     body.password = await bcrypt.hash(password, 10);
@@ -216,7 +242,10 @@ const signUp = async (req: Request, res: Response) => {
 
     await transaction.commit();
     res.json({
-      msg: '¡Usuario registrado!, revise su correo electronico para validarlo.',
+      message: {
+        type: 'success',
+        msg: '¡Usuario registrado!',
+      },
       user: newUser,
     });
   } catch (error) {

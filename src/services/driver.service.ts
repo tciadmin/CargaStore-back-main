@@ -26,7 +26,12 @@ const createDriver = async (req: Request, res: Response) => {
       !charge_capacity ||
       !charge_type
     ) {
-      return res.status(400).json({ msg: 'Faltan parametros' });
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: 'Faltan parametros',
+        },
+      });
     }
 
     const truckData: TruckInterface = {
@@ -39,7 +44,12 @@ const createDriver = async (req: Request, res: Response) => {
 
     const user = await UserModel.findByPk(userId);
     if (!user) {
-      return res.status(404).json({ msg: 'Usuario no encontrado' });
+      return res.status(404).json({
+        message: {
+          type: 'error',
+          msg: 'Usuario no encontrado',
+        },
+      });
     }
 
     const newTruck = await TruckModel.create(truckData);
@@ -67,7 +77,10 @@ const createDriver = async (req: Request, res: Response) => {
     const token = jwt.sign({ id: userId }, secret);
 
     return res.status(200).json({
-      msg: 'Conductor registrado!, revise su correo electronico para validarlo.',
+      message: {
+        type: 'success',
+        msg: '¡Conductor registrado!',
+      },
       token,
       user: newUser,
     });

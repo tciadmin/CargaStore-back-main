@@ -12,15 +12,23 @@ const createCustomer = async (req: Request, res: Response) => {
   try {
     // Verificar que todos los parámetros requeridos estén presentes
     if (!company_name || !city || !address || !company_phone) {
-      return res
-        .status(400)
-        .json({ msg: 'Faltan parametros para crear cliente' });
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: 'Faltan parametros para crear cliente',
+        },
+      });
     }
 
     // Buscar el usuario por ID
     const user = await UserModel.findByPk(userId);
     if (!user) {
-      return res.status(404).json({ msg: 'Usuario no encontrado' });
+      return res.status(404).json({
+        message: {
+          type: 'error',
+          msg: 'Usuario no encontrado',
+        },
+      });
     }
 
     // Crear los datos del cliente
@@ -55,7 +63,10 @@ const createCustomer = async (req: Request, res: Response) => {
     const token = jwt.sign({ id: userId }, secret);
 
     return res.status(200).json({
-      msg: '¡Usuario registrado!, revise su correo electronico para validarlo.',
+      message: {
+        type: 'success',
+        msg: '¡Usuario registrado!',
+      },
       token,
       user: newUser,
     });
