@@ -6,7 +6,7 @@ export interface DriverInterface {
   description?: string;
   port_permit?: boolean;
   pdf_port_permit?: string;
-  insurance_policy?: boolean;
+  insurance_policy?: string;
   img_insurance_policy?: string;
   img_driver_license?: string;
   phone?: string;

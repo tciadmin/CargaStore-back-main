@@ -2,9 +2,8 @@ import { Router } from 'express';
 import { DriverService } from '../services';
 // import ValidJWT from '../middlewares/valid-jwt';
 import {
-  imagesLegalDocuments,
-  pdfLegalDocuments,
   uploadImageProfile,
+  uploadLegalDocumentsFile,
 } from '../config/multerConfig';
 
 const router = Router();
@@ -13,10 +12,7 @@ const {
   createDriver,
   getDriverByUserId,
   patchDriver,
-  findDriver,
   patchDriverLegalDocuments,
-  patchPdfLegalDocumentsDriver,
-  patchImagesLegalDocuments,
   getAllDrivers,
   validateDriver,
 } = DriverService;
@@ -40,21 +36,8 @@ router.patch(
 
 router.patch(
   '/patch/legal_documents/:driverId',
+  uploadLegalDocumentsFile,
   patchDriverLegalDocuments
-);
-
-router.patch(
-  '/patch/pdf_legal_documents/:driverId',
-  findDriver,
-  pdfLegalDocuments,
-  patchPdfLegalDocumentsDriver
-);
-
-router.patch(
-  '/patch/image_legal_documents/:driverId',
-  findDriver,
-  imagesLegalDocuments,
-  patchImagesLegalDocuments
 );
 
 router.patch('/change_validate_status/:driverId', validateDriver);

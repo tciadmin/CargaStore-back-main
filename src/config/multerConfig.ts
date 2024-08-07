@@ -77,16 +77,6 @@ export const uploadImageProfile = (
   });
 };
 
-export const imagesLegalDocuments = image.fields([
-  { name: 'img_driver_license', maxCount: 1 },
-  { name: 'img_insurance_policy', maxCount: 1 },
-]);
-
-export const pdfLegalDocuments = invoice.fields([
-  { name: 'pdf_iess', maxCount: 1 },
-  { name: 'pdf_port_permit', maxCount: 1 },
-]);
-
 export const uploadImages = image.fields([
   { name: 'image1', maxCount: 1 },
   { name: 'image2', maxCount: 1 },
@@ -126,9 +116,10 @@ interface MulterSingleFile {
   encoding: string;
   mimetype: string;
   size: number;
-  destination: string;
-  filename: string;
-  path: string;
+  destination?: string; // destination and filename might not be present in memory storage
+  filename?: string;
+  path?: string;
+  buffer?: Buffer;
 }
 
 const isMulterSingleFile = (file: any): file is MulterSingleFile => {
@@ -140,10 +131,30 @@ const isMulterSingleFile = (file: any): file is MulterSingleFile => {
     typeof file.encoding === 'string' &&
     typeof file.mimetype === 'string' &&
     typeof file.size === 'number' &&
-    typeof file.destination === 'string' &&
-    typeof file.filename === 'string' &&
-    typeof file.path === 'string'
+    (typeof file.destination === 'undefined' ||
+      typeof file.destination === 'string') &&
+    (typeof file.filename === 'undefined' ||
+      typeof file.filename === 'string') &&
+    (typeof file.path === 'undefined' ||
+      typeof file.path === 'string')
   );
 };
+
+export const uploadLegalDocumentsFile = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      const storagePath = file.mimetype.startsWith('image/')
+        ? IMAGE_UPLOADS
+        : INVOICE_UPLOADS;
+      cb(null, storagePath);
+    },
+    filename: (req, file, cb) => cb(null, generatorNameFile(file)),
+  }),
+}).fields([
+  { name: 'img_driver_license', maxCount: 1 },
+  { name: 'img_insurance_policy', maxCount: 1 },
+  { name: 'pdf_iess', maxCount: 1 },
+  { name: 'pdf_port_permit', maxCount: 1 },
+]);
 
 export { isMulterRequestFiles, isMulterSingleFile };
