@@ -21,9 +21,12 @@ const createOrder = async (req: Request, res: Response) => {
   const { customerId } = req.params;
   if (!isMulterRequestFiles(req.files)) {
     console.log('error al subir los archivos: ', req.files);
-    return res
-      .status(400)
-      .json({ msg: 'Error al subir los archivos' });
+    return res.status(400).json({
+      message: {
+        type: 'error',
+        msg: 'Error al subir los archivos',
+      },
+    });
   }
   const files = req.files;
   console.log('files: ', files);
@@ -66,7 +69,12 @@ const createOrder = async (req: Request, res: Response) => {
       !delivery_address
     ) {
       console.log('faltan parametros');
-      return res.status(404).json({ msg: 'Faltan parametros' });
+      return res.status(404).json({
+        message: {
+          type: 'error',
+          msg: 'Faltan parametros',
+        },
+      });
     }
     const packageData: PackageInterface = {
       product_name,
@@ -95,7 +103,12 @@ const createOrder = async (req: Request, res: Response) => {
     const customer = await CustomerModel.findByPk(customerId);
     if (!customer) {
       console.log('cliente no encontrado');
-      return res.status(404).json({ msg: 'Cliente no encontrado' });
+      return res.status(404).json({
+        message: {
+          type: 'error',
+          msg: 'Cliente no encontrado',
+        },
+      });
     }
     const newPackage = await PackageModel.create(packageData);
     const order = await OrderModel.create({
@@ -107,9 +120,13 @@ const createOrder = async (req: Request, res: Response) => {
       package: newPackage,
     });
     await customer.addOrder(order);
-    return res
-      .status(200)
-      .json({ msg: 'Orden creada con exito!!', order });
+    return res.status(200).json({
+      message: {
+        type: 'success',
+        msg: 'Orden creada con exito!!',
+        order,
+      },
+    });
   } catch (error) {
     console.error('Error: ', error);
     res.status(500).send(error);
@@ -401,7 +418,10 @@ const duplicateOrder = async (req: Request, res: Response) => {
       packageId: duplicatePackage.id,
     });
     res.status(200).json({
-      msg: 'Orden duplicada con exito',
+      message: {
+        type: 'success',
+        msg: 'Orden duplicada con exito',
+      },
       orden: duplicateOrder,
     });
   } catch (error) {
