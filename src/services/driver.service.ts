@@ -302,8 +302,8 @@ const patchDriverLegalDocuments = async (
         ? pdf_port_permit[0].path
         : driver?.pdf_port_permit,
     };
-    if (img_insurance_policy && driver?.img_insurance_policy) {
-      fs.unlinkSync(driver?.img_insurance_policy);
+    if (img_insurance_policy && driver.img_insurance_policy) {
+      fs.unlinkSync(driver.img_insurance_policy);
     }
     if (img_driver_license && driver.img_driver_license) {
       fs.unlinkSync(driver.img_driver_license);
@@ -316,11 +316,13 @@ const patchDriverLegalDocuments = async (
     }
 
     await driver?.update(updatedData);
+    const updatedDriver = await DriverModel.findByPk(driverId);
     res.status(200).json({
       message: {
         type: 'success',
         msg: 'Documentos legales editado',
       },
+      updatedDriver,
     });
   } catch (error) {
     console.log('ERROR: ', error);
