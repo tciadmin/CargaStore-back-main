@@ -13,7 +13,8 @@ import { PackageInterface } from '../interface/package.interface';
 import { randomNumber } from '../utils/numberManager';
 import { OrderStatus } from '../models/orders.model';
 import { isMulterRequestFiles } from '../config/multerConfig';
-import { WhereOptions } from 'sequelize';
+import { WhereOptions, Op } from 'sequelize';
+import fs from 'fs';
 
 //import { AddInvoice } from "../interface/addInvoice.interface";
 
@@ -312,8 +313,42 @@ const editOrder = async (req: Request, res: Response) => {
     delivery_time, //string
     delivery_address, //string
   } = req.body;
+  const files = req.files;
   try {
+    const order = await OrderModel.findByPk(orderId);
+    if (!order) {
+      return res.status(404).json({
+        message: {
+          type: 'error',
+          msg: 'Orden no encontrada',
+        },
+      });
+    }
+    if (!isMulterRequestFiles(files)) {
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: 'Error al subir los archivos',
+        },
+      });
+    }
+
+    const single_package = await PackageModel.findByPk(
+      order.packageId
+    );
     const packageData: PackageInterface = {
+      image1: files.image1
+        ? files.image1[0].path
+        : single_package?.image1,
+      image2: files.image2
+        ? files.image2[0].path
+        : single_package?.image2,
+      image3: files.image3
+        ? files.image3[0].path
+        : single_package?.image3,
+      image4: files.image4
+        ? files.image4[0].path
+        : single_package?.image4,
       product_name,
       quantity,
       type,
@@ -333,15 +368,52 @@ const editOrder = async (req: Request, res: Response) => {
       delivery_time,
       delivery_address,
     };
-    const order = await OrderModel.findByPk(orderId);
-    if (!order) {
-      return res.status(404).json({ msg: 'Orden no encontrada' });
+    const packageImage1 = await PackageModel.findOne({
+      where: {
+        image1: single_package?.image1,
+        id: { [Op.ne]: single_package?.id },
+      },
+    });
+    const packageImage2 = await PackageModel.findOne({
+      where: {
+        image2: single_package?.image2,
+        id: { [Op.ne]: single_package?.id },
+      },
+    });
+    const packageImage3 = await PackageModel.findOne({
+      where: {
+        image3: single_package?.image3,
+        id: { [Op.ne]: single_package?.id },
+      },
+    });
+    const packageImage4 = await PackageModel.findOne({
+      where: {
+        image4: single_package?.image4,
+        id: { [Op.ne]: single_package?.id },
+      },
+    });
+    if (!packageImage1) {
+      single_package?.image1 && fs.unlinkSync(single_package.image1);
+    }
+    if (!packageImage2) {
+      single_package?.image2 && fs.unlinkSync(single_package.image2);
+    }
+    if (!packageImage3) {
+      single_package?.image3 && fs.unlinkSync(single_package.image3);
+    }
+    if (!packageImage4) {
+      single_package?.image4 && fs.unlinkSync(single_package.image4);
     }
     await PackageModel.update(packageData, {
       where: { id: order.packageId },
     });
     await OrderModel.update(orderData, { where: { id: orderId } });
-    res.status(200).json({ msg: 'Orden editada con exito' });
+    res.status(200).json({
+      message: {
+        type: 'success',
+        msg: 'Tu orden ha sido editada',
+      },
+    });
   } catch (error) {
     res.status(500).send(error);
   }
