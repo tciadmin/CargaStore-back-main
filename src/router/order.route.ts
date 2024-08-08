@@ -46,6 +46,7 @@ router.get(
 router.put(
   '/edit/:orderId',
   // ValidJWT,
+  uploadImages,
   editOrder
 );
 

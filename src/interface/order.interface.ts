@@ -1,7 +1,7 @@
 export interface OrderInterface {
   id?: string;
   status?: 'pendiente' | 'asignado' | 'en Curso' | 'finalizado';
-  orderType: 'national' | 'international';
+  orderType: 'nacional' | 'internacional';
   receiving_company: string;
   contact_number: number;
   receiving_company_RUC: number;

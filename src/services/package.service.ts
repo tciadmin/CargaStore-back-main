@@ -59,12 +59,10 @@ const editPackageImage = async (req: Request, res: Response) => {
       }
     });
 
-    return res
-      .status(200)
-      .json({
-        msg: 'Imágenes actualizadas con éxito',
-        single_package,
-      });
+    return res.status(200).json({
+      msg: 'Imágenes actualizadas con éxito',
+      single_package,
+    });
   } catch (error) {
     res.status(500).send(error);
   }
