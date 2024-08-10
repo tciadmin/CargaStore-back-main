@@ -4,6 +4,7 @@ import {
   OrderModel,
   PayModel,
   PackageModel,
+  DriverModel,
 } from '../models';
 import { OrderStatus } from '../models/orders.model';
 import { PayStatus } from '../models/pay.model';
@@ -12,8 +13,30 @@ const applyForOrder = async (req: Request, res: Response) => {
   try {
     const { driverId, orderId } = req.body;
     const order = await OrderModel.findByPk(orderId);
+    const driver = await DriverModel.findByPk(driverId);
     if (!order) {
-      return res.status(404).json({ msg: 'Orden no encontrada' });
+      return res.status(404).json({
+        message: {
+          type: 'error',
+          msg: 'Orden no encontrada',
+        },
+      });
+    }
+    if (!driver) {
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: 'Conductor no encontrado',
+        },
+      });
+    }
+    if (!driver.validate_by_admin) {
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: 'Tu cuenta no está verificada por el administrador',
+        },
+      });
     }
     if (order.assignedDriverId || order.pendingAssignedDriverId) {
       return res
@@ -24,16 +47,15 @@ const applyForOrder = async (req: Request, res: Response) => {
       driverId,
       orderId,
     });
-    res
-      .status(201)
-      .json({
-        application,
-        msg: {
-          msg1: 'Postulación enviada',
-          msg2: 'Si te asignan el envío recibirás una notificación',
-        },
-      });
+    res.status(201).json({
+      application,
+      msg: {
+        msg1: 'Postulación enviada',
+        msg2: 'Si te asignan el envío recibirás una notificación',
+      },
+    });
   } catch (error) {
+    console.log(error);
     res.status(500).send(error);
   }
 };
