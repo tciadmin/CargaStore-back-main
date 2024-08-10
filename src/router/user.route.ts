@@ -5,7 +5,8 @@ import { uploadImageProfile } from '../config/multerConfig';
 
 const router = Router();
 
-const { getAllCustomersAndDrivers, patchUser } = UserService;
+const { getAllCustomersAndDrivers, patchUser, pageInfo } =
+  UserService;
 
 router.get('/all', ValidJWT, getAllCustomersAndDrivers); // Ruta para obtener todos los clientes y conductores
 router.patch(
@@ -14,5 +15,6 @@ router.patch(
   uploadImageProfile,
   patchUser
 ); // Ruta para obtener todos los clientes y conductores
+router.get('/page_info', pageInfo);
 
 module.exports = router;

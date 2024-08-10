@@ -39,9 +39,12 @@ const applyForOrder = async (req: Request, res: Response) => {
       });
     }
     if (order.assignedDriverId || order.pendingAssignedDriverId) {
-      return res
-        .status(400)
-        .json({ msg: 'Esta orden ya tiene un conductor asignado' });
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: 'Esta orden ya tiene un conductor asignado',
+        },
+      });
     }
     const application = await ApplicationModel.create({
       driverId,

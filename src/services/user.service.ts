@@ -1,7 +1,12 @@
 import { Request, Response } from 'express';
 import CustomerModel from '../models/customers.model';
 import DriverModel from '../models/drivers.model';
-import { UserModel } from '../models';
+import {
+  ApplicationModel,
+  OrderModel,
+  TruckModel,
+  UserModel,
+} from '../models';
 // import { isMulterSingleFile } from '../config/multerConfig';
 import fs from 'fs';
 
@@ -119,4 +124,32 @@ const patchUser = async (req: Request, res: Response) => {
   }
 };
 
-export default { getAllCustomersAndDrivers, patchUser };
+const pageInfo = async (req: Request, res: Response) => {
+  try {
+    const viajesSinAsignar = await OrderModel.count({
+      where: { status: 'pendiente' },
+    });
+    const viajesActivos = await OrderModel.count({
+      where: { status: 'en curso' },
+    });
+    const viajesFinalizados = await OrderModel.count({
+      where: { status: 'finalizado' },
+    });
+    const solicitudesDeViaje = await ApplicationModel.count();
+    const sociosActivos = await DriverModel.count();
+    const camionesRegistrados = await TruckModel.count();
+    res.status(200).json({
+      viajesSinAsignar,
+      viajesActivos,
+      viajesFinalizados,
+      solicitudesDeViaje,
+      sociosActivos,
+      camionesRegistrados,
+    });
+  } catch (error) {
+    console.log('ERROR: ', error);
+    res.status(500).send({ msg: 'Error interno' });
+  }
+};
+
+export default { getAllCustomersAndDrivers, patchUser, pageInfo };
