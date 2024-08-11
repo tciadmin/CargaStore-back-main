@@ -131,14 +131,22 @@ const aceptOrder = async (req: Request, res: Response) => {
       return res.status(404).json({ msg: 'Orden no encontrada' });
     }
 
-    order.assignedDriverId = order.pendingAssignedDriverId;
-    order.pendingAssignedDriverId = null;
-    order.status = OrderStatus.ASIGNADO;
-    await order.save();
-
     if (!order.package) {
       return res.status(404).json({ msg: 'Paquete no encontrado' });
     }
+
+    order.assignedDriverId = order.pendingAssignedDriverId;
+    order.pendingAssignedDriverId = null;
+    order.status = OrderStatus.ASIGNADO;
+
+    //Una vez que el conductor acepta el envío se limpia la lista de postulaciones de la misma
+
+    await order.save();
+    await ApplicationModel.destroy({
+      where: {
+        orderId,
+      },
+    });
 
     // Crear instancia de Pay con estado "pendiente" para esta orden
     const newPay = await PayModel.create({
