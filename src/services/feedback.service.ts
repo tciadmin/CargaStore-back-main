@@ -15,9 +15,12 @@ const createFeedback = async (req: Request, res: Response) => {
     });
     if (existingFeedback) {
       console.log('Ya haz opinado de este conductor');
-      return res
-        .status(404)
-        .json({ msg: 'Ya haz opinado de este conductor' });
+      return res.status(404).json({
+        message: {
+          type: 'error',
+          msg: 'Ya haz opinado de este conductor',
+        },
+      });
     }
     if (!driver) {
       return res.status(404).json({ msg: 'Conductor no encontrado' });
@@ -26,9 +29,12 @@ const createFeedback = async (req: Request, res: Response) => {
       return res.status(404).json({ msg: 'Cliente no encontrado' });
     }
     if (!comment || comment.trim() === '') {
-      return res
-        .status(400)
-        .json({ error: 'Comentario no puede estar vacio' });
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: 'Comentario no puede estar vacio',
+        },
+      });
     }
     if (
       score === undefined ||
