@@ -393,16 +393,36 @@ const editOrder = async (req: Request, res: Response) => {
       },
     });
     if (!packageImage1) {
-      single_package?.image1 && fs.unlinkSync(single_package.image1);
+      if (
+        single_package?.image1 &&
+        fs.existsSync(single_package?.image1)
+      ) {
+        fs.unlinkSync(single_package.image1);
+      }
     }
     if (!packageImage2) {
-      single_package?.image2 && fs.unlinkSync(single_package.image2);
+      if (
+        single_package?.image2 &&
+        fs.existsSync(single_package?.image2)
+      ) {
+        fs.unlinkSync(single_package.image2);
+      }
     }
     if (!packageImage3) {
-      single_package?.image3 && fs.unlinkSync(single_package.image3);
+      if (
+        single_package?.image3 &&
+        fs.existsSync(single_package?.image3)
+      ) {
+        fs.unlinkSync(single_package.image3);
+      }
     }
     if (!packageImage4) {
-      single_package?.image4 && fs.unlinkSync(single_package.image4);
+      if (
+        single_package?.image4 &&
+        fs.existsSync(single_package?.image4)
+      ) {
+        fs.unlinkSync(single_package.image4);
+      }
     }
     await PackageModel.update(packageData, {
       where: { id: order.packageId },
@@ -415,6 +435,7 @@ const editOrder = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
+    console.log('ERROR: ', error);
     res.status(500).send(error);
   }
 };
