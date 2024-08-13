@@ -8,7 +8,7 @@ const { createNewChat, getAllUserChat } = chatService;
 
 router.post(
   '/create/',
-  ValidJWT,
+  //ValidJWT,
   createNewChat
 );
 router.get(

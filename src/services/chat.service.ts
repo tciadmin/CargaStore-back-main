@@ -80,8 +80,10 @@ const createNewChat = async (req: Request, res: Response) => {
       return res.status(404).json({ msg: "Orden no encontrada" });
     }
 
-    const chat = await findOrCreateChat(userId, driverId);
-    await createMessage(chat.id, driverId, messageContent);
+    const chat:any = await findOrCreateChat(userId, driverId);
+    console.log(chat);
+    
+      await createMessage(chat.id, driverId, messageContent);
 
     return res.status(201).json({ msg: "Chat iniciado y mensaje enviado con éxito" });
   } catch (error) {
@@ -96,7 +98,8 @@ async function getOrderDetails(orderId: string) {
 
 async function findOrCreateChat(person1ID: string, person2ID: string) {
   // Ordena los IDs para asegurar que siempre se guarden en el mismo orden
-  const [id1, id2] = [person1ID, person2ID].sort();
+  try {
+    const [id1, id2] = [person1ID, person2ID].sort();
 
   const existingChat = await ChatModel.findOne({
     where: {
@@ -110,6 +113,10 @@ async function findOrCreateChat(person1ID: string, person2ID: string) {
   }
 
   return await ChatModel.create({ person1ID: id1, person2ID: id2 });
+  } catch (error) {
+    console.log(error)
+  }
+  
 }
 
 async function createMessage(chatID: string, emisorID: number, messageContent: string) {
@@ -120,7 +127,10 @@ async function createMessage(chatID: string, emisorID: number, messageContent: s
   });
 }
 
-
+const findChatById = async (chatID:string)=>{
+  const findChat = await ChatModel.findByPk(chatID)
+  return findChat
+}
 
 // const createNewChat = async (req: Request, res: Response) => {
 //   try {
@@ -242,4 +252,4 @@ async function createMessage(chatID: string, emisorID: number, messageContent: s
 //     }
 // };
 
-export default { createNewChat, getAllUserChat };
+export default { createNewChat, getAllUserChat, findChatById };
