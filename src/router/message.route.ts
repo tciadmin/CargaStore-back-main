@@ -5,18 +5,13 @@ import messageService from '../services/message.service';
 
 const router = Router();
 //Servicios
-const {  getLastMessage, getAllMessages } = messageService;
+const { getLastMessage, getAllMessages } = messageService;
 
-
+router.get('/getLast', [ValidJWT], getLastMessage);
 router.get(
-    '/getLast',
-    [ValidJWT],
-    getLastMessage
-)
-router.get(
-    '/getAll/:chatID',
-    [ValidJWT],
-    getAllMessages
-)
+  '/getAll/:chatID',
+  // [ValidJWT],
+  getAllMessages
+);
 
 module.exports = router;

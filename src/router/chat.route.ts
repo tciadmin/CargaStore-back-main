@@ -13,9 +13,8 @@ router.post(
 );
 router.get(
   '/getAll',
-  [ValidJWT],
+  // [ValidJWT],
   getAllUserChat
 );
-
 
 module.exports = router;

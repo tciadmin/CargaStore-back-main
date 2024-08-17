@@ -12,6 +12,8 @@ import Users from './users.model';
 
   
   interface ChatAttributes {
+    person2: any;
+    person1: any;
     id?: string;
     person1ID?: string;
     person2ID?: string;  
@@ -33,7 +35,7 @@ import Users from './users.model';
   person1ID!: number;
 
   @BelongsTo(() => Users, { foreignKey: 'person1ID', as: 'person1' })
-  user!: Users;
+  user1!: Users;
 
 
   @ForeignKey(() => Users)

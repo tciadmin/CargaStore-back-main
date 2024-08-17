@@ -8,6 +8,7 @@ const optionCors = {
     'Access-Control-Allow-Origin',
     'Content-Type',
     'Authorization',
+    'id',
   ],
 };
 

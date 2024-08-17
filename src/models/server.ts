@@ -95,28 +95,28 @@ class Server {
         );
       });
 
-      socket.on(
-        'message',
-        async (msg: any, chatID: string, emisorID: number) => {
-          console.log('message',msg,chatID,emisorID);
-          
-          try {
-            // Crear el mensaje
-            const mensajeEnviado = await messageService.createNewMessage(
+      socket.on('message', async (msg: any) => {
+        console.log('message', msg);
+
+        try {
+          // Crear el mensaje
+          const mensajeEnviado =
+            await messageService.createNewMessage(
               msg.chatID,
               msg.emisorID,
-              msg.message,
+              msg.message
             );
-            
-            console.log(mensajeEnviado);
 
-            // Emitir el mensaje a todos los clientes conectados al chat
-            this.io.to(chatID).emit('message', { emisorID, msg });
-          } catch (error) {
-            console.error('Error al manejar el mensaje:', error);
-          }
+          console.log({ mensajeEnviado: mensajeEnviado.dataValues });
+
+          // Emitir el mensaje a todos los clientes conectados al chat
+          socket
+            .to(msg.chatID)
+            .emit('message', mensajeEnviado.dataValues);
+        } catch (error) {
+          console.error('Error al manejar el mensaje:', error);
         }
-      );
+      });
 
       socket.on('disconnect', () => {
         console.log('usuario desconectado');
