@@ -39,12 +39,22 @@ class Server {
     this.sockets(); // Añadir la configuración de sockets
   }
 
-  async dbConnection() {
-    try {
-      await db.authenticate();
-      console.log('Database online');
-    } catch (error) {
-      throw new Error(error as string);
+  async dbConnection(retries = 5, delay = 5000) {
+    while (retries) {
+      try {
+        await db.authenticate();
+        console.log('Database online');
+        break;
+      } catch (error) {
+        console.error('Database connection error:', error);
+        retries -= 1;
+        console.log(`Retries left: ${retries}`);
+        if (!retries)
+          throw new Error(
+            'Unable to connect to the database after multiple attempts.'
+          );
+        await new Promise((res) => setTimeout(res, delay)); // Espera antes de reintentar
+      }
     }
   }
 
@@ -75,6 +85,7 @@ class Server {
           { encoding: 'utf-8' },
           (err, html) => {
             if (err) {
+              console.log({ error: err });
               return reject(err);
             }
             return resolve(html);
