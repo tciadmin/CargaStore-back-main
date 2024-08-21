@@ -104,7 +104,6 @@ const patchUser = async (req: Request, res: Response) => {
       const updatedUser = await UserModel.findOne({
         where: { id: userId },
       });
-      console.log('User updated successfully:', updatedUser);
       return res.status(200).json({
         message: {
           type: 'success',
