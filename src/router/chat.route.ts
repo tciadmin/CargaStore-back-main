@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import ValidJWT from '../middlewares/valid-jwt';
+// import ValidJWT from '../middlewares/valid-jwt';
 import chatService from '../services/chat.service';
 
 const router = Router();
