@@ -18,7 +18,7 @@ const Config = {
   PasswordDB: process.env.PASSWORD_DB || '',
   urlDB: process.env.URL_DB || '',
   //Urls
-  urlFront: process.env.URL_FRONT,
+  urlFront: process.env.URL_FRONT || '*',
   urlBack: process.env.URL_BACK,
 
   //Mail config

@@ -1,5 +1,8 @@
+import Config from '.';
+const { urlFront } = Config;
+
 const optionCors = {
-  origin: '*',
+  origin: `${urlFront}`,
   methods: 'GET,PUT,PATCH,POST,DELETE',
   preflightContinue: false,
   optionsSuccessStatus: 204,
