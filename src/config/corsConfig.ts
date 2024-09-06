@@ -8,7 +8,6 @@ const optionCors = {
   optionsSuccessStatus: 204,
   credentials: true,
   allowedHeaders: [
-    'Access-Control-Allow-Origin',
     'Content-Type',
     'Authorization',
     'id',
