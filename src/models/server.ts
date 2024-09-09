@@ -14,7 +14,7 @@ import path from 'path';
 import { Server as SocketIOServer } from 'socket.io'; // Importar Socket.IO
 import http from 'http'; // Importar http para servidor HTTP
 import messageService from '../services/message.service';
-import chatService from '../services/chat.service';
+// import chatService from '../services/chat.service';
 
 class Server {
   private app: Application;
@@ -30,6 +30,7 @@ class Server {
       cors: {
         origin: `${Config.urlFront}`,
         methods: ['GET', 'POST'],
+        credentials: true,
       },
     });
 
@@ -78,23 +79,23 @@ class Server {
       this.app.use(`/api${url}`, route.default);
     }
 
-    this.app.get('/', async (_, res) => {
-      const html = await new Promise((resolve, reject) =>
-        fs.readFile(
-          `${__dirname}/../../../public/index.html`,
-          { encoding: 'utf-8' },
-          (err, html) => {
-            if (err) {
-              console.log({ error: err });
-              return reject(err);
-            }
-            return resolve(html);
-          }
-        )
-      );
-      res.send(html);
-    });
-    this.app.use('*', express.static('public/index.html'));
+    // this.app.get('/', async (_, res) => {
+    //   const html = await new Promise((resolve, reject) =>
+    //     fs.readFile(
+    //       `${__dirname}/../../../public/index.html`,
+    //       { encoding: 'utf-8' },
+    //       (err, html) => {
+    //         if (err) {
+    //           console.log({ error: err });
+    //           return reject(err);
+    //         }
+    //         return resolve(html);
+    //       }
+    //     )
+    //   );
+    //   res.send(html);
+    // });
+    // this.app.use('*', express.static('public/index.html'));
   }
 
   sockets() {
