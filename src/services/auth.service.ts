@@ -498,56 +498,73 @@ const verifyCodePassword = async (req: Request, res: Response) => {
 
 const changePassword = async (req: Request, res: Response) => {
   const transaction = await db.transaction();
+  const { id } = req.params;
+  const { password } = req.body;
+  console.log({ id, password });
   try {
-    const { email, code, password }: RecoveryPasswordBody = req.body;
+    // Verificar que la contraseña tenga al menos 8 caracteres
+    if (password.length < 8) {
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: 'La contraseña debe tener al menos 8 caracteres',
+        },
+      });
+    }
+    // const { email, code, password }: RecoveryPasswordBody = req.body;
 
     //requerido contraseña, codigo e email
-    if (!email || !code || !password)
-      return res
-        .status(400)
-        .json({ msg: 'Se requieren todos los campos!' });
+    // if (!email || !code || !password)
+    //   return res
+    //     .status(400)
+    //     .json({ msg: 'Se requieren todos los campos!' });
 
-    const user: any = await UserModel.findOne({
-      where: { email: email.toLocaleLowerCase(), status: true },
-    });
+    const user = await UserModel.findByPk(id);
 
     if (!user)
-      return res
-        .status(404)
-        .json({ msg: 'Usuario no encontrado o desactivado' });
+      return res.status(404).json({
+        message: {
+          type: 'error',
+          msg: 'Usuario no encontrado o desactivado',
+        },
+      });
 
-    const codePasword: any = await PasswordCodesModel.findOne({
-      where: { user_id: user.id, code: code.toUpperCase() },
-    });
+    // const codePasword: any = await PasswordCodesModel.findOne({
+    //   where: { user_id: user.id, code: code.toUpperCase() },
+    // });
 
-    if (!codePasword)
-      return res
-        .status(404)
-        .json({ mgs: 'No se encontró el codigo' });
+    // if (!codePasword)
+    //   return res
+    //     .status(404)
+    //     .json({ mgs: 'No se encontró el codigo' });
 
-    if (!codePasword.status)
-      return res.status(404).json({ mgs: 'Codigo vencido' });
+    // if (!codePasword.status)
+    //   return res.status(404).json({ mgs: 'Codigo vencido' });
 
     //Validamos el formato del body
-    const valid = validRegexBody(
-      { password },
-      { password: '^(?=.{8,})(?=.*[A-Z])(?=.*[0-9])' }
-    );
+    // const valid = validRegexBody(
+    //   { password },
+    //   { password: '^(?=.{8,})(?=.*[A-Z])(?=.*[0-9])' }
+    // );
 
-    if (valid) return res.status(403).json({ msg: valid });
+    // if (valid) return res.status(403).json({ msg: valid });
 
     const newPassword = await bcrypt.hash(password, 10);
 
     user.password = newPassword;
-    codePasword.status = false;
+    // codePasword.status = false;
     await user.save({ transaction });
-    await codePasword.save({ transaction });
+    // await codePasword.save({ transaction });
 
     await transaction.commit();
-    res
-      .status(200)
-      .json({ msg: 'Se cambió la contraseña exitosamente' });
+    res.status(200).json({
+      message: {
+        type: 'success',
+        msg: 'Se cambió la contraseña exitosamente',
+      },
+    });
   } catch (error) {
+    console.log({ error });
     res.status(500).json({ msg: 'Error interno' });
   }
 };
@@ -602,6 +619,7 @@ const singleUser = async (req: Request, res: Response) => {
     const token = jwt.sign({ id: user.id }, secret);
     res.status(200).json({ token, user: sessionUser });
   } catch (error) {
+    console.log({ error });
     res.status(500).send(error);
   }
 };
