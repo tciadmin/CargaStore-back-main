@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+  carga_store_api:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=development
+    command: npm start # Ejecuta el script de desarrollo con nodemon
+    volumes:
+      - .:/app # Sincroniza los cambios locales
+      - /app/node_modules # Evita que sobrescribas la carpeta node_modules en el contenedor
