@@ -63,6 +63,6 @@ const dbConfig = dev
 // Crear la instancia de Sequelize
 const db = new Sequelize(dbConfig);
 
-db.sync({ alter: true });
+db.sync();
 
 export default db;
