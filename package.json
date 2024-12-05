@@ -5,8 +5,8 @@
   "main": "app.js",
   "scripts": {
     "build": "tsc",
-    "start": "npm run build && node dist/index.js",
-    "dev": "nodemon -e ts --exec \"npm start\""
+    "start": "node dist/index.js",
+    "dev": "nodemon -e ts --exec \"npm run build && node dist/index.js\""
   },
   "keywords": [],
   "author": "",
