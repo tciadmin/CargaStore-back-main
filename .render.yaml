@@ -1,0 +1,5 @@
+runtime: node
+env: node
+build:
+  # Usa una versión de Node compatible con tu proyecto
+  NODE_VERSION: 16.x
