@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {
   BelongsTo,
   Column,
@@ -7,18 +8,18 @@ import {
   PrimaryKey,
   AllowNull,
   Table,
-} from "sequelize-typescript";
-import Drivers from "./drivers.model";
-import Customer from "./customers.model";
-import Users from "./users.model";
-import Order from "./orders.model";
+} from 'sequelize-typescript';
+import Drivers from './drivers.model';
+import Customer from './customers.model';
+import Users from './users.model';
+import Order from './orders.model';
 
 export enum PayStatus {
-  PENDIENTE = "pendiente",
-  ACREDITADO = "acreditado",
+  PENDIENTE = 'pendiente',
+  ACREDITADO = 'acreditado',
 }
 
-@Table({ tableName: "pay", timestamps: false })
+@Table({ tableName: 'pay', timestamps: false })
 class Pay extends Model {
   @PrimaryKey
   @Column({

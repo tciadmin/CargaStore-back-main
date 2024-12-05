@@ -37,6 +37,7 @@
 
 // export default PasswordCodes;
 
+import 'reflect-metadata';
 import {
   Table,
   Column,
