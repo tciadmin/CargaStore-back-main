@@ -6,8 +6,37 @@ services:
     ports:
       - '3000:3000'
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=dev
+      - URL_DB=${URL_DB} # Usar la URL completa de la base de datos de Railway
+      - HOST_MAIL=${HOST_MAIL}
+      - PORT_MAIL=${PORT_MAIL}
+      - USER_MAIL=${USER_MAIL}
+      - PASSWORD_MAIL=${PASSWORD_MAIL}
+      - KEY_MAIL=${KEY_MAIL}
+      - AUTH_JWT_SECRET=${AUTH_JWT_SECRET}
+      - URL_BACK=${URL_BACK}
+      - URL_FRONT=${URL_FRONT}
     command: npm start # Ejecuta el script de desarrollo con nodemon
     volumes:
       - .:/app # Sincroniza los cambios locales
       - /app/node_modules # Evita que sobrescribas la carpeta node_modules en el contenedor
+    depends_on:
+      - db # En caso de que también utilices un contenedor de base de datos
+
+  db:
+    image: mysql:8.0 # Si decides usar un contenedor de base de datos MySQL
+    container_name: mysql_db
+    environment:
+      - MYSQL_ROOT_PASSWORD=${PASSWORD_DB}
+      - MYSQL_DATABASE=${NAME_DB}
+    volumes:
+      - mysql-data:/var/lib/mysql # Persistencia de datos de la base de datos
+    ports:
+      - '3306:3306' # Exponer el puerto de MySQL
+
+volumes:
+  mysql-data: # Volumen persistente para los datos de la base de datos
+
+networks:
+  default:
+    driver: bridge
