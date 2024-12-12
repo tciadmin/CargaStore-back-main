@@ -574,12 +574,12 @@ const singleUser = async (req: Request, res: Response) => {
     const { userId } = req.params;
     console.log(userId);
     if (!userId) {
-      res.status(400).json({ msg: 'Usuario no encontrado' });
+      return res.status(400).json({ msg: 'Usuario no encontrado' });
     }
     const user = await UserModel.findByPk(userId);
 
     if (!user) {
-      res.status(400).json({ msg: 'Usuario no encontrado' });
+      return res.status(400).json({ msg: 'Usuario no encontrado' });
     }
     let sessionUser;
     if (user?.role === 'driver') {
@@ -617,10 +617,10 @@ const singleUser = async (req: Request, res: Response) => {
       throw new Error('Rol desconocido');
     }
     const token = jwt.sign({ id: user.id }, secret);
-    res.status(200).json({ token, user: sessionUser });
+    return res.status(200).json({ token, user: sessionUser });
   } catch (error) {
     console.log({ error });
-    res.status(500).send(error);
+    return res.status(500).send(error);
   }
 };
 

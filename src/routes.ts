@@ -19,6 +19,4 @@ export const ApiPaths: IApiPaths[] = [
   { url: '/users', router: 'user.route' },
   { url: '/chat', router: 'chat.route' },
   { url: '/message', router: 'message.route' },
-
-
 ];
