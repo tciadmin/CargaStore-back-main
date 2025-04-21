@@ -96,7 +96,13 @@ export default class Drivers extends Model {
     type: DataType.STRING,
     allowNull: true,
   })
-  phone!: string;
+  phone_code!: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  phone_number!: string;
 
   @Column({
     type: DataType.STRING,
