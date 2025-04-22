@@ -27,11 +27,7 @@ class Server {
     this.port = Config.port || 3000;
     this.server = http.createServer(this.app);
     this.io = new SocketIOServer(this.server, {
-      cors: {
-        origin: `${Config.urlFront}`,
-        methods: ['GET', 'POST'],
-        credentials: true,
-      },
+      cors: optionCors
     });
 
     this.dbConnection();
