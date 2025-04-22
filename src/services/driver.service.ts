@@ -37,10 +37,12 @@ const createDriver = async (req: Request, res: Response) => {
   const {
     brand, // string
     model, // string
+    vehicle_type,
     year, // integer
     charge_type, // seca | peligrosa | refrigerada
     charge_capacity, // string
     phone,
+    hasGps,
   } = req.body;
 
   try {
@@ -75,6 +77,8 @@ const createDriver = async (req: Request, res: Response) => {
       year,
       charge_type,
       charge_capacity,
+      vehicle_type,   // <- aquí también
+      hasGps, 
     };
 
     const user = await UserModel.findByPk(userId);
