@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { TruckService } from '../services';
-import { vehicleData } from '../config/vehicleData';
+import { vehicleData } from '../config/vehicleDataConfig';
 // import ValidJWT from "../middlewares/valid-jwt";
 
 const router = Router();
