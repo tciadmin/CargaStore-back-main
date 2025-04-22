@@ -25,10 +25,12 @@ router.get('/vehicle/brands', (req, res) => {
 
 // Rutas para modelos de vehículos
 router.get('/vehicle/models', (req, res) => {
-  const brand = String(req.query.brand || '');
+  const brand = String(req.query.brand || '').trim();  // Para eliminar espacios innecesarios
+  
   if (!brand || !vehicleData.marcas[brand]) {
     return res.status(400).json({ error: 'Marca no válida' });
   }
+
   return res.json(vehicleData.marcas[brand]);
 });
 
