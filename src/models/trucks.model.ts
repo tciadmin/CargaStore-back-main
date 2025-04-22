@@ -16,6 +16,20 @@ enum ChargeType {
   REFRIGERADA = 'Refrigerada',
 }
 
+enum VehicleType {
+  CAMION = 'Camión',
+  CAMIONETA = 'Camioneta',
+  TRAILER = 'Tráiler',
+  PLATAFORMA = 'Plataforma',
+  FURGON = 'Furgón',
+  REFRIGERADO = 'Refrigerado',
+  VOLQUETA = 'Volqueta',
+  CISTERNA = 'Cisterna',
+  PORTA_VEHICULOS = 'Porta vehículos',
+  GONDOLA = 'Góndola',
+  CAMA_BAJA = 'Cama baja',
+}
+
 @Table({ tableName: 'trucks', timestamps: false })
 class Truck extends Model<TruckInterface> {
   @PrimaryKey
@@ -36,6 +50,13 @@ class Truck extends Model<TruckInterface> {
   @Column({ type: DataType.STRING, allowNull: false })
   model!: string;
 
+  @Column({
+    type: DataType.ENUM,
+    values: Object.values(VehicleType),
+    allowNull: false,
+  })
+  vehicle_type!: VehicleType;  
+
   @Column({ type: DataType.INTEGER, allowNull: false })
   year!: number;
 
@@ -52,6 +73,12 @@ class Truck extends Model<TruckInterface> {
   @Column({ type: DataType.STRING, allowNull: true }) // Agregado: num_plate
   num_plate!: string;
 
+  @Column({
+    type: DataType.BOOLEAN,
+    allowNull: true, // Esto significa que es opcional (si quieres que sea obligatorio, cambia a 'false')
+  })
+  hasGps!: boolean;
+
   @HasOne(() => Drivers, {
     foreignKey: 'DriverId',
     as: 'truck_driver',
@@ -59,4 +86,5 @@ class Truck extends Model<TruckInterface> {
   driver!: Drivers;
 }
 export type { ChargeType };
+export { VehicleType };
 export default Truck;

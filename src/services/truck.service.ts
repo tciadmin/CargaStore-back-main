@@ -24,10 +24,12 @@ const patchTruck = async (req: Request, res: Response) => {
   const {
     brand,
     model,
+    vehicle_type,
     year,
     charge_type,
     num_plate,
     charge_capacity,
+    hasGps,
   }: TruckInterface = req.body;
 
   try {
@@ -67,6 +69,7 @@ const patchTruck = async (req: Request, res: Response) => {
     if (
       !brand ||
       !model ||
+      !vehicle_type ||
       !year ||
       !charge_type ||
       !num_plate ||
@@ -94,10 +97,12 @@ const patchTruck = async (req: Request, res: Response) => {
     // Actualizar solo los atributos proporcionados en el cuerpo de la solicitud
     truck.brand = brand;
     truck.model = model;
+    truck.vehicle_type = vehicle_type;
     truck.year = year;
     truck.charge_type = charge_type;
     truck.num_plate = num_plate;
     truck.charge_capacity = charge_capacity;
+    truck.hasGps = hasGps;
 
     await truck.save();
 
