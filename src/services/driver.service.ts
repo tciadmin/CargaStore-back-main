@@ -6,7 +6,31 @@ import Config from '../config';
 import jwt from 'jsonwebtoken';
 import fs from 'fs';
 import { isMulterRequestFiles } from '../config/multerConfig';
+import { PhoneNumber } from 'libphonenumber-js';
 const { secret } = Config;
+
+const validatePhoneNumber = (phone: string) => {
+  // Validación de teléfono para diferentes países
+  const countryRegex: { [key: string]: RegExp } = {
+    '+593': /^\+593\d{9}$/,  // Ecuador
+    '+1': /^\+1\d{10}$/,     // Estados Unidos
+    '+51': /^\+51\d{9}$/,    // Perú
+    '+57': /^\+57\d{10}$/,   // Colombia
+    '+58': /^\+58\d{10}$/,   // Venezuela
+  };
+
+  const regex = Object.entries(countryRegex).find(([code]) => 
+    phone.startsWith(code)
+  )?.[1];
+
+  // Si no hay una coincidencia para el código de país, se devuelve false
+  if (!regex) {
+    return false;
+  }
+
+  // Verifica que el número completo coincida con la expresión regular del país
+  return regex.test(phone);
+};
 
 const createDriver = async (req: Request, res: Response) => {
   const { userId } = req.params;
@@ -16,6 +40,7 @@ const createDriver = async (req: Request, res: Response) => {
     year, // integer
     charge_type, // seca | peligrosa | refrigerada
     charge_capacity, // string
+    phone,
   } = req.body;
 
   try {
@@ -24,12 +49,22 @@ const createDriver = async (req: Request, res: Response) => {
       !model ||
       !year ||
       !charge_capacity ||
-      !charge_type
+      !charge_type ||
+      !phone
     ) {
       return res.status(400).json({
         message: {
           type: 'error',
           msg: 'Faltan parametros',
+        },
+      });
+    }
+
+    if (!validatePhoneNumber(phone)) {
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: 'El número de teléfono no es válido o no tiene el formato correcto.',
         },
       });
     }
@@ -58,6 +93,7 @@ const createDriver = async (req: Request, res: Response) => {
     const newDriver: DriverInterface = await DriverModel.create({
       userId: userId,
       truckId: newTruck.id,
+      phone,
     });
 
     await user.update({ driverId: newDriver.id });
@@ -163,13 +199,12 @@ const patchDriver = async (req: Request, res: Response) => {
       });
     }
 
-    const phoneRegex = /^\d{10}$/;
-
-    if (!phoneRegex.test(phone)) {
+    // Validación del número de teléfono con la nueva función
+    if (!validatePhoneNumber(phone)) {
       return res.status(400).json({
         message: {
           type: 'error',
-          msg: 'El número de teléfono debe tener exactamente 10 dígitos.',
+          msg: 'El número de teléfono no es válido o no tiene el formato correcto.',
         },
       });
     }

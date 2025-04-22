@@ -10,6 +10,7 @@ import {
   PrimaryKey,
   HasMany,
   CreatedAt,
+  BeforeSave,
 } from 'sequelize-typescript';
 import Users from './users.model';
 import Truck from './trucks.model';
@@ -17,6 +18,7 @@ import Application from './application.model';
 import Order from './orders.model';
 import Feedback from './feedbacks.model';
 import Pay from './pay.model';
+import { isValidPhoneNumber } from 'libphonenumber-js';
 
 @Table({ tableName: 'drivers', timestamps: false })
 export default class Drivers extends Model {
@@ -96,13 +98,7 @@ export default class Drivers extends Model {
     type: DataType.STRING,
     allowNull: true,
   })
-  phone_code!: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: true,
-  })
-  phone_number!: string;
+  phone!: string;
 
   @Column({
     type: DataType.STRING,
@@ -169,6 +165,12 @@ export default class Drivers extends Model {
   @HasMany(() => Feedback)
   feedbacks!: Feedback[];
 
+  @BeforeSave
+  static validateFullPhoneNumber(instance: Drivers) {
+    if (instance.phone && !isValidPhoneNumber(instance.phone)) {
+     throw new Error('Número de teléfono no válido');
+    }
+  }
   async addOrder(feedbacks: Feedback): Promise<void> {
     if (!this.feedbacks) {
       this.feedbacks = [];
