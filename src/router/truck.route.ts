@@ -34,4 +34,4 @@ router.get('/vehicle/models', (req, res) => {
   return res.json(vehicleData.marcas[brand]);
 });
 
-module.exports = router;
+export default router;

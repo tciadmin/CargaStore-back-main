@@ -1,6 +1,20 @@
 import { Request, Response } from 'express';
 import { DriverModel, TruckModel, UserModel } from '../models';
 import { TruckInterface } from '../interface/truck.interface';
+import { vehicleData } from '../config/vehicleDataConfig';
+
+// Función de validación para marca y modelo
+const validateTruckData = (brand: string, model: string) => {
+  // Verifica si la marca existe
+  if (!vehicleData.marcas[brand]) {
+    throw new Error('Marca no válida');
+  }
+
+  // Verifica si el modelo existe para esa marca
+  if (!vehicleData.marcas[brand].includes(model)) {
+    throw new Error('El modelo no es válido para esta marca');
+  }
+};
 
 const getAllTrucks = async (req: Request, res: Response) => {
   try {
@@ -93,6 +107,8 @@ const patchTruck = async (req: Request, res: Response) => {
         },
       });
     }
+
+    validateTruckData(brand, model);
 
     // Actualizar solo los atributos proporcionados en el cuerpo de la solicitud
     truck.brand = brand;

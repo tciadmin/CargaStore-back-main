@@ -125,7 +125,7 @@ const createDriver = async (req: Request, res: Response) => {
       user: newUser,
     });
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).json({ msg: 'Error interno del servidor', error });
   }
 };
 

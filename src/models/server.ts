@@ -24,7 +24,7 @@ class Server {
 
   constructor() {
     this.app = express();
-    this.port = Config.port || 3000;
+    this.port = process.env.port || 3000;
     this.server = http.createServer(this.app);
     this.io = new SocketIOServer(this.server, {
       cors: optionCors
@@ -74,24 +74,6 @@ class Server {
       const route = await import(`../router/${router}`);
       this.app.use(`/api${url}`, route.default);
     }
-
-    // this.app.get('/', async (_, res) => {
-    //   const html = await new Promise((resolve, reject) =>
-    //     fs.readFile(
-    //       `${__dirname}/../../../public/index.html`,
-    //       { encoding: 'utf-8' },
-    //       (err, html) => {
-    //         if (err) {
-    //           console.log({ error: err });
-    //           return reject(err);
-    //         }
-    //         return resolve(html);
-    //       }
-    //     )
-    //   );
-    //   res.send(html);
-    // });
-    // this.app.use('*', express.static('public/index.html'));
   }
 
   sockets() {
@@ -161,134 +143,5 @@ class Server {
     }
   }
 }
-// class Server {
-//   private app: Application;
-//   private port: string | number;
-//   private server: http.Server;
-//   private io: SocketIOServer;
-//   constructor() {
-//     this.app = express();
-//     this.port = Config.port || 3000;
-//     this.server = http.createServer(this.app);
-//     this.io = new SocketIOServer(this.server, {
-//       cors: {
-//         origin: '*',
-//         methods: ['GET', 'POST'],
-//       },
-//     });
-
-//     this.dbConnection();
-//     this.middleware();
-//     this.routes();
-//     this.sockets(); // Añadir la configuración de sockets
-//   }
-
-//   async dbConnection() {
-//     try {
-//       await db.authenticate();
-//       console.log('Database online');
-//     } catch (error) {
-//       throw new Error(error as string);
-//     }
-//   }
-
-//   middleware() {
-//     this.app.use(cors(optionCors));
-//     this.app.use(express.json());
-//     this.app.use(bodyParser.json());
-//     this.app.use(bodyParser.urlencoded({ extended: true }));
-//     this.app.use(compression());
-//     this.app.use(morgan('dev'));
-
-//     this.app.use(
-//       '/api/uploads/images',
-//       express.static(path.join(__dirname, '../../../uploads/images'))
-//     );
-//   }
-
-//   async routes() {
-//     for (const { url, router } of ApiPaths) {
-//       const route = await import(`../router/${router}`);
-//       this.app.use(`/api${url}`, route.default);
-//     }
-
-//     this.app.get('/', async (_, res) => {
-//       const html = await new Promise((resolve, reject) =>
-//         fs.readFile(
-//           `${__dirname}/../../../public/index.html`,
-//           { encoding: 'utf-8' },
-//           (err, html) => {
-//             if (err) {
-//               return reject(err);
-//             }
-//             return resolve(html);
-//           }
-//         )
-//       );
-//       res.send(html);
-//     });
-//     this.app.use('*', express.static('public/index.html'));
-//   }
-
-//   sockets() {
-//     this.io.on('connection', (socket) => {
-//       socket.on('joinChat', (chatId) => {
-//         socket.join(chatId);
-//         console.log(
-//           `Usuario ${socket.id} se conecto al chat:  ${chatId}`
-//         );
-//       });
-
-//       socket.on(
-//         'message',
-//         async (msg: string, chatID: string, emisor: string) => {
-//           const mensajeEnviado =
-//             await messageService.createNewMessage(
-//               emisor,
-//               msg,
-//               chatID,
-//               '',
-//               false
-//             );
-//           console.log(mensajeEnviado);
-//           this.io.to(chatID).emit('message', { emisor, msg });
-//         }
-//       );
-
-//       socket.on('disconnect', () => {
-//         console.log('usuario desconectado');
-//       });
-//     });
-//   }
-
-//   async listen() {
-//     FilesController.existFolder();
-//     if (Config.dev) {
-//       this.server.listen(this.port, () => {
-//         console.log('Servidor corriendo en el puerto', this.port);
-//       });
-//     } else {
-//       const privateKey = fs.readFileSync(
-//         `${Config.urlCertificado}privkey.pem`,
-//         'utf8'
-//       );
-//       const certificate = fs.readFileSync(
-//         `${Config.urlCertificado}cert.pem`,
-//         'utf8'
-//       );
-
-//       const credentials = {
-//         key: privateKey,
-//         cert: certificate,
-//       };
-//       const httpsServer = https.createServer(credentials, this.app);
-//       this.io.attach(httpsServer);
-//       this.sockets();
-//       httpsServer.listen(Config.port, () => {
-//         console.log(`HTTPS Server running on port ${Config.port}`);
-//       });
-//     }
-//   }
-// }
 
 export default Server;
