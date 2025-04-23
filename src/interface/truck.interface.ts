@@ -10,4 +10,7 @@ export interface TruckInterface {
   num_plate?: string; // Agregado: num_plate de tipo string
   charge_capacity: string;
   hasGps: boolean;
+  truckImage?: string;
+  plateImage?: string;
+  driverId?: string;
 }

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { TruckService } from '../services';
 import { vehicleData } from '../config/vehicleDataConfig';
+import { uploadTruckImages } from '../config/multerConfig';
 // import ValidJWT from "../middlewares/valid-jwt";
 
 const router = Router();
@@ -33,5 +34,29 @@ router.get('/vehicle/models', (req, res) => {
 
   return res.json(vehicleData.marcas[brand]);
 });
+
+router.post(
+  '/create',
+  uploadTruckImages, // Middleware de multer que sube image1 y image2
+  async (req, res) => {
+    try {
+      const { body, files } = req;
+
+      const truckImage = (files?.truckImage as Express.Multer.File[] | undefined)?.[0]?.filename || null;
+      const plateImage = (files?.plateImage as Express.Multer.File[] | undefined)?.[0]?.filename || null;
+
+      const result = await TruckService.createTruck({
+        ...body,
+        truckImage,
+        plateImage,
+      });
+
+      return res.status(201).json(result);
+    } catch (error) {
+      console.error('Error al crear camión:', error);
+      return res.status(500).json({ error: 'Error interno del servidor' });
+    }
+  }
+);
 
 export default router;

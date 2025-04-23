@@ -39,6 +39,7 @@ const createDriver = async (req: Request, res: Response) => {
     model, // string
     vehicle_type,
     year, // integer
+    num_plate,
     charge_type, // seca | peligrosa | refrigerada
     charge_capacity, // string
     phone,
@@ -71,15 +72,32 @@ const createDriver = async (req: Request, res: Response) => {
       });
     }
 
+    if (!isMulterRequestFiles(req.files)) {
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: 'Error al subir las imágenes',
+        },
+      });
+    }
+
+    const truckImage = req.files?.truckImage?.[0]?.filename;
+    const plateImage = req.files?.plateImage?.[0]?.filename;
+
     const truckData: TruckInterface = {
       brand,
       model,
       year,
       charge_type,
       charge_capacity,
-      vehicle_type,   // <- aquí también
-      hasGps, 
+      num_plate,
+      vehicle_type,
+      hasGps,
+      truckImage,
+      plateImage,
     };
+
+    const newTruck = await TruckModel.create(truckData);
 
     const user = await UserModel.findByPk(userId);
     if (!user) {
@@ -91,12 +109,9 @@ const createDriver = async (req: Request, res: Response) => {
       });
     }
 
-    const newTruck = await TruckModel.create(truckData);
-    console.log(newTruck);
-
-    const newDriver: DriverInterface = await DriverModel.create({
-      userId: userId,
-      truckId: newTruck.id,
+    const newDriver = await DriverModel.create({
+      userId: user.id,
+      truckId: newTruck.id,  // Asociamos el camión al conductor
       phone,
     });
 
@@ -114,6 +129,7 @@ const createDriver = async (req: Request, res: Response) => {
         },
       ],
     });
+
     const token = jwt.sign({ id: userId }, secret);
 
     return res.status(200).json({
@@ -357,7 +373,7 @@ const patchDriverLegalDocuments = async (
     if (img_insurance_policy && driver.img_insurance_policy) {
       fs.unlinkSync(driver.img_insurance_policy);
     }
-    if (img_driver_license && driver.img_driver_license) {
+    if (driver.img_driver_license && fs.existsSync(driver.img_driver_license)) {
       fs.unlinkSync(driver.img_driver_license);
     }
     if (pdf_iess && driver.pdf_iess) {

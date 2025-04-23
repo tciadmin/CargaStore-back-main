@@ -136,4 +136,66 @@ const patchTruck = async (req: Request, res: Response) => {
   }
 };
 
-export default { patchTruck, getAllTrucks };
+const createTruck = async (data: any) => {
+  const {
+    userId,
+    brand,
+    model,
+    vehicle_type,
+    year,
+    charge_type,
+    num_plate,
+    charge_capacity,
+    hasGps,
+    truckImage,
+    plateImage,
+  } = data;
+
+  if (
+    !userId || !brand || !model || !vehicle_type ||
+    !year || !charge_type || !num_plate || !charge_capacity
+  ) {
+    throw new Error('Faltan atributos obligatorios');
+  }
+
+  if (!truckImage || !plateImage) {
+    throw new Error('Debe subir ambas imágenes');
+  }
+
+  const regex = /^\d{4}$/;
+  if (!regex.test(String(year))) {
+    throw new Error('Año debe tener cuatro dígitos');
+  }
+
+  validateTruckData(brand, model);
+
+  const user = await UserModel.findByPk(userId);
+  if (!user) throw new Error('Usuario no encontrado');
+
+  const driver = await DriverModel.findOne({ where: { userId } });
+  if (!driver) throw new Error('Conductor no encontrado');
+
+  const newTruck = await TruckModel.create({
+    brand,
+    model,
+    vehicle_type,
+    year,
+    charge_type,
+    num_plate,
+    charge_capacity,
+    hasGps,
+    truckImage,
+    plateImage,
+    driverId: driver.id,
+  });
+
+  return {
+    message: {
+      type: 'success',
+      msg: 'Camión creado correctamente',
+    },
+    truck: newTruck,
+  };
+};
+
+export default { patchTruck, getAllTrucks, createTruck };

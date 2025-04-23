@@ -79,6 +79,24 @@ class Truck extends Model<TruckInterface> {
   })
   hasGps!: boolean;
 
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  truckImage!: string; // Foto del camión
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  plateImage!: string;
+
+  @Column({
+    type: DataType.UUID,
+    allowNull: true,
+  })
+  driverId?: string;
+
   @HasOne(() => Drivers, {
     foreignKey: 'DriverId',
     as: 'truck_driver',

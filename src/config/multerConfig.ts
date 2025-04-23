@@ -17,8 +17,7 @@ const invoiceStorage = multer.diskStorage({
 
 const imageStorage = multer.diskStorage({
   destination: (_req, _file, cb) => cb(null, IMAGE_UPLOADS),
-  filename: (_req, file: Express.Multer.File, cb) =>
-    cb(null, generatorNameFile(file)),
+  filename: (_req, file, cb) => cb(null, generatorNameFile(file)),
 });
 
 const invoice = multer({
@@ -43,6 +42,21 @@ const image = multer({
     }
   },
 });
+
+export const uploadTruckImages = multer({
+  storage: imageStorage,
+  fileFilter: (_req, file, cb: FileFilterCallback) => {
+    const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (allowedMimeTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Solo se permiten archivos .jpeg, .jpg y .png'));
+    }
+  }
+}).fields([
+  { name: 'truckImage', maxCount: 1 },
+  { name: 'plateImage', maxCount: 1 }
+]);
 
 export const uploadInvoice = invoice.single('invoice');
 
@@ -82,6 +96,8 @@ export const uploadImages = image.fields([
   { name: 'image2', maxCount: 1 },
   { name: 'image3', maxCount: 1 },
   { name: 'image4', maxCount: 1 },
+  { name: 'truckImage', maxCount: 1 },
+  { name: 'plateImage', maxCount: 1 },
 ]);
 
 interface MulterFile {
