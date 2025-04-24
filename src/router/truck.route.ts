@@ -45,6 +45,10 @@ router.post(
       const truckImage = (files?.truckImage as Express.Multer.File[] | undefined)?.[0]?.filename || null;
       const plateImage = (files?.plateImage as Express.Multer.File[] | undefined)?.[0]?.filename || null;
 
+      if (!truckImage || !plateImage) {
+        return res.status(400).json({ error: 'Faltan imágenes requeridas (camión o placa)' });
+      }
+
       const result = await TruckService.createTruck({
         ...body,
         truckImage,

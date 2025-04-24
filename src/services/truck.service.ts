@@ -136,7 +136,13 @@ const patchTruck = async (req: Request, res: Response) => {
   }
 };
 
-const createTruck = async (data: any) => {
+interface CreateTruckData extends TruckInterface {
+  userId: string;
+  truckImage: string;
+  plateImage: string;
+}
+
+const createTruck = async (data: CreateTruckData) => {
   const {
     userId,
     brand,

@@ -45,6 +45,9 @@ const image = multer({
 
 export const uploadTruckImages = multer({
   storage: imageStorage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5 MB
+  },
   fileFilter: (_req, file, cb: FileFilterCallback) => {
     const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png'];
     if (allowedMimeTypes.includes(file.mimetype)) {
@@ -96,8 +99,6 @@ export const uploadImages = image.fields([
   { name: 'image2', maxCount: 1 },
   { name: 'image3', maxCount: 1 },
   { name: 'image4', maxCount: 1 },
-  { name: 'truckImage', maxCount: 1 },
-  { name: 'plateImage', maxCount: 1 },
 ]);
 
 interface MulterFile {
