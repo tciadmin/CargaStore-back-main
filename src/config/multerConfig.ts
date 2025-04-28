@@ -20,6 +20,21 @@ const imageStorage = multer.diskStorage({
   filename: (_req, file, cb) => cb(null, generatorNameFile(file)),
 });
 
+const docsFilter = (_req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
+  const allowedMimeTypes = [
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'application/pdf',
+  ];
+
+  if (allowedMimeTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error('Solo se permiten imágenes (jpg, jpeg, png) o archivos PDF.'));
+  }
+};
+
 const invoice = multer({
   storage: invoiceStorage,
   fileFilter: (_req, file, cb: FileFilterCallback) => {
@@ -59,6 +74,29 @@ export const uploadTruckImages = multer({
 }).fields([
   { name: 'truckImage', maxCount: 1 },
   { name: 'plateImage', maxCount: 1 }
+]);
+
+const driverDocStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const storagePath = file.mimetype.startsWith('image/')
+      ? IMAGE_UPLOADS
+      : INVOICE_UPLOADS;
+    cb(null, storagePath);
+  },
+  filename: (req, file, cb) => cb(null, generatorNameFile(file)),
+});
+
+export const uploadDriverDocuments = multer({
+  storage: driverDocStorage,
+  fileFilter: docsFilter,
+  limits: { fileSize: 10 * 1024 * 1024 }, // Máx. 10MB por archivo
+}).fields([
+  { name: 'license', maxCount: 1 },
+  { name: 'registration', maxCount: 1 },
+  { name: 'soat', maxCount: 1 },
+  { name: 'idCard', maxCount: 1 },
+  { name: 'ruc', maxCount: 1 },
+  { name: 'selfie', maxCount: 1 },
 ]);
 
 export const uploadInvoice = invoice.single('invoice');

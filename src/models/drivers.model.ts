@@ -101,10 +101,10 @@ export default class Drivers extends Model {
   phone!: string;
 
   @Column({
-    type: DataType.STRING,
+    type: DataType.INTEGER,
     allowNull: false,
   })
-  identification!: string;
+  identification!: number;
 
   @Column({
     type: DataType.INTEGER,

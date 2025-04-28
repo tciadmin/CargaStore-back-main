@@ -5,13 +5,36 @@ import Config from '../config';
 import jwt from 'jsonwebtoken';
 const { secret } = Config;
 
+const validatePhoneNumber = (phone: string) => {
+  // Validación de teléfono para diferentes países
+  const countryRegex: { [key: string]: RegExp } = {
+    '+593': /^\+593\d{9}$/,  // Ecuador
+    '+1': /^\+1\d{10}$/,     // Estados Unidos
+    '+51': /^\+51\d{9}$/,    // Perú
+    '+57': /^\+57\d{10}$/,   // Colombia
+    '+58': /^\+58\d{10}$/,   // Venezuela
+  };
+
+  const regex = Object.entries(countryRegex).find(([code]) => 
+    phone.startsWith(code)
+  )?.[1];
+
+  // Si no hay una coincidencia para el código de país, se devuelve false
+  if (!regex) {
+    return false;
+  }
+
+  // Verifica que el número completo coincida con la expresión regular del país
+  return regex.test(phone);
+};
+
 const createCustomer = async (req: Request, res: Response) => {
   const { userId } = req.params;
-  const { company_name, city, address, company_phone } = req.body;
+  const { company_name,company_ident, city, address, company_phone } = req.body;
 
   try {
     // Verificar que todos los parámetros requeridos estén presentes
-    if (!company_name || !city || !address || !company_phone) {
+    if (!company_name || !company_ident || !city || !address || !company_phone) {
       return res.status(400).json({
         message: {
           type: 'error',
@@ -19,7 +42,15 @@ const createCustomer = async (req: Request, res: Response) => {
         },
       });
     }
-
+    
+    if (!validatePhoneNumber(company_phone)) {
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: 'El número de teléfono no es válido o no tiene el formato correcto.',
+        },
+      });
+    }
     // Buscar el usuario por ID
     const user = await UserModel.findByPk(userId);
     if (!user) {
@@ -34,6 +65,7 @@ const createCustomer = async (req: Request, res: Response) => {
     // Crear los datos del cliente
     const CustomerData = {
       company_name,
+      company_ident,
       city,
       company_phone,
       address,
@@ -77,13 +109,13 @@ const createCustomer = async (req: Request, res: Response) => {
 
 const editCustomer = async (req: Request, res: Response) => {
   const { customerId } = req.params;
-  const { company_name, ruc, company_phone, address, country, city } =
+  const { company_name, company_ident, company_phone, address, country, city } =
     req.body;
 
   try {
     const customerData: CustomerInterface = {
       company_name,
-      ruc,
+      company_ident,
       company_phone,
       address,
       country,
@@ -91,7 +123,7 @@ const editCustomer = async (req: Request, res: Response) => {
     };
     if (
       !company_name ||
-      !ruc ||
+      !company_ident ||
       !company_phone ||
       !address ||
       !country ||
@@ -104,6 +136,14 @@ const editCustomer = async (req: Request, res: Response) => {
     await CustomerModel.update(customerData, {
       where: { id: customerId },
     });
+    if (!validatePhoneNumber(company_phone)) {
+      return res.status(400).json({
+        message: {
+          type: 'error',
+          msg: 'El número de teléfono no es válido o no tiene el formato correcto.',
+        },
+      });
+    }
     const customer = await CustomerModel.findByPk(customerId);
     res.status(200).json({
       message: {

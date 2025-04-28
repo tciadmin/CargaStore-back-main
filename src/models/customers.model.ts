@@ -17,7 +17,7 @@ import Feedback from './feedbacks.model';
 interface CustomerAttributes {
   id?: string;
   company_name: string;
-  ruc?: number;
+  company_ident?: number;
   company_phone: string;
   address: string;
   country?: string;
@@ -46,7 +46,7 @@ export class Customer extends Model<CustomerAttributes> {
     type: DataType.INTEGER,
     allowNull: true,
   })
-  ruc!: number;
+  company_ident!: number;
 
   @Column({
     type: DataType.STRING,
